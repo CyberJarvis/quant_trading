@@ -23,13 +23,13 @@ const REGIME_STYLES = {
     glow:    "0 0 40px rgba(244,63,94,0.10)",
   },
   SIDEWAYS: {
-    bg:      "linear-gradient(135deg, #1A1505 0%, #120F00 100%)",
-    border:  "#F59E0B",
-    accent:  "#F59E0B",
-    text:    "#FBBF24",
-    label:   "#FCD34D",
+    bg:      "linear-gradient(135deg, #09132C 0%, #060B1A 100%)",
+    border:  "#3B82F6",
+    accent:  "#3B82F6",
+    text:    "#60A5FA",
+    label:   "#93C5FD",
     icon:    Minus,
-    glow:    "0 0 40px rgba(245,158,11,0.10)",
+    glow:    "0 0 40px rgba(59,130,246,0.10)",
   },
 };
 

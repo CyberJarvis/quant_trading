@@ -53,7 +53,7 @@ export default function PriceChart({ candles, symbol }: Props) {
         <p className="text-sm font-medium text-gray-300">
           {symbol.replace(".NS", "")} Price History
         </p>
-        <p className="font-mono text-lg font-bold text-amber-400">
+        <p className="font-mono text-lg font-bold text-emerald-400">
           ₹{candles[candles.length - 1]?.close.toFixed(2)}
         </p>
       </div>
@@ -61,8 +61,8 @@ export default function PriceChart({ candles, symbol }: Props) {
         <ComposedChart data={sampled}>
           <defs>
             <linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
+              <stop offset="5%" stopColor="#10B981" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
@@ -82,7 +82,7 @@ export default function PriceChart({ candles, symbol }: Props) {
           <Area
             type="monotone"
             dataKey="close"
-            stroke="#F59E0B"
+            stroke="#10B981"
             strokeWidth={2}
             fill="url(#priceGrad)"
             dot={false}

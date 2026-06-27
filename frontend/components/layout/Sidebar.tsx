@@ -1,89 +1,98 @@
-"use client";
+'use client'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import {
+  LayoutDashboard, PieChart, LineChart,
+  FlaskConical, Zap, Activity, User
+} from 'lucide-react'
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, PieChart, LineChart, FlaskConical, Zap } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const nav = [
-  { href: "/dashboard",   label: "Dashboard",   icon: LayoutDashboard },
-  { href: "/portfolio",   label: "Portfolio",   icon: PieChart },
-  { href: "/research",    label: "Research",    icon: LineChart },
-  { href: "/backtest",    label: "Backtest",    icon: FlaskConical },
-  { href: "/stress-test", label: "Stress Test", icon: Zap },
-];
+const NAV = [
+  { href: '/dashboard', label: 'Dashboard',   icon: LayoutDashboard },
+  { href: '/portfolio', label: 'Portfolio',   icon: PieChart },
+  { href: '/research',  label: 'Research',    icon: LineChart },
+  { href: '/backtest',  label: 'Backtest',    icon: FlaskConical },
+  { href: '/stress-test', label: 'Stress Test', icon: Zap },
+  { href: '/profile',   label: 'User Profile', icon: User },
+]
 
 export default function Sidebar() {
-  const path = usePathname();
+  const path = usePathname()
 
   return (
-    <aside
-      className="w-56 min-h-screen flex flex-col border-r"
-      style={{
-        background:   "linear-gradient(180deg, #0A1525 0%, #060B14 100%)",
-        borderColor:  "#1A2B40",
-      }}
-    >
-      {/* Logo */}
-      <div className="px-5 py-5 border-b" style={{ borderColor: "#1A2B40" }}>
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)" }}
-          >
-            <span className="text-black font-black text-sm">P</span>
+    <aside className="app-sidebar" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Brand logo header */}
+      <div style={{
+        padding: '24px 20px',
+        borderBottom: '1px solid var(--border)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: 'var(--radius-sm)',
+            background: 'var(--amber)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <Activity size={16} color="#04080F" strokeWidth={2.5} />
           </div>
           <div>
-            <p className="text-white font-bold text-sm tracking-widest">PRAVAH</p>
-            <p className="text-[10px] tracking-widest uppercase" style={{ color: "#475569" }}>
-              QuantEdge AI
-            </p>
+            <div style={{
+              fontWeight: 700, fontSize: 14.5, letterSpacing: '-0.02em',
+              color: 'var(--text)'
+            }}>P.R.A.V.A.H</div>
+            <div style={{ fontSize: 9, color: 'var(--muted)', letterSpacing: '0.08em', fontWeight: 600 }}>
+              QUANT PLATFORM
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-5 space-y-0.5">
-        {nav.map(({ href, label, icon: Icon }) => {
-          const active = path === href || path.startsWith(href + "/");
+      {/* Navigation link rows */}
+      <nav style={{ flex: 1, padding: '20px 10px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {NAV.map(({ href, label, icon: Icon }) => {
+          const active = path === href || path.startsWith(href + '/')
           return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative",
-                active
-                  ? "text-amber-300"
-                  : "hover:bg-white/[0.03]"
-              )}
-              style={active ? { background: "rgba(245,158,11,0.08)" } : {}}
-            >
-              {/* Active left indicator */}
-              {active && (
-                <span
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
-                  style={{ background: "#F59E0B" }}
-                />
-              )}
-              <Icon
-                size={16}
-                style={{ color: active ? "#F59E0B" : "#475569" }}
-              />
-              <span style={{ color: active ? "#FCD34D" : "#64748B" }}
-                className={cn("transition-colors", !active && "hover:text-slate-300")}
+            <Link key={href} href={href} style={{ textDecoration: 'none', display: 'block' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '9px 12px', borderRadius: 'var(--radius-sm)',
+                background: active ? 'var(--surface-hover)' : 'transparent',
+                color: active ? 'var(--amber)' : 'var(--muted)',
+                fontWeight: active ? 600 : 500,
+                fontSize: 13,
+                transition: 'all 0.15s ease-in-out',
+                cursor: 'pointer',
+                border: active ? '1px solid var(--border)' : '1px solid transparent'
+              }}
+                onMouseEnter={e => {
+                  if (!active) {
+                    const el = e.currentTarget as HTMLDivElement
+                    el.style.background = 'rgba(255,255,255,0.02)'
+                    el.style.color = 'var(--text-2)'
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!active) {
+                    const el = e.currentTarget as HTMLDivElement
+                    el.style.background = 'transparent'
+                    el.style.color = 'var(--muted)'
+                  }
+                }}
               >
-                {label}
-              </span>
+                <Icon size={16} strokeWidth={active ? 2.5 : 2} />
+                <span>{label}</span>
+              </div>
             </Link>
-          );
+          )
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="px-5 py-4 border-t" style={{ borderColor: "#1A2B40" }}>
-        <p className="text-[10px] tracking-wider uppercase" style={{ color: "#334155" }}>
-          v1.0 · PS-3 · Ignite Room
-        </p>
+      {/* Simplified details footer */}
+      <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border)' }}>
+        <div style={{ fontSize: 10.5, color: 'var(--muted-2)', lineHeight: 1.4 }}>
+          QuantEdge Terminal v2.0<br />
+          Production Build
+        </div>
       </div>
     </aside>
-  );
+  )
 }

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import type { MarketIndices } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { LogOut } from "lucide-react";
 
 function Ticker({
   label,
@@ -40,12 +42,19 @@ function Ticker({
 }
 
 const Divider = () => (
-  <span className="w-px h-4 mx-1" style={{ background: "#1A2B40" }} />
+  <span className="w-px h-4 mx-1" style={{ background: "var(--border)" }} />
 );
 
 export default function TopBar() {
+  const router = useRouter();
   const [data, setData]       = useState<MarketIndices | null>(null);
   const [marketOpen, setMarketOpen] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('pravah_user');
+    localStorage.removeItem('pravah_onboarding_completed');
+    router.push('/login');
+  };
 
   useEffect(() => {
     const check = () => {
@@ -65,7 +74,7 @@ export default function TopBar() {
   return (
     <header
       className="h-12 flex items-center justify-between px-5 border-b shrink-0"
-      style={{ background: "#060B14", borderColor: "#1A2B40" }}
+      style={{ background: "var(--bg)", borderColor: "var(--border)" }}
     >
       {/* Market status */}
       <div className="flex items-center gap-2">
@@ -104,7 +113,7 @@ export default function TopBar() {
         <Ticker
           label="VIX"
           value={data?.vix.value?.toFixed(1) ?? null}
-          valueColor="#F59E0B"
+          valueColor="var(--amber)"
         />
         {data?.vix.sentiment && (
           <span className="text-[10px] font-medium ml-1" style={{ color: "#64748B" }}>
@@ -127,6 +136,18 @@ export default function TopBar() {
           </>
         )}
       </div>
+      {/* Logout */}
+      <button
+        onClick={handleLogout}
+        title="Sign out"
+        className="flex items-center gap-1.5 px-3 py-1 rounded text-[11px] font-medium transition-colors"
+        style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--muted)', cursor: 'pointer' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-2)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-2)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted)'; }}
+      >
+        <LogOut size={13} />
+        Logout
+      </button>
     </header>
   );
 }

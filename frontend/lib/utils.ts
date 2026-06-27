@@ -43,7 +43,7 @@ export function regimeBg(regime: Regime): string {
   switch (regime) {
     case "BULL":     return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
     case "BEAR":     return "bg-red-500/20 text-red-400 border-red-500/30";
-    case "SIDEWAYS": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+    case "SIDEWAYS": return "bg-blue-500/20 text-blue-400 border-blue-500/30";
   }
 }
 
@@ -51,6 +51,6 @@ export function regimeColor(regime: Regime): string {
   switch (regime) {
     case "BULL":     return "#10B981";
     case "BEAR":     return "#EF4444";
-    case "SIDEWAYS": return "#F59E0B";
+    case "SIDEWAYS": return "#3B82F6";
   }
 }

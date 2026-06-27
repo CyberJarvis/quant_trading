@@ -23,8 +23,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from routers import regime, market, signals, portfolio, backtest, stress
+from routers import regime, market, signals, portfolio, backtest, stress, auth
 
+app.include_router(auth.router,      prefix="/api")
 app.include_router(regime.router,    prefix="/api")
 app.include_router(market.router,    prefix="/api")
 app.include_router(signals.router,   prefix="/api")

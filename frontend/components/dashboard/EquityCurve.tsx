@@ -21,7 +21,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     <div className="bg-[#1a2235] border border-[#2a3347] rounded-lg px-3 py-2 text-xs">
       <p className="text-gray-400 mb-1">{label}</p>
       {strategy && (
-        <p className="text-amber-400 font-mono">Strategy ₹{strategy.value.toLocaleString("en-IN")}</p>
+        <p className="text-emerald-400 font-mono">Strategy ₹{strategy.value.toLocaleString("en-IN")}</p>
       )}
       {market && (
         <p className="text-blue-400 font-mono">Nifty 50  ₹{market.value.toLocaleString("en-IN")}</p>
@@ -69,7 +69,7 @@ export default function EquityCurve({ data, capital = 100000 }: Props) {
           <Line
             type="monotone"
             dataKey="strategy"
-            stroke="#F59E0B"
+            stroke="#10B981"
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 3 }}

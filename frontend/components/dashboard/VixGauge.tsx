@@ -10,7 +10,7 @@ export default function VixGauge({ vix, sentiment }: Props) {
   const color = vix === null ? "#6B7280"
     : vix < 15 ? "#10B981"
     : vix > 22 ? "#EF4444"
-    : "#F59E0B";
+    : "#3B82F6";
 
   return (
     <div className="bg-[#111827] border border-[#1F2937] rounded-xl px-4 py-4">

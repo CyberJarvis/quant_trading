@@ -22,6 +22,34 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 }
 
 export const api = {
+  // Auth
+  signup: (name: string, email: string, password: string) =>
+    fetch(`${BASE}/api/auth/signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, password }) }).then(r => r.json()),
+
+  login: (email: string, password: string) =>
+    fetch(`${BASE}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) }).then(r => r.json()),
+
+  verifyOtp: (email: string, otp: string) =>
+    fetch(`${BASE}/api/auth/verify-otp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, otp }) }).then(r => r.json()),
+
+  saveOnboarding: (email: string, capital: number, goal: string, risk: string, horizon: string, sectors: string) =>
+    fetch(`${BASE}/api/auth/onboarding`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, capital, goal, risk, horizon, sectors }) }).then(r => r.json()),
+
+  getUserProfile: (email: string) =>
+    fetch(`${BASE}/api/auth/user/profile?email=${encodeURIComponent(email)}`).then(r => r.json()),
+
+  updateProfiling: (email: string, profiling: Record<string, unknown>) =>
+    fetch(`${BASE}/api/auth/user/profiling`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, ...profiling }) }).then(r => r.json()),
+
+  getHoldingsAnalysis: (holdings: unknown[]) =>
+    fetch(`${BASE}/api/portfolio/holdings-analysis`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ holdings }) }).then(r => r.json()),
+
+  importCSV: (file: File) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return fetch(`${BASE}/api/portfolio/import-csv`, { method: "POST", body: fd }).then(r => r.json());
+  },
+
   getRegime: () => get<RegimeData>("/api/regime"),
 
   getIndices: () => get<MarketIndices>("/api/market/indices"),

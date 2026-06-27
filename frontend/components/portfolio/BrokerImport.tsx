@@ -488,7 +488,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                     width:  step === s ? 20 : 6,
                     height: 6,
                     backgroundColor: (["broker","upload","preview","enriching"].indexOf(step) >= i)
-                      ? "#F59E0B" : "#1A2B40",
+                      ? "var(--amber)" : "#1A2B40",
                   }}
                 />
               ))}
