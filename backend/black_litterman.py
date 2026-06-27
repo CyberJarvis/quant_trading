@@ -10,7 +10,7 @@ B-L formula:
 """
 
 import numpy as np
-from data_cache import get_cached_candles, get_cached_signal, get_market_caps
+from data_cache import get_cached_candles, get_market_caps
 from scipy.optimize import minimize
 
 # ── Helpers ─────────────────────────────────────────────────────────────────────
@@ -156,9 +156,10 @@ def black_litterman_optimize(
     Pi = compute_equilibrium_returns(market_caps, cov_matrix, symbols)
 
     # ── Step 2: Build Q vector (your views — from CQR Q50 median) ───────────
-    # CQR returns pred_realist in percentage points → convert to decimal
+    # pred_realist is a 5-day log return in percentage points.
+    # Annualise: pct / 100 * (252 / 5) = pct * 0.504
     Q = np.array(
-        [predictions[s].get("pred_realist", 0.0) / 100.0 * 252 for s in symbols]
+        [(predictions[s].get("pred_realist") or 0.0) / 100.0 * (252 / 5) for s in symbols]
     )
 
     # ── Step 3: Build P matrix (identity — one view per stock) ──────────────
@@ -172,13 +173,17 @@ def black_litterman_optimize(
     # Small Ω diagonal  → model is confident  → B-L tilts toward this view
     #
     # Floor of 0.0001 prevents division-by-zero if CQR is extremely confident.
+    # width is a 5-day CQR interval width in percentage points.
+    # Annualise variance: (width/100)^2 * (252/5). Take sqrt for vol, square for variance.
+    # Simplified: omega_i = (width/100 * sqrt(252/5))^2
+    _annual_factor = np.sqrt(252 / 5)
     omega_diagonal = np.array(
         [
             max(
                 (
-                    predictions[s].get("prediction_interval", {}).get("width", 5.0)
+                    (predictions[s].get("prediction_interval") or {}).get("width", 5.0)
                     / 100.0
-                    * np.sqrt(252)
+                    * _annual_factor
                 )
                 ** 2,
                 0.0001,
