@@ -280,7 +280,8 @@ def compute_cqr_signals(symbol: str, candles: list) -> dict:
     ema12 = close.ewm(span=12, adjust=False).mean()
     ema26 = close.ewm(span=26, adjust=False).mean()
     macd = ema12 - ema26
-    feat["macd_hist"] = macd - macd.ewm(span=9, adjust=False).mean()
+    macd_hist_raw = macd - macd.ewm(span=9, adjust=False).mean()
+    feat["macd_hist"] = macd_hist_raw / close  # normalize by price for cross-stock comparability
 
     feat["target"] = log_ret.shift(-5)
     feat = feat.dropna()
