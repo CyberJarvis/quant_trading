@@ -258,7 +258,7 @@ def compute_cqr_signals(symbol: str, candles: list) -> dict:
     except ImportError:
         return {"prediction_interval": None}
 
-    if not candles or len(candles) < 100:
+    if not candles or len(candles) < 250:
         return {"prediction_interval": None}
 
     df = pd.DataFrame(candles)
