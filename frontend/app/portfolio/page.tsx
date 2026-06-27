@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Upload } from "lucide-react";
+import { Upload, Zap, Brain } from "lucide-react";
 import { api } from "@/lib/api";
-import type { PortfolioResult, PortfolioAllocation } from "@/lib/types";
+import type { PortfolioResult, PortfolioAllocation, OptimizerComparison, RiskBrief } from "@/lib/types";
 import BriefChat from "@/components/portfolio/BriefChat";
 import ReceiptBox from "@/components/portfolio/ReceiptBox";
 import AllocationPie from "@/components/portfolio/AllocationPie";
@@ -43,6 +43,11 @@ export default function PortfolioPage() {
   const [benchmarkSeries, setBenchmarkSeries] = useState<StockSeries | null>(null);
   const [chartLoading,    setChartLoading]    = useState(false);
   const [showImport,      setShowImport]      = useState(false);
+
+  const [optimizerResult, setOptimizerResult] = useState<OptimizerComparison | null>(null);
+  const [optimizing,      setOptimizing]      = useState(false);
+  const [riskBrief,       setRiskBrief]       = useState<RiskBrief | null>(null);
+  const [briefLoading,    setBriefLoading]    = useState(false);
 
   // ── enrich holdings with live price, RSI, 1Y return ──────────────────────
   const enrich = useCallback(async (
@@ -162,6 +167,39 @@ export default function PortfolioPage() {
       } as any);
     }
   }, [result, loadChartData]);
+
+  // ── run optimizer comparison ─────────────────────────────────────────────
+  const handleOptimize = useCallback(async () => {
+    if (holdings.length < 2) return;
+    setOptimizing(true);
+    setOptimizerResult(null);
+    try {
+      const res = await api.optimizePortfolio(holdings.map((h) => h.symbol));
+      setOptimizerResult(res);
+    } catch (e: any) {
+      console.error(e);
+    } finally {
+      setOptimizing(false);
+    }
+  }, [holdings]);
+
+  // ── generate AI risk brief ────────────────────────────────────────────────
+  const handleRiskBrief = useCallback(async () => {
+    if (holdings.length === 0) return;
+    setBriefLoading(true);
+    setRiskBrief(null);
+    const portfolio: Record<string, number> = {};
+    const total = holdings.reduce((s, h) => s + h.weight, 0);
+    for (const h of holdings) portfolio[h.symbol] = h.weight / total;
+    try {
+      const brief = await api.getPortfolioBrief(portfolio);
+      setRiskBrief(brief);
+    } catch (e: any) {
+      console.error(e);
+    } finally {
+      setBriefLoading(false);
+    }
+  }, [holdings]);
 
   // ── remove stock ──────────────────────────────────────────────────────────
   const handleRemove = useCallback((symbol: string) => {
@@ -293,6 +331,107 @@ export default function PortfolioPage() {
               />
             </div>
           </div>
+
+          {/* Optimizer comparison + risk brief controls */}
+          {holdings.length >= 2 && (
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={handleOptimize}
+                disabled={optimizing}
+                className="flex items-center gap-1.5 px-3 py-1.5 border font-mono text-[10px] uppercase font-bold transition-colors disabled:opacity-40
+                  border-amber/50 text-amber hover:bg-amber/10"
+              >
+                <Zap size={11} />
+                {optimizing ? "Running Optimizers…" : "BL vs MVO vs HRP"}
+              </button>
+              <button
+                onClick={handleRiskBrief}
+                disabled={briefLoading}
+                className="flex items-center gap-1.5 px-3 py-1.5 border font-mono text-[10px] uppercase font-bold transition-colors disabled:opacity-40
+                  border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10"
+              >
+                <Brain size={11} />
+                {briefLoading ? "Generating Brief…" : "AI Risk Brief"}
+              </button>
+            </div>
+          )}
+
+          {/* Optimizer comparison table */}
+          {optimizerResult && (
+            <div className="bg-surface border overflow-hidden" style={{ borderColor: "var(--border)" }}>
+              <div className="px-4 py-2 border-b flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-gray-400">Optimizer Comparison</span>
+                <span className="font-mono text-[9px] font-bold uppercase px-2 py-0.5 bg-amber/15 text-amber">
+                  Winner: {optimizerResult.winner === "pravah_bl" ? "PRAVAH B-L" : optimizerResult.winner.toUpperCase()}
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full font-mono text-[10px]">
+                  <thead>
+                    <tr className="border-b" style={{ borderColor: "var(--border)" }}>
+                      <th className="text-left px-4 py-2 text-gray-500 uppercase font-bold">Metric</th>
+                      <th className="text-right px-4 py-2 text-amber font-bold uppercase">PRAVAH B-L</th>
+                      <th className="text-right px-4 py-2 text-gray-400 font-bold uppercase">Markowitz</th>
+                      <th className="text-right px-4 py-2 text-gray-400 font-bold uppercase">HRP</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {optimizerResult.comparison_table.map((row) => (
+                      <tr key={row.metric} className="border-b last:border-0" style={{ borderColor: "var(--border)" }}>
+                        <td className="px-4 py-1.5 text-gray-500">{row.metric}</td>
+                        <td className="px-4 py-1.5 text-right text-amber font-bold">
+                          {row.pravah_bl != null ? row.pravah_bl.toFixed(3) : "—"}
+                        </td>
+                        <td className="px-4 py-1.5 text-right text-gray-300">
+                          {row.markowitz != null ? row.markowitz.toFixed(3) : "—"}
+                        </td>
+                        <td className="px-4 py-1.5 text-right text-gray-300">
+                          {row.hrp != null ? row.hrp.toFixed(3) : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* AI Risk Brief */}
+          {riskBrief && (
+            <div className="bg-surface border overflow-hidden" style={{ borderColor: "var(--border)" }}>
+              <div className="px-4 py-2 border-b flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-gray-400">AI Risk Brief</span>
+                <span className="font-mono text-[8px] text-gray-600 uppercase">{riskBrief.model}</span>
+              </div>
+              <div className="p-4 space-y-3">
+                <p className="font-mono text-[11px] text-gray-200 leading-relaxed">{riskBrief.brief}</p>
+                {riskBrief.risk_flags?.length > 0 && (
+                  <div>
+                    <p className="font-mono text-[9px] font-bold uppercase text-red-400 mb-1">Risk Flags</p>
+                    <ul className="space-y-0.5">
+                      {riskBrief.risk_flags.map((f, i) => (
+                        <li key={i} className="font-mono text-[10px] text-gray-400 flex gap-1.5">
+                          <span className="text-red-400">▸</span>{f}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {riskBrief.opportunities?.length > 0 && (
+                  <div>
+                    <p className="font-mono text-[9px] font-bold uppercase text-emerald-400 mb-1">Opportunities</p>
+                    <ul className="space-y-0.5">
+                      {riskBrief.opportunities.map((o, i) => (
+                        <li key={i} className="font-mono text-[10px] text-gray-400 flex gap-1.5">
+                          <span className="text-emerald-400">▸</span>{o}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

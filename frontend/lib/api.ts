@@ -1,6 +1,7 @@
 import type {
   RegimeData, MarketIndices, StockSignal, StockData,
   PortfolioResult, BacktestResult, StressTestResult, ForecastData,
+  OptimizerComparison, RiskBrief,
 } from "./types";
 
 export interface OrderResult {
@@ -114,4 +115,13 @@ export const api = {
 
   runStressTest: (portfolio: Record<string, number>, scenario: string, custom_drop?: number) =>
     post<StressTestResult>("/api/stress-test", { portfolio, scenario, custom_drop }),
+
+  optimizePortfolio: (symbols: string[], days_back = 365) =>
+    post<OptimizerComparison>("/api/optimize", { symbols, days_back }),
+
+  getSentiment: (symbols: string[]) =>
+    post<{ headlines: any[]; scores: Record<string, any> }>("/api/sentiment", { symbols }),
+
+  getPortfolioBrief: (portfolio: Record<string, number>, regime = "SIDEWAYS") =>
+    post<RiskBrief>("/api/portfolio/brief", { portfolio, regime, run_optimizer: false }),
 };

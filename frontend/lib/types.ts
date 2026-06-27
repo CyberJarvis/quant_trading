@@ -181,3 +181,58 @@ export interface StressTestResult {
   worst_stock: string;
   best_stock: string;
 }
+
+export interface ComparisonRow {
+  metric: string;
+  pravah_bl: number | null;
+  markowitz: number | null;
+  hrp: number | null;
+}
+
+export interface RiskMetrics {
+  annualised_return: number;
+  annualised_volatility: number;
+  sharpe_ratio: number;
+  sortino_ratio: number;
+  var_95: number;
+  cvar_95: number;
+  max_drawdown: number;
+  calmar_ratio: number;
+  n_days: number;
+}
+
+export interface OptimizerResult {
+  method: string;
+  weights: Record<string, number>;
+  expected_return: number;
+  expected_volatility: number;
+  sharpe_ratio: number;
+  risk_metrics?: RiskMetrics;
+  error?: string;
+}
+
+export interface OptimizerComparison {
+  symbols: string[];
+  optimizers: {
+    pravah_bl: OptimizerResult;
+    markowitz: OptimizerResult;
+    hrp: OptimizerResult;
+  };
+  comparison_table: ComparisonRow[];
+  winner: string;
+}
+
+export interface SentimentScore {
+  score: number;
+  label: string;
+  headlines: string[];
+}
+
+export interface RiskBrief {
+  brief: string;
+  risk_flags: string[];
+  opportunities: string[];
+  generated_at: string;
+  model: string;
+  sentiment?: { scores: Record<string, SentimentScore> };
+}
