@@ -10,6 +10,8 @@ export interface EnrichedAllocation extends PortfolioAllocation {
   rsi?: number | null;
   return_1y?: number | null;
   macd_signal?: string | null;
+  pred_realist?: number | null;
+  cqr_abstain?: boolean | null;
 }
 
 interface Props {

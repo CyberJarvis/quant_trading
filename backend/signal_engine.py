@@ -334,6 +334,7 @@ def compute_cqr_signals(symbol: str, candles: list) -> dict:
     width_pct = round(width * 100, 2)
 
     return {
+        "pred_realist": pred_pct,  # Q50 median — feeds Black-Litterman view vector Q
         "prediction_interval": {
             "lower_pct":    lower_pct,
             "pred_realist": pred_pct,

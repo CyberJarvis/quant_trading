@@ -473,22 +473,26 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
       await sleep(150);
 
       try {
-        const sig = await api.getSignals(h.symbol) as any;
+        const sig = await api.getSignalsCQR(h.symbol) as any;
+        const pi = sig?.prediction_interval;
         enriched.push({
           symbol:        h.symbol,
           weight:        parseFloat(weight.toFixed(2)),
           amount_inr:    parseFloat(h.totalValue.toFixed(2)),
-          sector:        sig?.sector        ?? "Other",
-          signal:        sig?.verdict       ?? "HOLD",
-          score:         sig?.composite_score ?? 0,
-          current_price: sig?.current_price  ?? h.currentPrice,
-          rsi:           sig?.rsi            ?? null,
-          macd_signal:   sig?.macd_signal    ?? null,
+          sector:        sig?.sector           ?? "Other",
+          signal:        sig?.verdict          ?? "HOLD",
+          score:         sig?.composite_score  ?? 0,
+          current_price: sig?.current_price    ?? h.currentPrice,
+          rsi:           sig?.rsi              ?? null,
+          macd_signal:   sig?.macd_signal      ?? null,
           return_1y:     null,
+          pred_realist:  sig?.pred_realist     ?? null,
+          cqr_abstain:   pi?.abstain           ?? null,
         });
+        const cqrTag = pi?.abstain ? " · CQR:ABSTAIN" : pi ? ` · CQR:${pi.lower_pct}%→${pi.upper_pct}%` : "";
         setConsoleLogs(prev => [
           ...prev.slice(0, -1),
-          `> enriched ${h.displaySymbol} · verdict: ${sig?.verdict ?? "HOLD"} · rsi: ${sig?.rsi?.toFixed(1) ?? "—"} (ok)`
+          `> enriched ${h.displaySymbol} · verdict: ${sig?.verdict ?? "HOLD"} · rsi: ${sig?.rsi?.toFixed(1) ?? "—"}${cqrTag} (ok)`
         ]);
       } catch {
         enriched.push({
