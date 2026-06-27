@@ -12,7 +12,6 @@ from datetime import datetime, timezone
 
 import httpx
 
-GROQ_API_KEY  = os.getenv("GROQ_API_KEY", "")
 GROQ_MODEL    = "llama-3.3-70b-versatile"
 GROQ_API_URL  = "https://api.groq.com/openai/v1/chat/completions"
 FINLLAMA_PATH = os.getenv("FINLLAMA_PATH", "")   # path to llama.cpp binary
@@ -61,7 +60,8 @@ def fetch_headlines(symbols: list[str], max_per_feed: int = 15) -> list[dict]:
 
 def _call_groq(prompt: str, system: str = "", max_tokens: int = 512) -> str:
     """Call Groq API. Raises on failure so caller can fallback."""
-    if not GROQ_API_KEY:
+    api_key = os.getenv("GROQ_API_KEY", "")
+    if not api_key:
         raise RuntimeError("GROQ_API_KEY not set")
 
     messages = []
@@ -71,7 +71,7 @@ def _call_groq(prompt: str, system: str = "", max_tokens: int = 512) -> str:
 
     resp = httpx.post(
         GROQ_API_URL,
-        headers={"Authorization": f"Bearer {GROQ_API_KEY}",
+        headers={"Authorization": f"Bearer {api_key}",
                  "Content-Type": "application/json"},
         json={"model": GROQ_MODEL, "messages": messages,
               "max_tokens": max_tokens, "temperature": 0.2},
@@ -253,5 +253,5 @@ Return JSON (no extra text):
     return {
         **parsed,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "model": GROQ_MODEL if GROQ_API_KEY else "finllama-fallback",
+        "model": GROQ_MODEL if os.getenv("GROQ_API_KEY", "") else "finllama-fallback",
     }

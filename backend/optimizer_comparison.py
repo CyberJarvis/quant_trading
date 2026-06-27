@@ -69,13 +69,9 @@ def run_comparison(symbols: list[str], days_back: int = 365) -> dict:
     if len(valid_symbols) < 2:
         raise ValueError("Insufficient candle data for optimization")
 
-    returns = compute_returns_matrix_from_candles(candles_by_symbol)
-    if returns is None:
+    returns, valid_symbols = compute_returns_matrix_from_candles(candles_by_symbol)
+    if returns is None or len(valid_symbols) < 2:
         raise ValueError("Could not build returns matrix")
-
-    # Align valid_symbols to match columns in returns matrix
-    # compute_returns_matrix_from_candles preserves key order
-    valid_symbols = [s for s in valid_symbols if s in candles_by_symbol]
 
     # ── CQR predictions for B-L views ───────────────────────────────────────
     predictions = _fetch_cqr_predictions(valid_symbols, candles_by_symbol)

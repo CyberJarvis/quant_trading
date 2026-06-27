@@ -75,7 +75,10 @@ def markowitz_optimize(
     )
 
     weights = result.x
-    weights = weights / weights.sum()  # re-normalise
+    if not result.success or weights.sum() < 1e-9 or np.any(np.isnan(weights)):
+        weights = np.ones(n) / n
+    else:
+        weights = weights / weights.sum()  # re-normalise
 
     port_return = float(weights @ expected_returns)
     port_vol = float(np.sqrt(weights @ cov_matrix @ weights))

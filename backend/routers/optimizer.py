@@ -8,7 +8,6 @@ POST /api/portfolio/brief   — generate Groq risk brief for a portfolio
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional
 
 router = APIRouter()
 

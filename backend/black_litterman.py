@@ -18,18 +18,18 @@ from scipy.optimize import minimize
 
 def compute_returns_matrix_from_candles(
     candles_by_symbol: dict, min_days: int = 30
-) -> np.ndarray | None:
+) -> tuple[np.ndarray, list[str]] | tuple[None, list]:
     """
     Build aligned daily-returns matrix from cached candle dicts.
-    Returns (n_days × n_stocks) array, or None if insufficient data.
-    Drops all rows where any stock has a NaN return (aligns on trading days).
+    Returns (n_days × n_stocks array, symbols_list) or (None, []).
+    symbols_list is the exact ordered list matching matrix columns.
     """
-    symbols = list(candles_by_symbol.keys())
-    if not symbols or len(symbols) < 2:
-        return None
+    all_symbols = list(candles_by_symbol.keys())
+    if not all_symbols or len(all_symbols) < 2:
+        return None, []
 
     returns_by_symbol = {}
-    for sym in symbols:
+    for sym in all_symbols:
         candles = candles_by_symbol.get(sym, [])
         if len(candles) < min_days:
             continue
@@ -38,12 +38,14 @@ def compute_returns_matrix_from_candles(
         returns_by_symbol[sym] = ret
 
     if len(returns_by_symbol) < 2:
-        return None
+        return None, []
 
-    # Align to shortest common length (stocks have different IPO / delist dates)
+    # Iterate returns_by_symbol (not all_symbols) — avoids KeyError if any
+    # symbol was filtered out by the min_days check above.
+    filtered_symbols = list(returns_by_symbol.keys())
     min_len = min(len(r) for r in returns_by_symbol.values())
-    aligned = np.column_stack([returns_by_symbol[sym][-min_len:] for sym in symbols])
-    return aligned
+    aligned = np.column_stack([returns_by_symbol[sym][-min_len:] for sym in filtered_symbols])
+    return aligned, filtered_symbols
 
 
 def compute_cov_matrix(returns: np.ndarray) -> np.ndarray:
@@ -233,7 +235,11 @@ def black_litterman_optimize(
     )
 
     weights = result.x
-    weights = weights / weights.sum()  # re-normalise (floating point)
+    # Guard: if optimizer diverged and weights are degenerate, fall back to equal-weight
+    if not result.success or weights.sum() < 1e-9 or np.any(np.isnan(weights)):
+        weights = np.ones(n) / n
+    else:
+        weights = weights / weights.sum()  # re-normalise (floating point)
     port_return = float(weights @ posterior_returns)
     port_vol = float(np.sqrt(weights @ posterior_cov @ weights))
     sharpe = (port_return - risk_free_rate) / (port_vol + 1e-9)
@@ -241,8 +247,8 @@ def black_litterman_optimize(
     # ── Step 7: Build the audit trail ───────────────────────────────────────
     view_vs_prior = {}
     for i, s in enumerate(symbols):
-        pp = predictions.get(s, {})
-        pi_data = pp.get("prediction_interval", {})
+        pp = predictions.get(s) or {}
+        pi_data = (pp.get("prediction_interval") or {})
         view_vs_prior[s] = {
             "prior_belief": round(float(Pi[i]), 4),
             "your_view": round(float(Q[i]), 4),
