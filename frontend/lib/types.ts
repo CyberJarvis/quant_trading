@@ -1,0 +1,154 @@
+export type Regime = "BULL" | "BEAR" | "SIDEWAYS";
+export type Signal = "STRONG BUY" | "BUY" | "HOLD" | "SELL" | "STRONG SELL";
+export type Risk = "LOW" | "MODERATE" | "HIGH";
+
+export interface RegimeData {
+  regime: Regime;
+  score: number;
+  vix: number;
+  nifty: number;
+  sma50: number;
+  sma200: number;
+  nifty_vs_sma200: number;
+  description: string;
+  strategy_hint: string;
+}
+
+export interface IndexQuote {
+  value: number | null;
+  change: number | null;
+  change_pct: number | null;
+}
+
+export interface MarketIndices {
+  nifty50: IndexQuote;
+  sensex: IndexQuote;
+  banknifty: IndexQuote;
+  vix: { value: number | null; sentiment: string | null };
+  fii_net: number | null;
+  fii_net_available: boolean;
+}
+
+export interface StockSignal {
+  symbol: string;
+  composite_score: number;
+  verdict: Signal;
+  // RSI
+  rsi: number;
+  rsi_signal: string;
+  // MACD — raw values
+  macd_line: number;
+  macd_signal_line: number;
+  macd_histogram: number;
+  macd_signal: string;
+  // Trend / SMA
+  sma50: number;
+  sma200: number;
+  trend_signal: string;
+  // Bollinger Bands — raw values
+  bb_upper: number;
+  bb_lower: number;
+  bb_middle: number;
+  bb_signal: string;
+  // Price
+  current_price: number;
+  signals: Record<string, string>;
+}
+
+export interface Candle {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export interface StockData {
+  symbol: string;
+  period: string;
+  candles: Candle[];
+  dates: string[];
+  open: number[];
+  high: number[];
+  low: number[];
+  close: number[];
+  volume: number[];
+  live_price?: number | null;
+  live_change?: number | null;
+  live_change_pct?: number | null;
+}
+
+export interface PortfolioAllocation {
+  symbol: string;
+  weight: number;
+  amount_inr: number;
+  sector: string;
+  signal: Signal;
+  score: number;
+}
+
+export interface PortfolioReceipt {
+  budget_inr: number;
+  horizon_months: number;
+  risk_level: Risk;
+  current_regime: Regime;
+  strategy_applied: string;
+}
+
+export interface PortfolioMetrics {
+  expected_return: number | null;
+  sharpe_estimate: number | null;
+  num_stocks: number;
+  total_weight: number;
+  metrics_note: string;
+}
+
+export interface PortfolioResult {
+  receipt: PortfolioReceipt;
+  allocation: PortfolioAllocation[];
+  metrics: PortfolioMetrics;
+}
+
+export interface EquityPoint {
+  date: string;
+  strategy: number;
+  market: number;
+}
+
+export interface DrawdownPoint {
+  date: string;
+  drawdown: number;
+}
+
+export interface BacktestResult {
+  total_return: number;
+  annual_return: number;
+  market_return: number;
+  alpha: number;
+  sharpe: number;
+  sortino: number;
+  max_drawdown: number;
+  var_95: number;
+  win_rate: number;
+  total_trades: number;
+  final_value: number;
+  equity_curve: EquityPoint[];
+  drawdown_curve: DrawdownPoint[];
+}
+
+export interface StockImpact {
+  symbol: string;
+  impact: number;
+}
+
+export interface StressTestResult {
+  scenario: string;
+  nifty_drop: number;
+  portfolio_before: number;
+  portfolio_after: number;
+  portfolio_loss_pct: number;
+  stock_impacts: StockImpact[];
+  worst_stock: string;
+  best_stock: string;
+}
