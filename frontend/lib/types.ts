@@ -29,6 +29,15 @@ export interface MarketIndices {
   fii_net_available: boolean;
 }
 
+export interface PredictionInterval {
+  lower_pct: number;
+  pred_realist: number;
+  upper_pct: number;
+  width: number;
+  confidence: number;
+  abstain: boolean;
+}
+
 export interface StockSignal {
   symbol: string;
   composite_score: number;
@@ -53,6 +62,25 @@ export interface StockSignal {
   // Price
   current_price: number;
   signals: Record<string, string>;
+  // CQR — present only when fetched with cqr=true
+  prediction_interval?: PredictionInterval | null;
+}
+
+export interface ForecastBands {
+  p10: number[];
+  p25: number[];
+  p50: number[];
+  p75: number[];
+  p90: number[];
+}
+
+export interface ForecastData {
+  symbol: string;
+  current_price: number;
+  horizon_days: number;
+  simulations: number;
+  bands: ForecastBands;
+  label: string;
 }
 
 export interface Candle {
@@ -62,6 +90,7 @@ export interface Candle {
   low: number;
   close: number;
   volume: number;
+  timestamp?: number; // Unix seconds — present for intraday candles
 }
 
 export interface StockData {

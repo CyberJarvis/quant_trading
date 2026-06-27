@@ -1,4 +1,4 @@
-import type { StockSignal } from "@/lib/types";
+import type { StockSignal, PredictionInterval } from "@/lib/types";
 import { signalBg } from "@/lib/utils";
 
 function label(v: string | undefined): string {
@@ -19,19 +19,19 @@ function label(v: string | undefined): string {
 
 function Row({ k, v, sub, color }: { k: string; v: string; sub?: string; color?: string }) {
   return (
-    <div className="py-2 border-b border-[#1F2937] last:border-0">
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] text-gray-500">{k}</span>
-        <span className={`text-[11px] font-semibold ${color ?? "text-gray-300"}`}>{v}</span>
+    <div className="py-1.5 border-b" style={{ borderColor: "var(--border)" }}>
+      <div className="flex items-center justify-between font-mono text-[10px]">
+        <span style={{ color: "var(--muted)" }}>{k}</span>
+        <span className={`font-bold ${color ?? "text-gray-300"}`} style={{ fontVariantNumeric: "tabular-nums" }}>{v}</span>
       </div>
-      {sub && <p className="text-[10px] text-gray-600 mt-0.5 text-right">{sub}</p>}
+      {sub && <p className="font-mono text-[8px] mt-0.5 text-right uppercase" style={{ color: "var(--muted-2)" }}>{sub}</p>}
     </div>
   );
 }
 
 function Section({ title }: { title: string }) {
   return (
-    <p className="text-[9px] text-gray-600 uppercase tracking-widest pt-2 pb-1">{title}</p>
+    <p className="font-mono text-[9px] font-bold uppercase tracking-widest pt-2 pb-1" style={{ color: "var(--muted)" }}>{title}</p>
   );
 }
 
@@ -43,15 +43,15 @@ interface Props {
 export default function SignalsPanel({ signal, error }: Props) {
   if (error) {
     return (
-      <div className="bg-[#0B1320] border border-[#1A2B40] rounded-xl p-5 h-full flex items-center justify-center">
-        <p className="text-red-400 text-sm text-center">{error}</p>
+      <div className="bg-surface border p-5 h-full flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-red-400 text-xs text-center">{error}</p>
       </div>
     );
   }
   if (!signal || signal.composite_score === undefined) {
     return (
-      <div className="bg-[#0B1320] border border-[#1A2B40] rounded-xl p-5 h-full flex items-center justify-center">
-        <p className="text-gray-600 text-sm text-center">Select a stock to view signals</p>
+      <div className="bg-surface border p-5 h-full flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-gray-500 text-xs text-center uppercase">Select stock to view signal</p>
       </div>
     );
   }
@@ -65,27 +65,27 @@ export default function SignalsPanel({ signal, error }: Props) {
     : null;
 
   return (
-    <div className="bg-[#0B1320] border border-[#1A2B40] rounded-xl overflow-y-auto h-full">
+    <div className="bg-surface border overflow-y-auto h-full" style={{ borderColor: "var(--border)" }}>
       {/* Verdict header */}
-      <div className="px-4 pt-4 pb-3 border-b border-[#1A2B40] text-center">
-        <p className="text-[9px] text-gray-500 uppercase tracking-widest mb-2">Composite Signal</p>
-        <span className={`text-xs font-black px-3 py-1.5 rounded-full border ${signalBg(signal.verdict)}`}>
+      <div className="px-4 pt-4 pb-3 border-b text-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-[9px] text-gray-500 uppercase tracking-widest mb-2">Composite Signal</p>
+        <span className={`font-mono text-[10px] font-bold px-2.5 py-1 border ${signalBg(signal.verdict)}`}>
           {signal.verdict}
         </span>
-        <p className="font-mono font-black text-3xl mt-2 text-gray-100">
+        <p className="font-mono font-bold text-2xl mt-3 text-gray-100">
           {score.toFixed(1)}<span className="text-xs text-gray-500 font-normal">/10</span>
         </p>
         {/* Score bar */}
-        <div className="mt-2 h-1.5 bg-[#1A2B40] rounded-full overflow-hidden">
+        <div className="mt-2.5 h-1.5 bg-border overflow-hidden">
           <div
-            className="h-full rounded-full transition-all duration-700"
+            className="h-full transition-all duration-700"
             style={{
               width: `${Math.min(Math.max(((score + 10) / 20) * 100, 0), 100)}%`,
-              backgroundColor: score > 2 ? "#22C55E" : score < -2 ? "#F43F5E" : "#F59E0B",
+              backgroundColor: score > 2 ? "var(--bull)" : score < -2 ? "var(--bear)" : "var(--amber)",
             }}
           />
         </div>
-        <div className="flex justify-between text-[9px] text-gray-700 mt-0.5">
+        <div className="flex justify-between font-mono text-[8px] text-gray-600 mt-1 uppercase">
           <span>Bearish −10</span><span>Bullish +10</span>
         </div>
       </div>
@@ -154,6 +154,83 @@ export default function SignalsPanel({ signal, error }: Props) {
           />
         )}
         <Row k="Signal" v={signal.bb_signal ?? "—"} color={label(signal.bb_signal)} />
+
+        {/* ── CQR Prediction Interval ───────────────────────────── */}
+        {signal.prediction_interval !== undefined && (
+          <>
+            <Section title="CQR Prediction · 5D Return" />
+            <CQRBlock pi={signal.prediction_interval} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CQRBlock({ pi }: { pi: PredictionInterval | null | undefined }) {
+  if (!pi) {
+    return (
+      <div className="py-2 font-mono text-[9px] text-gray-500 uppercase text-center">
+        Insufficient data for CQR
+      </div>
+    );
+  }
+
+  if (pi.abstain) {
+    return (
+      <div className="py-2 px-3 border border-red-500/40 bg-red-500/5 mt-1">
+        <p className="font-mono text-[9px] font-bold text-red-400 uppercase tracking-wider">
+          ⚠ Abstain — Interval Too Wide
+        </p>
+        <p className="font-mono text-[8px] text-red-400/70 mt-0.5">
+          Width {pi.width.toFixed(1)}% · Model recommends no trade
+        </p>
+      </div>
+    );
+  }
+
+  // Normalise range to [0, 100] for the position bar
+  const range = pi.upper_pct - pi.lower_pct;
+  const medPos = range > 0 ? ((pi.pred_realist - pi.lower_pct) / range) * 100 : 50;
+  const medColor = pi.pred_realist >= 0 ? "var(--bull)" : "var(--bear)";
+
+  return (
+    <div className="pt-1 pb-2 space-y-2">
+      {/* Three-value row */}
+      <div className="grid grid-cols-3 text-center">
+        <div>
+          <p className="font-mono text-[8px] text-gray-500 uppercase">Lower</p>
+          <p className={`font-mono text-[11px] font-bold ${pi.lower_pct < 0 ? "text-red-400" : "text-emerald-400"}`}>
+            {pi.lower_pct >= 0 ? "+" : ""}{pi.lower_pct.toFixed(1)}%
+          </p>
+        </div>
+        <div>
+          <p className="font-mono text-[8px] text-gray-500 uppercase">Realist</p>
+          <p className={`font-mono text-[11px] font-bold ${pi.pred_realist >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+            {pi.pred_realist >= 0 ? "+" : ""}{pi.pred_realist.toFixed(1)}%
+          </p>
+        </div>
+        <div>
+          <p className="font-mono text-[8px] text-gray-500 uppercase">Upper</p>
+          <p className={`font-mono text-[11px] font-bold ${pi.upper_pct >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+            {pi.upper_pct >= 0 ? "+" : ""}{pi.upper_pct.toFixed(1)}%
+          </p>
+        </div>
+      </div>
+
+      {/* Range bar */}
+      <div className="relative h-1.5 bg-border overflow-visible mx-1">
+        <div className="absolute inset-0 bg-blue-500/20" />
+        <div
+          className="absolute top-1/2 -translate-y-1/2 w-0.5 h-3"
+          style={{ left: `${Math.max(0, Math.min(100, medPos))}%`, backgroundColor: medColor }}
+        />
+      </div>
+
+      {/* Meta */}
+      <div className="flex justify-between font-mono text-[8px] text-gray-600 uppercase px-1">
+        <span>Width {pi.width.toFixed(1)}%</span>
+        <span>{(pi.confidence * 100).toFixed(0)}% Conf</span>
       </div>
     </div>
   );

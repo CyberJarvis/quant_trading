@@ -145,7 +145,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right: login form */}
-        <div style={{ padding: '60px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#0B1320', borderLeft: '1px solid var(--border)' }}>
+        <div style={{ padding: '60px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--bg-2)', borderLeft: '1px solid var(--border)' }}>
           <div style={{ marginBottom: 28 }}>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', marginBottom: 4 }}>
               {mode === 'login' ? 'Access Quant Terminal' : 'Verify Your Identity'}

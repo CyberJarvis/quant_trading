@@ -23,18 +23,18 @@ function Ticker({
   const pos = (changePct ?? change ?? 0) >= 0;
   return (
     <span className="flex items-center gap-1.5">
-      <span className="text-[11px] font-medium tracking-wider" style={{ color: "#475569" }}>
+      <span className="font-mono text-[10px] font-bold tracking-wider uppercase" style={{ color: "var(--muted-2)" }}>
         {label}
       </span>
-      <span className="font-mono font-bold text-sm" style={{ color: valueColor ?? "#E2E8F0" }}>
+      <span className="font-mono font-bold text-xs" style={{ color: valueColor ?? "var(--text)", fontVariantNumeric: "tabular-nums" }}>
         {value ?? "—"}
       </span>
       {changePct !== null && changePct !== undefined && (
         <span className={cn(
-          "font-mono text-[11px] font-semibold",
-          pos ? "text-emerald-400" : "text-rose-400"
+          "font-mono text-[10px] font-bold",
+          pos ? "text-emerald-600" : "text-red-600"
         )}>
-          {pos ? "+" : ""}{changePct.toFixed(2)}%
+          {pos ? "▲" : "▼"}{Math.abs(changePct).toFixed(2)}%
         </span>
       )}
     </span>
@@ -47,7 +47,7 @@ const Divider = () => (
 
 export default function TopBar() {
   const router = useRouter();
-  const [data, setData]       = useState<MarketIndices | null>(null);
+  const [data, setData] = useState<MarketIndices | null>(null);
   const [marketOpen, setMarketOpen] = useState(false);
 
   const handleLogout = () => {
@@ -65,7 +65,7 @@ export default function TopBar() {
     };
     check();
 
-    const load = async () => { try { setData(await api.getIndices()); } catch {} };
+    const load = async () => { try { setData(await api.getIndices()); } catch { } };
     load();
     const id = setInterval(load, 30000);
     return () => clearInterval(id);
@@ -80,13 +80,13 @@ export default function TopBar() {
       <div className="flex items-center gap-2">
         <span
           className={cn(
-            "w-1.5 h-1.5 rounded-full",
+            "w-1.5 h-1.5",
             marketOpen ? "bg-emerald-400 animate-pulse-dot" : "bg-slate-600"
           )}
-          style={marketOpen ? { boxShadow: "0 0 6px #22C55E" } : {}}
+          style={marketOpen ? { boxShadow: "0 0 6px #10B981" } : {}}
         />
-        <span className="text-[11px] font-medium tracking-widest uppercase" style={{ color: "#475569" }}>
-          {marketOpen ? "Market Open" : "Market Closed"}
+        <span className="font-mono text-[10px] font-bold tracking-widest uppercase" style={{ color: "var(--muted-2)" }}>
+          {marketOpen ? "MARKET LIVE" : "MARKET CLOSED"}
         </span>
       </div>
 
@@ -123,11 +123,11 @@ export default function TopBar() {
         {data?.fii_net_available && data.fii_net !== null && (
           <>
             <Divider />
-            <span className="flex items-center gap-1">
-              <span className="text-[11px] tracking-wider font-medium" style={{ color: "#475569" }}>FII</span>
+            <span className="flex items-center gap-1.5">
+              <span className="font-mono text-[10px] font-bold tracking-wider uppercase" style={{ color: "var(--muted-2)" }}>FII</span>
               <span className={cn(
-                "font-mono text-[11px] font-semibold",
-                (data.fii_net ?? 0) >= 0 ? "text-emerald-400" : "text-rose-400"
+                "font-mono text-[10px] font-bold",
+                (data.fii_net ?? 0) >= 0 ? "text-emerald-600" : "text-red-600"
               )}>
                 {(data.fii_net ?? 0) >= 0 ? "▲" : "▼"}
                 ₹{Math.abs(data.fii_net ?? 0).toFixed(0)} Cr
@@ -140,13 +140,12 @@ export default function TopBar() {
       <button
         onClick={handleLogout}
         title="Sign out"
-        className="flex items-center gap-1.5 px-3 py-1 rounded text-[11px] font-medium transition-colors"
-        style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--muted)', cursor: 'pointer' }}
+        className="flex items-center gap-1.5 px-2.5 py-1 border text-[10px] font-bold font-mono uppercase transition-colors"
+        style={{ background: 'transparent', borderColor: 'var(--border)', color: 'var(--muted)', cursor: 'pointer' }}
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-2)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-2)'; }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted)'; }}
       >
-        <LogOut size={13} />
-        Logout
+        [ESC] SIGNOUT
       </button>
     </header>
   );

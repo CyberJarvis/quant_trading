@@ -110,8 +110,8 @@ export default function OnboardingPage() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {GOALS.map(g => (
-                  <div key={g.id} onClick={() => setGoal(g.id)} style={{ padding: '14px 16px', background: goal === g.id ? 'rgba(245,158,11,0.04)' : 'var(--surface)', border: `1px solid ${goal === g.id ? 'var(--amber)' : 'var(--border)'}`, borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s' }}>
-                    <div style={{ fontWeight: 600, fontSize: 13.5, color: 'var(--text)', marginBottom: 3 }}>{g.label}</div>
+                  <div key={g.id} onClick={() => setGoal(g.id)} style={{ padding: '14px 16px', background: goal === g.id ? 'rgba(245,158,11,0.04)' : 'var(--surface)', border: `1px solid ${goal === g.id ? 'var(--amber)' : 'var(--border)'}`, borderRadius: 0, cursor: 'pointer', transition: 'all 0.15s' }}>
+                    <div style={{ fontWeight: 605, fontSize: 13.5, color: 'var(--text)', marginBottom: 3, fontFamily: 'monospace', textTransform: 'uppercase' }}>{g.label}</div>
                     <div style={{ fontSize: 12, color: 'var(--muted)' }}>{g.desc}</div>
                   </div>
                 ))}
@@ -125,9 +125,9 @@ export default function OnboardingPage() {
               <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 28 }}>Defines drawdown thresholds and position sizing in our models.</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {RISKS.map(r => (
-                  <div key={r.id} onClick={() => setRisk(r.id)} style={{ padding: '18px 20px', background: risk === r.id ? 'rgba(245,158,11,0.03)' : 'var(--surface)', border: `1px solid ${risk === r.id ? 'var(--amber)' : 'var(--border)'}`, borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.15s' }}>
-                    <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>{r.label}</div>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: r.color, background: `${r.color}15`, padding: '3px 8px', borderRadius: 4 }}>{r.badge}</span>
+                  <div key={r.id} onClick={() => setRisk(r.id)} style={{ padding: '18px 20px', background: risk === r.id ? 'rgba(245,158,11,0.03)' : 'var(--surface)', border: `1px solid ${risk === r.id ? 'var(--amber)' : 'var(--border)'}`, borderRadius: 0, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.15s' }}>
+                    <div style={{ fontWeight: 605, fontSize: 14, color: 'var(--text)', fontFamily: 'monospace', textTransform: 'uppercase' }}>{r.label}</div>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: r.color, background: `${r.color}15`, padding: '3px 8px', borderRadius: 0, border: `1px solid ${r.color}33`, fontFamily: 'monospace' }}>{r.badge}</span>
                   </div>
                 ))}
               </div>
@@ -140,9 +140,9 @@ export default function OnboardingPage() {
               <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 28 }}>Determines compounding runway and volatility tolerance period.</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
                 {HORIZONS.map(h => (
-                  <div key={h.id} onClick={() => setHorizon(h.id)} style={{ padding: '20px 16px', textAlign: 'center', background: horizon === h.id ? 'rgba(245,158,11,0.04)' : 'var(--surface)', border: `1px solid ${horizon === h.id ? 'var(--amber)' : 'var(--border)'}`, borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s' }}>
+                  <div key={h.id} onClick={() => setHorizon(h.id)} style={{ padding: '20px 16px', textAlign: 'center', background: horizon === h.id ? 'rgba(245,158,11,0.04)' : 'var(--surface)', border: `1px solid ${horizon === h.id ? 'var(--amber)' : 'var(--border)'}`, borderRadius: 0, cursor: 'pointer', transition: 'all 0.15s' }}>
                     <div className="font-mono" style={{ fontSize: 20, fontWeight: 700, color: horizon === h.id ? 'var(--amber)' : 'var(--text)', marginBottom: 4 }}>{h.label}</div>
-                    <div style={{ fontSize: 11.5, color: 'var(--muted)' }}>{h.desc}</div>
+                    <div style={{ fontSize: 11.5, color: 'var(--muted)', fontFamily: 'monospace', textTransform: 'uppercase' }}>{h.desc}</div>
                   </div>
                 ))}
               </div>
@@ -157,11 +157,11 @@ export default function OnboardingPage() {
                 {SECTORS.map(s => {
                   const sel = sectors.includes(s)
                   return (
-                    <div key={s} onClick={() => toggleSector(s)} style={{ padding: '12px 16px', background: sel ? 'rgba(245,158,11,0.04)' : 'var(--surface)', border: `1px solid ${sel ? 'var(--amber)' : 'var(--border)'}`, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.15s' }}>
-                      <div style={{ width: 16, height: 16, borderRadius: 4, border: `2px solid ${sel ? 'var(--amber)' : 'var(--border)'}`, background: sel ? 'var(--amber)' : 'transparent', transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {sel && <div style={{ width: 8, height: 8, background: '#04080F', borderRadius: 2 }} />}
+                    <div key={s} onClick={() => toggleSector(s)} style={{ padding: '12px 16px', background: sel ? 'rgba(245,158,11,0.04)' : 'var(--surface)', border: `1px solid ${sel ? 'var(--amber)' : 'var(--border)'}`, borderRadius: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.15s' }}>
+                      <div style={{ width: 16, height: 16, borderRadius: 0, border: `2px solid ${sel ? 'var(--amber)' : 'var(--border)'}`, background: sel ? 'var(--amber)' : 'transparent', transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {sel && <div style={{ width: 8, height: 8, background: '#04080F', borderRadius: 0 }} />}
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: sel ? 'var(--text)' : 'var(--text-2)' }}>{s}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: sel ? 'var(--text)' : 'var(--text-2)', fontFamily: 'monospace', textTransform: 'uppercase' }}>{s}</span>
                     </div>
                   )
                 })}

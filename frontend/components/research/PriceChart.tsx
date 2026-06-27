@@ -17,13 +17,13 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   const change = d.close - d.open;
   const changePct = (change / d.open) * 100;
   return (
-    <div className="bg-[#1a2235] border border-[#2a3347] rounded-lg px-3 py-2 text-xs space-y-0.5">
-      <p className="text-gray-400 mb-1">{label}</p>
-      <p className="text-gray-300">O <span className="font-mono text-gray-200">{d.open.toFixed(2)}</span></p>
-      <p className="text-gray-300">H <span className="font-mono text-emerald-400">{d.high.toFixed(2)}</span></p>
-      <p className="text-gray-300">L <span className="font-mono text-red-400">{d.low.toFixed(2)}</span></p>
-      <p className="text-gray-300">C <span className="font-mono text-amber-400">{d.close.toFixed(2)}</span></p>
-      <p className={`font-mono mt-1 ${changePct >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+    <div className="bg-surface border px-3 py-2 text-xs space-y-0.5" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-gray-500 mb-1">{label}</p>
+      <p className="font-mono text-text-2">O <span className="font-bold text-text">{d.open.toFixed(2)}</span></p>
+      <p className="font-mono text-text-2">H <span className="font-bold text-emerald-500">{d.high.toFixed(2)}</span></p>
+      <p className="font-mono text-text-2">L <span className="font-bold text-red-500">{d.low.toFixed(2)}</span></p>
+      <p className="font-mono text-text-2">C <span className="font-bold text-amber">{d.close.toFixed(2)}</span></p>
+      <p className={`font-mono mt-1 font-bold ${changePct >= 0 ? "text-emerald-500" : "text-red-500"}`}>
         {changePct >= 0 ? "+" : ""}{changePct.toFixed(2)}%
       </p>
     </div>
@@ -33,8 +33,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export default function PriceChart({ candles, symbol }: Props) {
   if (!candles.length) {
     return (
-      <div className="h-72 bg-[#111827] border border-[#1F2937] rounded-xl flex items-center justify-center">
-        <p className="text-gray-600 text-sm">Select a stock to view chart</p>
+      <div className="h-72 bg-surface border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-xs text-gray-500 uppercase">Select a stock to view chart</p>
       </div>
     );
   }
@@ -48,12 +48,12 @@ export default function PriceChart({ candles, symbol }: Props) {
   const domain = [minClose * 0.99, maxClose * 1.01];
 
   return (
-    <div className="bg-[#111827] border border-[#1F2937] rounded-xl p-4">
+    <div className="bg-surface border p-4" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-medium text-gray-300">
+        <p className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-wider">
           {symbol.replace(".NS", "")} Price History
         </p>
-        <p className="font-mono text-lg font-bold text-emerald-400">
+        <p className="font-mono text-lg font-bold text-emerald-500" style={{ fontVariantNumeric: "tabular-nums" }}>
           ₹{candles[candles.length - 1]?.close.toFixed(2)}
         </p>
       </div>
@@ -61,20 +61,20 @@ export default function PriceChart({ candles, symbol }: Props) {
         <ComposedChart data={sampled}>
           <defs>
             <linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10B981" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--bull)" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="var(--bull)" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis
             dataKey="date"
-            tick={{ fill: "#6B7280", fontSize: 10 }}
+            tick={{ fill: "var(--muted)", fontSize: 10, fontFamily: "monospace" }}
             tickFormatter={(d) => d.slice(5)}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={domain}
-            tick={{ fill: "#6B7280", fontSize: 10 }}
+            tick={{ fill: "var(--muted)", fontSize: 10, fontFamily: "monospace" }}
             tickFormatter={(v) => `₹${v.toLocaleString("en-IN")}`}
             width={70}
           />
@@ -82,7 +82,7 @@ export default function PriceChart({ candles, symbol }: Props) {
           <Area
             type="monotone"
             dataKey="close"
-            stroke="#10B981"
+            stroke="var(--bull)"
             strokeWidth={2}
             fill="url(#priceGrad)"
             dot={false}

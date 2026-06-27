@@ -9,22 +9,22 @@ interface Props {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between items-center py-2 border-b border-[#1F2937] last:border-0">
-      <span className="text-xs text-gray-500 uppercase tracking-wider">{label}</span>
-      <span className="text-sm font-mono font-medium text-gray-200">{value}</span>
+    <div className="flex justify-between items-center py-2 border-b" style={{ borderColor: "var(--border)" }}>
+      <span className="font-mono text-[10px] text-gray-500 uppercase tracking-wider">{label}</span>
+      <span className="font-mono text-xs font-bold text-text uppercase">{value}</span>
     </div>
   );
 }
 
 export default function ReceiptBox({ receipt, metrics }: Props) {
   return (
-    <div className="bg-[#111827] border border-[#1F2937] rounded-xl p-5">
+    <div className="bg-surface border p-5" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center gap-2 mb-4">
-        <CheckCircle size={16} className="text-emerald-400" />
-        <h3 className="text-sm font-semibold text-gray-200">We Understood</h3>
+        <CheckCircle size={14} className="text-emerald-400" />
+        <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-text">Receipt Details</h3>
       </div>
 
-      <div className="divide-y divide-[#1F2937]">
+      <div className="divide-y" style={{ borderColor: "var(--border)" }}>
         <Row label="Budget" value={formatInr(receipt.budget_inr)} />
         <Row
           label="Horizon"
@@ -34,25 +34,25 @@ export default function ReceiptBox({ receipt, metrics }: Props) {
         <Row label="Strategy" value={receipt.strategy_applied} />
       </div>
 
-      <div className={`mt-4 px-3 py-2 rounded-lg border text-xs font-medium ${regimeBg(receipt.current_regime)}`}>
+      <div className={`mt-4 px-3 py-2 border text-[10px] font-mono font-bold uppercase ${regimeBg(receipt.current_regime)}`} style={{ borderColor: "var(--border)" }}>
         Current regime: {receipt.current_regime} MARKET
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <div className="bg-[#0D1220] rounded-lg px-3 py-2 text-center">
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Est. Annual Return</p>
-          <p className="font-mono font-bold text-emerald-400 text-lg">
+        <div className="bg-surface-2 border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
+          <p className="font-mono text-[9px] text-gray-500 uppercase tracking-wider mb-0.5">Est. Annual Return</p>
+          <p className="font-mono font-bold text-emerald-500 text-base" style={{ fontVariantNumeric: "tabular-nums" }}>
             {metrics.expected_return !== null ? `${formatNumber(metrics.expected_return)}%` : "—"}
           </p>
         </div>
-        <div className="bg-[#0D1220] rounded-lg px-3 py-2 text-center">
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Sharpe Ratio</p>
-          <p className="font-mono font-bold text-amber-400 text-lg">
+        <div className="bg-surface-2 border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
+          <p className="font-mono text-[9px] text-gray-500 uppercase tracking-wider mb-0.5">Sharpe Ratio</p>
+          <p className="font-mono font-bold text-amber text-base" style={{ fontVariantNumeric: "tabular-nums" }}>
             {metrics.sharpe_estimate !== null ? formatNumber(metrics.sharpe_estimate) : "—"}
           </p>
         </div>
       </div>
-      <p className="text-[10px] text-gray-600 mt-2 text-center">{metrics.metrics_note}</p>
+      <p className="font-mono text-[9px] text-gray-600 mt-2 text-center uppercase">{metrics.metrics_note}</p>
     </div>
   );
 }

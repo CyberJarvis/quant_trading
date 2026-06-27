@@ -217,12 +217,11 @@ export default function PortfolioPage() {
           onClose={() => setShowImport(false)}
         />
       )}
-      {/* Header */}
       <div>
-        <h1 className="text-xl font-bold" style={{ color: "#E2E8F0" }}>
-          Portfolio Builder
+        <h1 className="font-mono text-lg font-bold uppercase tracking-wider" style={{ color: "var(--text)" }}>
+          Portfolio Desk
         </h1>
-        <p className="text-xs mt-0.5" style={{ color: "#475569" }}>
+        <p className="font-mono text-[10px] mt-0.5 uppercase" style={{ color: "var(--muted)" }}>
           Signal-weighted portfolio construction · Live NSE signals · Angel One SmartAPI
         </p>
       </div>
@@ -234,27 +233,28 @@ export default function PortfolioPage() {
           <ReceiptBox receipt={result.receipt} metrics={result.metrics} />
         ) : (
           <div
-            className="rounded-xl border flex flex-col items-center justify-center min-h-[220px] gap-4"
-            style={{ background: "#0B1320", borderColor: "#1A2B40" }}
+            className="border flex flex-col items-center justify-center min-h-[220px] gap-4 bg-surface"
+            style={{ borderColor: "var(--border)" }}
           >
-            <div className="text-center">
-              <p className="text-sm" style={{ color: "#334155" }}>
-                Your analysis will appear here
+            <div className="text-center px-4">
+              <p className="font-mono text-xs font-bold uppercase tracking-wider text-gray-400">
+                Analysis Pending
               </p>
-              <p className="text-xs mt-1" style={{ color: "#1E3451" }}>
-                Describe your goal and click Optimize
+              <p className="font-mono text-[9px] uppercase mt-1" style={{ color: "var(--muted-2)" }}>
+                Describe your goal above and click optimize
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-px w-16 bg-[#1A2B40]" />
-              <span className="text-[10px] text-gray-700">or</span>
-              <div className="h-px w-16 bg-[#1A2B40]" />
+              <div className="h-px w-12 bg-border" />
+              <span className="font-mono text-[9px] text-gray-600 uppercase">or</span>
+              <div className="h-px w-12 bg-border" />
             </div>
             <button
               onClick={() => setShowImport(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#1A2B40] text-xs font-medium text-gray-400 hover:border-amber-500/40 hover:text-amber-400 transition-all"
+              className="flex items-center gap-2 px-4 py-2 border font-mono text-[10px] uppercase font-bold text-gray-400 hover:border-amber/45 hover:text-amber transition-colors cursor-pointer"
+              style={{ borderColor: "var(--border)" }}
             >
-              <Upload size={13} /> Import from Broker
+              <Upload size={12} /> Import Broker Statement
             </button>
           </div>
         )}
@@ -262,8 +262,8 @@ export default function PortfolioPage() {
 
       {error && (
         <div
-          className="rounded-xl border px-4 py-3 text-sm"
-          style={{ background: "rgba(244,63,94,0.08)", borderColor: "rgba(244,63,94,0.25)", color: "#FB7185" }}
+          className="border px-4 py-3 font-mono text-xs uppercase font-bold text-red-700 bg-red-50/50"
+          style={{ borderColor: "var(--bear-border)" }}
         >
           {error}
         </div>

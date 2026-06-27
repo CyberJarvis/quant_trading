@@ -28,11 +28,11 @@ export default function Sidebar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
             width: 28, height: 28, borderRadius: 'var(--radius-sm)',
-            background: 'var(--amber)',
+            border: '1px solid var(--amber)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           }}>
-            <Activity size={16} color="#04080F" strokeWidth={2.5} />
+            <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--amber)', fontFamily: 'monospace' }}>P</span>
           </div>
           <div>
             <div style={{
@@ -66,8 +66,8 @@ export default function Sidebar() {
                 onMouseEnter={e => {
                   if (!active) {
                     const el = e.currentTarget as HTMLDivElement
-                    el.style.background = 'rgba(255,255,255,0.02)'
-                    el.style.color = 'var(--text-2)'
+                    el.style.background = 'var(--surface-hover)'
+                    el.style.color = 'var(--text)'
                   }
                 }}
                 onMouseLeave={e => {

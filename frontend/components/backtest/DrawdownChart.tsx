@@ -11,10 +11,10 @@ export default function DrawdownChart({ data }: { data: DrawdownPoint[] }) {
   const minDd = Math.min(...data.map((d) => d.drawdown));
 
   return (
-    <div className="bg-[#111827] border border-[#1F2937] rounded-xl p-4">
+    <div className="bg-surface border p-4" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-medium text-gray-300">Drawdown</p>
-        <span className="font-mono text-xs text-red-400">
+        <p className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-wider">Drawdown Analysis</p>
+        <span className="font-mono text-xs text-red-600 font-bold">
           Max: {minDd.toFixed(2)}%
         </span>
       </div>
@@ -22,32 +22,32 @@ export default function DrawdownChart({ data }: { data: DrawdownPoint[] }) {
         <AreaChart data={sampled}>
           <defs>
             <linearGradient id="ddGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#EF4444" stopOpacity={0.05} />
+              <stop offset="5%" stopColor="var(--bear)" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="var(--bear)" stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis
             dataKey="date"
-            tick={{ fill: "#6B7280", fontSize: 10 }}
+            tick={{ fill: "var(--muted)", fontSize: 10, fontFamily: "monospace" }}
             tickFormatter={(d) => d.slice(5)}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fill: "#6B7280", fontSize: 10 }}
+            tick={{ fill: "var(--muted)", fontSize: 10, fontFamily: "monospace" }}
             tickFormatter={(v) => `${v}%`}
             width={40}
           />
           <Tooltip
             formatter={(v) => [`${Number(v).toFixed(2)}%`, "Drawdown"]}
-            contentStyle={{ background: "#1a2235", border: "1px solid #2a3347", fontSize: 11 }}
-            labelStyle={{ color: "#9CA3AF" }}
+            contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", fontSize: 11, fontFamily: "monospace" }}
+            labelStyle={{ color: "var(--text)" }}
           />
-          <ReferenceLine y={0} stroke="#374151" />
+          <ReferenceLine y={0} stroke="var(--muted-2)" />
           <Area
             type="monotone"
             dataKey="drawdown"
-            stroke="#EF4444"
+            stroke="var(--bear)"
             strokeWidth={1.5}
             fill="url(#ddGrad)"
             dot={false}

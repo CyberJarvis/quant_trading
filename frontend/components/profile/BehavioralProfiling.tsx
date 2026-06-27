@@ -88,10 +88,10 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
               key={exp.id}
               onClick={() => setPastExperience(exp.id)}
               style={pastExperience === exp.id ? cardSelectedStyle : cardUnselectedStyle}
-              className="p-4 rounded-xl cursor-pointer transition-all hover:border-amber-500/40 relative flex flex-col justify-between"
+              className="p-4 cursor-pointer transition-all hover:border-amber-500/40 relative flex flex-col justify-between"
             >
               <div>
-                <p className="text-xs font-bold text-gray-200">{exp.label}</p>
+                <p className="text-xs font-bold text-text font-mono uppercase">{exp.label}</p>
                 <p className="text-[10.5px] text-gray-500 mt-1 leading-relaxed">{exp.desc}</p>
               </div>
               {pastExperience === exp.id && (
@@ -121,10 +121,10 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
               key={style.id}
               onClick={() => setInvestmentStyle(style.id)}
               style={investmentStyle === style.id ? cardSelectedStyle : cardUnselectedStyle}
-              className="p-4 rounded-xl cursor-pointer transition-all hover:border-amber-500/40 relative flex flex-col justify-between"
+              className="p-4 cursor-pointer transition-all hover:border-amber-500/40 relative flex flex-col justify-between"
             >
               <div>
-                <p className="text-xs font-bold text-gray-200">{style.label}</p>
+                <p className="text-xs font-bold text-text font-mono uppercase">{style.label}</p>
                 <p className="text-[10.5px] text-gray-500 mt-1 leading-relaxed">{style.desc}</p>
               </div>
               {investmentStyle === style.id && (
@@ -153,10 +153,10 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
               key={react.id}
               onClick={() => setLossBehavior(react.id)}
               style={lossBehavior === react.id ? cardSelectedStyle : cardUnselectedStyle}
-              className="p-4 rounded-xl cursor-pointer transition-all hover:border-amber-500/40 relative flex flex-col justify-between"
+              className="p-4 cursor-pointer transition-all hover:border-amber-500/40 relative flex flex-col justify-between"
             >
               <div>
-                <p className="text-xs font-bold text-gray-200">{react.label}</p>
+                <p className="text-xs font-bold text-text font-mono uppercase">{react.label}</p>
                 <p className="text-[10.5px] text-gray-500 mt-1 leading-relaxed">{react.desc}</p>
               </div>
               {lossBehavior === react.id && (
@@ -180,7 +180,7 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
             {financialKnowledge}: {KNOWLEDGE_LABELS[financialKnowledge]}
           </span>
         </div>
-        <div className="bg-[#0D1829] border border-[#1A2B40] rounded-xl p-4">
+        <div className="bg-surface border p-4" style={{ borderColor: "var(--border)" }}>
           <input
             type="range"
             min="1"
@@ -188,9 +188,9 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
             step="1"
             value={financialKnowledge}
             onChange={(e) => setFinancialKnowledge(parseInt(e.target.value))}
-            className="w-full h-1.5 bg-[#1A2B40] rounded-lg appearance-none cursor-pointer accent-amber-500"
+            className="w-full h-1.5 bg-border-2 appearance-none cursor-pointer accent-amber-500"
           />
-          <div className="flex justify-between text-[10px] text-gray-500 mt-2 font-mono">
+          <div className="flex justify-between text-[9px] text-gray-500 mt-2 font-mono uppercase">
             <span>1: Novice</span>
             <span>2: Familiar</span>
             <span>3: Proficient</span>
@@ -217,10 +217,10 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
               key={tax.id}
               onClick={() => setTaxSlab(tax.id)}
               style={tax.id === taxSlab ? cardSelectedStyle : cardUnselectedStyle}
-              className="p-4 rounded-xl cursor-pointer transition-all hover:border-amber-500/40 relative flex flex-col justify-between"
+              className="p-4 cursor-pointer transition-all hover:border-amber-500/40 relative flex flex-col justify-between"
             >
               <div>
-                <p className="text-xs font-bold text-gray-200">{tax.label}</p>
+                <p className="text-xs font-bold text-text font-mono uppercase">{tax.label}</p>
                 <p className="text-[10.5px] text-gray-500 mt-1 leading-relaxed">{tax.desc}</p>
               </div>
               {taxSlab === tax.id && (
@@ -235,16 +235,16 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
 
       {/* Success/Error Alerts */}
       {success && (
-        <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
-          <CheckCircle2 size={14} className="text-emerald-400" />
-          <p className="text-xs text-emerald-400">{success}</p>
+        <div className="flex items-start gap-2 bg-emerald-50/50 border p-3 font-mono text-xs text-emerald-800" style={{ borderColor: "var(--bull-border)" }}>
+          <CheckCircle2 size={14} className="text-emerald-500 flex-shrink-0" />
+          <span className="uppercase font-bold">{success}</span>
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-          <AlertCircle size={14} className="text-red-400" />
-          <p className="text-xs text-red-400">{error}</p>
+        <div className="flex items-start gap-2 bg-red-50/50 border p-3 font-mono text-xs text-red-800" style={{ borderColor: "var(--bear-border)" }}>
+          <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
+          <span className="uppercase font-bold">{error}</span>
         </div>
       )}
 

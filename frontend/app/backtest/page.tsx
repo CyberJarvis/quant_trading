@@ -40,8 +40,8 @@ export default function BacktestPage() {
   return (
     <div className="space-y-5 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-xl font-bold text-gray-100">Backtester</h1>
-        <p className="text-xs text-gray-500 mt-0.5">
+        <h1 className="font-mono text-lg font-bold uppercase tracking-wider text-text">Backtest Desk</h1>
+        <p className="font-mono text-[10px] text-gray-500 mt-0.5 uppercase">
           Test quantitative strategies against historical Nifty 50 data
         </p>
       </div>
@@ -52,18 +52,18 @@ export default function BacktestPage() {
         </div>
         <div className="lg:col-span-2">
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-sm text-red-400 mb-4">
+            <div className="border px-4 py-3 font-mono text-xs text-red-700 bg-red-50/50 mb-4 font-bold uppercase" style={{ borderColor: "var(--bear-border)" }}>
               {error}
             </div>
           )}
           {!result && !loading && (
-            <div className="h-64 bg-[#111827] border border-[#1F2937] rounded-xl flex items-center justify-center">
-              <p className="text-gray-600 text-sm">Configure and run a backtest to see results</p>
+            <div className="h-64 bg-surface border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+              <p className="font-mono text-xs text-gray-500 uppercase">Configure and run a backtest to see results</p>
             </div>
           )}
           {loading && (
-            <div className="h-64 bg-[#111827] border border-[#1F2937] rounded-xl flex items-center justify-center animate-pulse">
-              <p className="text-gray-600 text-sm">Running backtest…</p>
+            <div className="h-64 bg-surface border flex items-center justify-center animate-pulse" style={{ borderColor: "var(--border)" }}>
+              <p className="font-mono text-xs text-gray-500 uppercase">Running backtest…</p>
             </div>
           )}
           {result && !loading && (

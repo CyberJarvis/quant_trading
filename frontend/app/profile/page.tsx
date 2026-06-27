@@ -10,7 +10,7 @@ import BehavioralProfiling from '@/components/profile/BehavioralProfiling'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 import { api } from '@/lib/api'
 
-const PIE_COLORS = ['#F59E0B', '#22C55E', '#3B82F6', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4']
+const PIE_COLORS = ['#F59E0B', '#22C55E', '#3B82F6', '#EF4444', '#0D9488', '#EC4899', '#06B6D4']
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -193,7 +193,7 @@ export default function ProfilePage() {
               <h2 className="text-[17px] font-bold text-gray-100 leading-tight">{name}</h2>
               <p className="text-[12px] text-gray-500 font-mono mt-1">{email}</p>
             </div>
-            <div className="w-full border-t border-[#1A2B40] pt-4 flex flex-col gap-2.5 text-left text-xs">
+            <div className="w-full border-t pt-4 flex flex-col gap-2.5 text-left text-xs" style={{ borderColor: "var(--border)" }}>
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Account Tier</span>
                 <span className="font-bold text-amber-500 tracking-wider text-[10px]">QUANT EDGE MEMBER</span>
@@ -224,12 +224,12 @@ export default function ProfilePage() {
                   value="gsk_demo_zK98xWqM21P0yLaB76c5"
                   readOnly
                   style={{ fontSize: '11.5px', fontFamily: 'JetBrains Mono' }}
-                  className="input w-full pr-8 cursor-not-allowed select-none bg-[#070D18]"
+                  className="input w-full pr-8 cursor-not-allowed select-none bg-surface-2"
                 />
                 <button
                   type="button"
                   onClick={() => setShowGroqKey(!showGroqKey)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-text transition-colors"
                 >
                   {showGroqKey ? <EyeOff size={13} /> : <Eye size={13} />}
                 </button>
@@ -245,12 +245,12 @@ export default function ProfilePage() {
                   value="mongodb+srv://pravah_user:secure_password@cluster0.mongodb.net/pravah"
                   readOnly
                   style={{ fontSize: '11.5px', fontFamily: 'JetBrains Mono' }}
-                  className="input w-full pr-8 cursor-not-allowed select-none bg-[#070D18]"
+                  className="input w-full pr-8 cursor-not-allowed select-none bg-surface-2"
                 />
                 <button
                   type="button"
                   onClick={() => setShowMongoUri(!showMongoUri)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-text transition-colors"
                 >
                   {showMongoUri ? <EyeOff size={13} /> : <Eye size={13} />}
                 </button>
@@ -341,7 +341,7 @@ export default function ProfilePage() {
                           key={opt}
                           type="button"
                           onClick={() => setRisk(opt)}
-                          className="px-4 py-2.5 rounded-lg border text-xs font-semibold uppercase tracking-wider transition-all"
+                          className="px-4 py-2.5 border text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer"
                           style={{
                             borderColor: isActive ? 'var(--amber)' : 'var(--border)',
                             color: isActive ? 'var(--amber)' : 'var(--muted)',
@@ -369,16 +369,16 @@ export default function ProfilePage() {
 
                 {/* Save Feedback Alerts */}
                 {saveSuccess && (
-                  <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
-                    <CheckCircle size={14} className="text-emerald-400" />
-                    <p className="text-xs text-emerald-400">{saveSuccess}</p>
+                  <div className="flex items-start gap-2 bg-surface-2 border p-3 font-mono text-xs text-emerald-800" style={{ borderColor: "var(--bull-border)" }}>
+                    <CheckCircle size={14} className="text-emerald-500 flex-shrink-0" />
+                    <span className="uppercase font-bold">{saveSuccess}</span>
                   </div>
                 )}
 
                 {saveError && (
-                  <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                    <AlertCircle size={14} className="text-red-400" />
-                    <p className="text-xs text-red-400">{saveError}</p>
+                  <div className="flex items-start gap-2 bg-surface-2 border p-3 font-mono text-xs text-red-800" style={{ borderColor: "var(--bear-border)" }}>
+                    <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
+                    <span className="uppercase font-bold">{saveError}</span>
                   </div>
                 )}
 
@@ -403,20 +403,20 @@ export default function ProfilePage() {
             {activeTab === 'import' && (
               <div className="space-y-6">
                 {/* Dashed Import Box */}
-                <div className="border-2 border-dashed border-[#1A2B40] rounded-xl p-6 flex flex-col items-center gap-4 text-center">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
+                <div className="border-2 border-dashed p-6 flex flex-col items-center gap-4 text-center" style={{ borderColor: "var(--border)" }}>
+                  <div className="w-10 h-10 bg-amber-glow border flex items-center justify-center text-amber" style={{ borderColor: "var(--amber-border)" }}>
                     <Upload size={18} />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-gray-200">Upload Broker Statement (.csv)</p>
-                    <p className="text-[10px] text-gray-500 mt-1 font-mono">Supports standard Zerodha, Groww, Upstox holdings CSV files.</p>
+                    <p className="text-xs font-semibold text-text">Upload Broker Statement (.csv)</p>
+                    <p className="text-[10px] text-gray-500 mt-1 font-mono">Supports Zerodha, Groww, Upstox holdings CSV files.</p>
                   </div>
                   <div className="flex flex-col sm:flex-row items-center gap-3 mt-1">
                     <input
                       type="file"
                       accept=".csv"
                       onChange={(e) => setImportFile(e.target.files?.[0] || null)}
-                      className="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-[#1A2B40] file:text-gray-300 hover:file:bg-[#233852] file:text-xs file:font-semibold cursor-pointer"
+                      className="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-surface-2 file:text-text hover:file:bg-surface-hover file:text-xs file:font-semibold cursor-pointer"
                     />
                     <button
                       onClick={handleImportCSV}
@@ -430,9 +430,9 @@ export default function ProfilePage() {
                 </div>
 
                 {importError && (
-                  <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                  <div className="flex items-start gap-2 bg-red-500/5 border p-3 text-xs" style={{ borderColor: "var(--bear-border)" }}>
                     <AlertCircle size={14} className="text-red-400 flex-shrink-0" />
-                    <p className="text-xs text-red-400">{importError}</p>
+                    <p className="text-red-600 font-mono font-bold uppercase">{importError}</p>
                   </div>
                 )}
 
@@ -463,9 +463,9 @@ export default function ProfilePage() {
                           accent: 'text-amber-500'
                         }
                       ].map((card, i) => (
-                        <div key={i} className="bg-[#0D1829] border border-[#1A2B40] rounded-xl px-3 py-2 text-center">
-                          <p className="text-[10px] text-gray-500 uppercase font-medium">{card.label}</p>
-                          <p className={`text-sm font-bold font-mono mt-1 ${card.accent}`}>{card.value}</p>
+                        <div key={i} className="bg-surface border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
+                          <p className="font-mono text-[9px] text-gray-500 uppercase tracking-widest">{card.label}</p>
+                          <p className={`text-sm font-bold font-mono mt-1 ${card.accent}`} style={{ fontVariantNumeric: "tabular-nums" }}>{card.value}</p>
                         </div>
                       ))}
                     </div>
@@ -473,8 +473,8 @@ export default function ProfilePage() {
                     {/* Sector Splits (PieChart) + Rebalancing Insights */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Left: PieChart */}
-                      <div className="border border-[#1A2B40] rounded-xl p-4 flex flex-col justify-between">
-                        <p className="text-xs font-semibold text-gray-300 mb-4">Sector Allocation Split</p>
+                      <div className="bg-surface border p-4 flex flex-col justify-between" style={{ borderColor: "var(--border)" }}>
+                        <p className="font-mono text-xs font-bold uppercase tracking-wider text-text mb-4">Sector Allocation Split</p>
                         {pieData.length > 0 ? (
                           <div className="flex flex-col sm:flex-row items-center gap-4">
                             <div className="w-28 h-28 flex-shrink-0">
@@ -499,7 +499,7 @@ export default function ProfilePage() {
                             <div className="flex-1 grid grid-cols-2 gap-2 text-[10px] font-medium font-mono text-gray-400">
                               {pieData.map((d: any, idx: number) => (
                                 <div key={idx} className="flex items-center gap-1.5">
-                                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                                  <span className="w-2 h-2 flex-shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
                                   <span className="truncate max-w-[80px]" title={d.name}>{d.name}</span>
                                   <span className="text-gray-500">({typeof d.value === 'number' && holdingsData.metrics?.total_value ? `${((d.value / holdingsData.metrics.total_value) * 100).toFixed(0)}%` : d.value})</span>
                                 </div>
@@ -512,8 +512,8 @@ export default function ProfilePage() {
                       </div>
 
                       {/* Right: AI Rebalancing Insights */}
-                      <div className="border border-[#1A2B40] rounded-xl p-4 flex flex-col justify-between">
-                        <p className="text-xs font-semibold text-gray-300 mb-3">AI Rebalancing Insights</p>
+                      <div className="bg-surface border p-4 flex flex-col justify-between" style={{ borderColor: "var(--border)" }}>
+                        <p className="font-mono text-xs font-bold uppercase tracking-wider text-text mb-3">AI Rebalancing Insights</p>
                         <div className="space-y-2 max-h-[110px] overflow-auto">
                           {holdingsData.rebalancing && holdingsData.rebalancing.length > 0 ? (
                             holdingsData.rebalancing.map((item: any, i: number) => {
@@ -538,9 +538,9 @@ export default function ProfilePage() {
                               )
                             })
                           ) : (
-                            <div className="flex items-center gap-1.5 bg-[#0D1829] border border-[#1A2B40] rounded p-2.5">
-                              <CheckCircle size={12} className="text-emerald-400 flex-shrink-0" />
-                              <p className="text-[10px] text-emerald-400/80 leading-normal">Your portfolio is perfectly balanced. No adjustments required.</p>
+                            <div className="flex items-center gap-1.5 bg-surface border p-2.5" style={{ borderColor: "var(--border)" }}>
+                              <CheckCircle size={12} className="text-emerald-500 flex-shrink-0" />
+                              <p className="font-mono text-[9px] text-emerald-600 uppercase font-bold leading-normal">Your portfolio is perfectly balanced. No adjustments required.</p>
                             </div>
                           )}
                         </div>
@@ -549,11 +549,11 @@ export default function ProfilePage() {
 
                     {/* Holdings Table */}
                     <div className="space-y-2">
-                      <p className="text-xs font-semibold text-gray-300">Detailed Allocation List</p>
-                      <div className="overflow-auto max-h-80 rounded-xl border border-[#1A2B40]">
+                      <p className="font-mono text-xs font-bold uppercase tracking-wider text-text">Detailed Allocation List</p>
+                      <div className="overflow-auto max-h-80 border" style={{ borderColor: "var(--border)" }}>
                         <table className="w-full text-xs">
-                          <thead className="sticky top-0 bg-[#0D1829] z-10">
-                            <tr className="border-b border-[#1A2B40] text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                          <thead className="sticky top-0 bg-surface-2 z-10">
+                            <tr className="border-b text-left font-mono text-[9px] font-bold text-gray-500 uppercase tracking-widest" style={{ borderColor: "var(--border)" }}>
                               <th className="px-4 py-2.5">Symbol</th>
                               <th className="px-4 py-2.5">Sector</th>
                               <th className="px-4 py-2.5">Qty</th>
@@ -563,19 +563,19 @@ export default function ProfilePage() {
                               <th className="px-4 py-2.5">P&L%</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-[#1A2B40] font-mono">
+                          <tbody className="divide-y font-mono" style={{ borderColor: "var(--border)" }}>
                             {holdingsData.holdings?.map((h: any, i: number) => {
                               const valuation = h.totalValue || (h.qty * (h.ltp || h.current_price || h.buyPrice))
                               const pnlPct = h.pnl_pct ?? (h.ltp && h.buyPrice ? ((h.ltp - h.buyPrice) / h.buyPrice) * 100 : 0)
                               return (
-                                <tr key={i} className="hover:bg-white/[0.01] text-gray-300">
-                                  <td className="px-4 py-2.5 font-bold text-amber-500">{h.symbol.replace('.NS', '')}</td>
-                                  <td className="px-4 py-2.5 text-gray-400 font-sans">{h.sector}</td>
+                                <tr key={i} className="hover:bg-surface-hover text-text-2">
+                                  <td className="px-4 py-2.5 font-bold text-amber">{h.symbol.replace('.NS', '')}</td>
+                                  <td className="px-4 py-2.5 text-gray-500 font-sans">{h.sector}</td>
                                   <td className="px-4 py-2.5">{h.qty}</td>
                                   <td className="px-4 py-2.5">₹{(h.buyPrice ?? h.avgPrice ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                                  <td className="px-4 py-2.5 text-amber-500">₹{(h.ltp ?? h.current_price ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                                  <td className="px-4 py-2.5 text-gray-100">₹{valuation.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                                  <td className={`px-4 py-2.5 font-bold ${pnlPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                                  <td className="px-4 py-2.5 text-amber">₹{(h.ltp ?? h.current_price ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
+                                  <td className="px-4 py-2.5 text-text">₹{valuation.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
+                                  <td className={`px-4 py-2.5 font-bold ${pnlPct >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                                     {pnlPct >= 0 ? '▲' : '▼'} {Math.abs(pnlPct).toFixed(2)}%
                                   </td>
                                 </tr>
@@ -588,11 +588,11 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   /* Empty state when no holdings */
-                  <div className="flex flex-col items-center justify-center py-16 gap-3 border border-[#1A2B40] rounded-xl bg-white/[0.005]">
+                  <div className="flex flex-col items-center justify-center py-16 gap-3 border bg-surface" style={{ borderColor: "var(--border)" }}>
                     <Database size={24} className="text-gray-600" />
                     <div>
-                      <p className="text-xs font-semibold text-gray-400">No Holdings Imported Yet</p>
-                      <p className="text-[10px] text-gray-600 mt-1 font-mono">Upload a standard CSV portfolio file above to compute sector splits and rebalancing suggestions.</p>
+                      <p className="font-mono text-xs font-bold uppercase text-gray-400">No Holdings Imported Yet</p>
+                      <p className="font-mono text-[9px] text-gray-500 mt-1 uppercase">Upload a standard CSV portfolio file above to compute sector splits and rebalancing suggestions.</p>
                     </div>
                   </div>
                 )}

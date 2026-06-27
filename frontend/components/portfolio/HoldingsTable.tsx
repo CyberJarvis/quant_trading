@@ -46,18 +46,19 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
   const totalWeight = allocations.reduce((s, a) => s + a.weight, 0);
 
   return (
-    <div className="bg-[#111827] border border-[#1F2937] rounded-xl overflow-hidden">
-      <div className="px-4 py-3 border-b border-[#1F2937] flex items-center justify-between">
+    <div className="bg-surface border" style={{ borderColor: "var(--border)" }}>
+      <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
         <div>
-          <p className="text-sm font-medium text-gray-300">Holdings</p>
-          <p className="text-[10px] text-gray-600 mt-0.5">
+          <p className="font-mono text-xs font-bold uppercase tracking-wider text-text">Holdings</p>
+          <p className="font-mono text-[10px] text-gray-500 mt-0.5 uppercase">
             {allocations.length} stocks · {totalWeight.toFixed(1)}% allocated · {formatInr(budget)} total
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={onImport}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-gray-400 border border-[#1F2937] hover:border-amber-500/40 hover:text-amber-400 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 border font-mono text-[10px] uppercase font-bold text-gray-500 hover:text-text cursor-pointer transition-colors"
+            style={{ borderColor: "var(--border)" }}
           >
             <Upload size={11} /> Import
           </button>
@@ -68,39 +69,39 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[#1F2937]">
+            <tr className="border-b" style={{ borderColor: "var(--border)" }}>
               {["Symbol", "Sector", "Price", "Weight", "Amount", "1Y Return", "RSI", "Signal", "Score", ""].map((h) => (
                 <th
                   key={h}
-                  className="px-4 py-2.5 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                  className="px-4 py-2.5 text-left font-mono text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap"
                 >
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1F2937]">
+          <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
             {allocations.map((a) => (
-              <tr key={a.symbol} className="hover:bg-white/[0.02] transition-colors group">
-                <td className="px-4 py-3 font-mono font-semibold text-amber-400 text-sm whitespace-nowrap">
+              <tr key={a.symbol} className="hover:bg-surface-hover transition-colors group">
+                <td className="px-4 py-3 font-mono font-bold text-amber text-xs whitespace-nowrap">
                   {a.symbol.replace(".NS", "")}
                 </td>
-                <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{a.sector || "—"}</td>
-                <td className="px-4 py-3 font-mono text-gray-200 text-xs whitespace-nowrap">
+                <td className="px-4 py-3 font-mono text-[10px] text-gray-500 uppercase whitespace-nowrap">{a.sector || "—"}</td>
+                <td className="px-4 py-3 font-mono text-text text-xs whitespace-nowrap">
                   {a.current_price != null ? `₹${a.current_price.toLocaleString("en-IN")}` : "—"}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <div className="flex items-center gap-2">
-                    <div className="w-12 h-1 bg-[#1F2937] rounded-full overflow-hidden">
+                    <div className="w-12 h-1.5 bg-border-2 overflow-hidden">
                       <div
-                        className="h-full bg-amber-500 rounded-full"
+                        className="h-full bg-amber"
                         style={{ width: `${Math.min(a.weight, 100)}%` }}
                       />
                     </div>
-                    <span className="font-mono text-gray-200 text-xs">{a.weight.toFixed(1)}%</span>
+                    <span className="font-mono text-text-2 text-xs">{a.weight.toFixed(1)}%</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 font-mono text-gray-300 text-xs whitespace-nowrap">
+                <td className="px-4 py-3 font-mono text-text-2 text-xs whitespace-nowrap">
                   {formatInr(a.amount_inr)}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
@@ -110,17 +111,17 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
                   <RsiBadge v={a.rsi} />
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${signalBg(a.signal)}`}>
+                  <span className={`font-mono text-[9px] font-bold uppercase px-2 py-0.5 border ${signalBg(a.signal)}`}>
                     {a.signal}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-mono text-gray-400 text-xs whitespace-nowrap">
+                <td className="px-4 py-3 font-mono text-gray-500 text-xs whitespace-nowrap">
                   {a.score.toFixed(1)}
                 </td>
                 <td className="px-4 py-3">
                   <button
                     onClick={() => onRemove(a.symbol)}
-                    className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 transition-all"
+                    className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                     title="Remove"
                   >
                     <X size={14} />
@@ -133,12 +134,12 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
       </div>
 
       {/* Weight bar summary */}
-      <div className="px-4 py-3 border-t border-[#1F2937]">
-        <div className="flex h-2 rounded-full overflow-hidden gap-px">
+      <div className="px-4 py-3 border-t" style={{ borderColor: "var(--border)" }}>
+        <div className="flex h-2 overflow-hidden gap-px">
           {allocations.map((a, i) => {
             const COLORS = [
-              "#F59E0B","#10B981","#3B82F6","#8B5CF6","#EF4444",
-              "#06B6D4","#F97316","#84CC16","#EC4899","#6366F1",
+              "#F59E0B","#10B981","#3B82F6","#2563EB","#EF4444",
+              "#06B6D4","#F97316","#84CC16","#EC4899","#0D9488",
             ];
             return (
               <div
@@ -153,13 +154,13 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
             );
           })}
           {totalWeight < 100 && (
-            <div className="flex-1 bg-[#1F2937]" title="Unallocated" />
+            <div className="flex-1 bg-border-2" title="Unallocated" />
           )}
         </div>
-        <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+        <div className="flex justify-between font-mono text-[9px] text-gray-500 mt-1 uppercase">
           <span>Allocated: {totalWeight.toFixed(1)}%</span>
-          {totalWeight < 100 && <span className="text-yellow-500">Unallocated: {(100 - totalWeight).toFixed(1)}%</span>}
-          {totalWeight > 100 && <span className="text-red-400">Overallocated by {(totalWeight - 100).toFixed(1)}%</span>}
+          {totalWeight < 100 && <span className="text-amber">Unallocated: {(100 - totalWeight).toFixed(1)}%</span>}
+          {totalWeight > 100 && <span className="text-red-500 font-bold">Overallocated by {(totalWeight - 100).toFixed(1)}%</span>}
         </div>
       </div>
     </div>

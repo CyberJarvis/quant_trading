@@ -5,31 +5,31 @@ import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 const REGIME_STYLES = {
   BULL: {
-    bg:      "linear-gradient(135deg, #0D2818 0%, #0A1E12 100%)",
-    border:  "#22C55E",
-    accent:  "#22C55E",
-    text:    "#4ADE80",
-    label:   "#86EFAC",
+    bg:      "linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)",
+    border:  "#10B981",
+    accent:  "#059669",
+    text:    "#065F46",
+    label:   "#047857",
     icon:    TrendingUp,
-    glow:    "0 0 40px rgba(34,197,94,0.10)",
+    glow:    "none",
   },
   BEAR: {
-    bg:      "linear-gradient(135deg, #1F0A0E 0%, #180608 100%)",
-    border:  "#F43F5E",
-    accent:  "#F43F5E",
-    text:    "#FB7185",
-    label:   "#FDA4AF",
+    bg:      "linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%)",
+    border:  "#EF4444",
+    accent:  "#DC2626",
+    text:    "#991B1B",
+    label:   "#B91C1C",
     icon:    TrendingDown,
-    glow:    "0 0 40px rgba(244,63,94,0.10)",
+    glow:    "none",
   },
   SIDEWAYS: {
-    bg:      "linear-gradient(135deg, #09132C 0%, #060B1A 100%)",
+    bg:      "linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)",
     border:  "#3B82F6",
-    accent:  "#3B82F6",
-    text:    "#60A5FA",
-    label:   "#93C5FD",
+    accent:  "#2563EB",
+    text:    "#1E40AF",
+    label:   "#1D4ED8",
     icon:    Minus,
-    glow:    "0 0 40px rgba(59,130,246,0.10)",
+    glow:    "none",
   },
 };
 
@@ -37,8 +37,8 @@ export default function RegimeBadge({ data }: { data: RegimeData | null }) {
   if (!data) {
     return (
       <div
-        className="rounded-xl border overflow-hidden animate-pulse"
-        style={{ height: 120, background: "#0B1320", borderColor: "#1A2B40" }}
+        className="border overflow-hidden animate-pulse"
+        style={{ height: 120, background: "var(--surface)", borderColor: "var(--border)" }}
       />
     );
   }
@@ -48,40 +48,39 @@ export default function RegimeBadge({ data }: { data: RegimeData | null }) {
 
   return (
     <div
-      className="rounded-xl border overflow-hidden relative"
+      className="border relative"
       style={{
         background:  s.bg,
         borderColor: s.border,
-        boxShadow:   s.glow,
       }}
     >
       {/* Left accent bar with animated pulse */}
       <div
-        className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
+        className="absolute left-0 top-0 bottom-0 w-1"
         style={{ background: s.accent }}
       >
         <div
-          className="absolute inset-0 rounded-l-xl animate-pulse-dot"
+          className="absolute inset-0 animate-pulse-dot"
           style={{ background: s.accent, opacity: 0.6 }}
         />
       </div>
 
-      <div className="pl-7 pr-5 py-5 flex items-start justify-between">
+      <div className="pl-6 pr-5 py-4 flex items-start justify-between">
         {/* Left: regime */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2.5 mb-1.5">
-            <Icon size={20} style={{ color: s.accent }} />
+          <div className="flex items-center gap-2.5 mb-1">
+            <Icon size={18} style={{ color: s.accent }} />
             <span
-              className="font-black tracking-wide"
-              style={{ fontSize: 26, color: s.text, lineHeight: 1 }}
+              className="font-bold tracking-wide font-mono uppercase"
+              style={{ fontSize: 20, color: s.text, lineHeight: 1 }}
             >
               {data.regime} MARKET
             </span>
           </div>
-          <p className="text-sm leading-relaxed" style={{ color: s.label, opacity: 0.9 }}>
+          <p className="text-xs leading-relaxed" style={{ color: s.label, opacity: 0.9 }}>
             {data.description}
           </p>
-          <p className="text-xs mt-1" style={{ color: s.label, opacity: 0.6 }}>
+          <p className="text-[10px] font-mono mt-1" style={{ color: s.label, opacity: 0.6 }}>
             {data.strategy_hint}
           </p>
         </div>
@@ -89,26 +88,26 @@ export default function RegimeBadge({ data }: { data: RegimeData | null }) {
         {/* Right: stats grid */}
         <div className="shrink-0 ml-6 grid grid-cols-2 gap-x-6 gap-y-2 text-right">
           <div>
-            <p className="text-[10px] uppercase tracking-widest" style={{ color: s.label, opacity: 0.5 }}>Score</p>
-            <p className="font-black font-mono text-3xl leading-none" style={{ color: s.text }}>
+            <p className="text-[9px] font-mono uppercase tracking-widest" style={{ color: s.label, opacity: 0.5 }}>Score</p>
+            <p className="font-bold font-mono text-2xl leading-none" style={{ color: s.text, fontVariantNumeric: "tabular-nums" }}>
               {data.score}
             </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-widest" style={{ color: s.label, opacity: 0.5 }}>VIX</p>
-            <p className="font-black font-mono text-3xl leading-none" style={{ color: s.text }}>
+            <p className="text-[9px] font-mono uppercase tracking-widest" style={{ color: s.label, opacity: 0.5 }}>VIX</p>
+            <p className="font-bold font-mono text-2xl leading-none" style={{ color: s.text, fontVariantNumeric: "tabular-nums" }}>
               {data.vix?.toFixed(1)}
             </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-widest" style={{ color: s.label, opacity: 0.5 }}>SMA 50</p>
-            <p className="font-mono text-sm font-bold" style={{ color: s.label }}>
+            <p className="text-[9px] font-mono uppercase tracking-widest" style={{ color: s.label, opacity: 0.5 }}>SMA 50</p>
+            <p className="font-mono text-xs font-bold" style={{ color: s.label, fontVariantNumeric: "tabular-nums" }}>
               {data.sma50?.toLocaleString("en-IN")}
             </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-widest" style={{ color: s.label, opacity: 0.5 }}>SMA 200</p>
-            <p className="font-mono text-sm font-bold" style={{ color: s.label }}>
+            <p className="text-[9px] font-mono uppercase tracking-widest" style={{ color: s.label, opacity: 0.5 }}>SMA 200</p>
+            <p className="font-mono text-xs font-bold" style={{ color: s.label, fontVariantNumeric: "tabular-nums" }}>
               {data.sma200?.toLocaleString("en-IN")}
             </p>
           </div>

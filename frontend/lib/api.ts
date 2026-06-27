@@ -1,7 +1,35 @@
 import type {
   RegimeData, MarketIndices, StockSignal, StockData,
-  PortfolioResult, BacktestResult, StressTestResult,
+  PortfolioResult, BacktestResult, StressTestResult, ForecastData,
 } from "./types";
+
+export interface OrderResult {
+  order_id: string;
+  status: string;
+  message: string;
+  symbol: string;
+  display_symbol: string;
+  qty: number;
+  transaction_type: string;
+  order_type: string;
+  executed_price: number;
+  total_value: number;
+  exchange: string;
+  timestamp: string;
+  mock: boolean;
+}
+
+export interface LiveHolding {
+  symbol: string;
+  display_symbol: string;
+  qty: number;
+  avg_price: number;
+  current_price: number;
+  pnl: number;
+  pnl_pct: number;
+  total_value: number;
+  isin: string;
+}
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -41,6 +69,14 @@ export const api = {
   updateProfiling: (email: string, profiling: Record<string, unknown>) =>
     fetch(`${BASE}/api/auth/user/profiling`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, ...profiling }) }).then(r => r.json()),
 
+  getLiveHoldings: () =>
+    get<{ holdings: LiveHolding[]; total_value: number; count: number; error?: string }>("/api/portfolio/holdings"),
+
+  placeOrder: (order: {
+    symbol: string; display_symbol: string; qty: number; price: number;
+    transaction_type: "BUY" | "SELL"; order_type?: string; product_type?: string;
+  }) => post<OrderResult>("/api/portfolio/order", order),
+
   getHoldingsAnalysis: (holdings: unknown[]) =>
     fetch(`${BASE}/api/portfolio/holdings-analysis`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ holdings }) }).then(r => r.json()),
 
@@ -54,13 +90,19 @@ export const api = {
 
   getIndices: () => get<MarketIndices>("/api/market/indices"),
 
-  getStockData: (symbol: string, period = "1y") =>
-    get<StockData>(`/api/market/stock?symbol=${encodeURIComponent(symbol)}&period=${period}`),
+  getStockData: (symbol: string, period = "1y", interval = "1d") =>
+    get<StockData>(`/api/market/stock?symbol=${encodeURIComponent(symbol)}&period=${period}&interval=${interval}`),
 
   getMarketCaps: () => get<Record<string, number>>("/api/market/caps"),
 
   getSignals: (symbol: string) =>
     get<StockSignal>(`/api/signals?symbol=${encodeURIComponent(symbol)}`),
+
+  getSignalsCQR: (symbol: string) =>
+    get<StockSignal>(`/api/signals?symbol=${encodeURIComponent(symbol)}&cqr=true`),
+
+  getForecast: (symbol: string, horizon = 30, simulations = 500) =>
+    get<ForecastData>(`/api/forecast?symbol=${encodeURIComponent(symbol)}&horizon=${horizon}&simulations=${simulations}`),
 
   getTopSignals: (n = 10) => get<StockSignal[]>(`/api/signals/top?n=${n}`),
 

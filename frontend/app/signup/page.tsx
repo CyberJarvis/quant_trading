@@ -95,7 +95,7 @@ export default function SignupPage() {
         </div>
 
         {/* Right: form */}
-        <div style={{ padding: '60px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#0B1320', borderLeft: '1px solid var(--border)' }}>
+        <div style={{ padding: '60px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--bg-2)', borderLeft: '1px solid var(--border)' }}>
           {mode === 'signup' ? (
             <>
               <div style={{ marginBottom: 28 }}>

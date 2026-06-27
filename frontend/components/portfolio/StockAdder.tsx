@@ -42,9 +42,10 @@ export default function StockAdder({ existing, onAdd }: Props) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 border border-dashed border-amber-500/30 hover:border-amber-400/50 rounded-lg px-3 py-2 transition-colors"
+        className="flex items-center gap-1.5 font-mono text-[10px] uppercase font-bold text-amber border border-dashed hover:bg-amber-glow px-3 py-2 transition-colors cursor-pointer"
+        style={{ borderColor: "var(--amber-border)" }}
       >
-        <Plus size={13} /> Add Stock
+        <Plus size={12} /> Add Asset holding
       </button>
     );
   }
@@ -56,11 +57,12 @@ export default function StockAdder({ existing, onAdd }: Props) {
         <select
           value={symbol}
           onChange={(e) => setSymbol(e.target.value)}
-          className="bg-[#0D1220] border border-[#2a3347] rounded-lg pl-3 pr-7 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
+          className="bg-surface border pl-3 pr-7 py-1.5 font-mono text-xs text-text focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500 appearance-none cursor-pointer"
+          style={{ borderColor: "var(--border)" }}
         >
-          <option value="">Select stock…</option>
+          <option value="" className="bg-surface">Select asset…</option>
           {available.map((s) => (
-            <option key={s} value={s} className="bg-[#111827]">
+            <option key={s} value={s} className="bg-surface">
               {s.replace(".NS", "")}
             </option>
           ))}
@@ -77,15 +79,17 @@ export default function StockAdder({ existing, onAdd }: Props) {
           min={1}
           max={100}
           step={1}
-          className="w-16 bg-[#0D1220] border border-[#2a3347] rounded-lg px-2 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-500/50 font-mono text-center"
+          className="w-16 bg-surface border px-2 py-1.5 font-mono text-xs text-text focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500 text-center"
+          style={{ borderColor: "var(--border)" }}
         />
-        <span className="text-xs text-gray-500">%</span>
+        <span className="font-mono text-[10px] text-gray-500 uppercase">%</span>
       </div>
 
       <button
         onClick={handleAdd}
         disabled={!symbol || loading}
-        className="flex items-center gap-1 text-xs bg-amber-500 text-black font-semibold px-3 py-2 rounded-lg hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-1.5 px-3 py-2 border font-mono text-xs uppercase font-bold bg-amber text-black hover:bg-transparent hover:text-amber transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+        style={{ borderColor: "var(--amber)" }}
       >
         {loading ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
         Add
@@ -93,7 +97,7 @@ export default function StockAdder({ existing, onAdd }: Props) {
 
       <button
         onClick={() => { setOpen(false); setSymbol(""); }}
-        className="text-xs text-gray-500 hover:text-gray-300 px-2 py-2"
+        className="font-mono text-xs uppercase text-gray-500 hover:text-text px-2 py-2 cursor-pointer transition-colors"
       >
         Cancel
       </button>

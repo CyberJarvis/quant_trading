@@ -11,9 +11,9 @@ export interface StockSeries {
 }
 
 const PALETTE = [
-  "#F59E0B","#10B981","#3B82F6","#8B5CF6","#EF4444",
+  "#F59E0B","#10B981","#3B82F6","#2563EB","#EF4444",
   "#06B6D4","#F97316","#84CC16","#EC4899","#6366F1",
-  "#14B8A6","#FB923C","#A855F7","#22D3EE","#4ADE80",
+  "#14B8A6","#FB923C","#0D9488","#22D3EE","#4ADE80",
 ];
 
 function normalize(candles: { date: string; close: number }[]) {
@@ -50,14 +50,14 @@ function buildChartData(series: StockSeries[]) {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#1a2235] border border-[#2a3347] rounded-lg px-3 py-2 text-xs space-y-1 min-w-[140px]">
-      <p className="text-gray-400 mb-1.5">{label}</p>
+    <div className="bg-surface border px-3 py-2 text-xs space-y-1 min-w-[140px]" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-gray-500 mb-1.5">{label}</p>
       {payload.map((p: any) => {
         const chg = p.value - 100;
         return (
-          <div key={p.dataKey} className="flex justify-between gap-4">
+          <div key={p.dataKey} className="flex justify-between gap-4 font-mono">
             <span style={{ color: p.color }}>{p.dataKey.replace(".NS", "")}</span>
-            <span className={`font-mono ${chg >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+            <span className={`font-bold ${chg >= 0 ? "text-emerald-600" : "text-red-650"}`}>
               {chg >= 0 ? "+" : ""}{chg.toFixed(1)}%
             </span>
           </div>
@@ -76,10 +76,10 @@ interface Props {
 export default function PerformanceChart({ series, benchmarkSeries, loading }: Props) {
   if (loading) {
     return (
-      <div className="bg-[#111827] border border-[#1F2937] rounded-xl p-5">
-        <p className="text-sm font-medium text-gray-300 mb-3">Performance Comparison</p>
-        <div className="h-64 animate-pulse bg-[#0D1220] rounded-lg flex items-center justify-center">
-          <p className="text-gray-600 text-xs">Loading chart data…</p>
+      <div className="bg-surface border p-5" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-wider">Performance Comparison</p>
+        <div className="h-64 animate-pulse bg-surface-2 flex items-center justify-center">
+          <p className="font-mono text-gray-500 text-[10px] uppercase">Loading chart data…</p>
         </div>
       </div>
     );
@@ -94,36 +94,36 @@ export default function PerformanceChart({ series, benchmarkSeries, loading }: P
   if (!data.length) return null;
 
   return (
-    <div className="bg-[#111827] border border-[#1F2937] rounded-xl p-5">
+    <div className="bg-surface border p-5" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <p className="text-sm font-medium text-gray-300">Performance Comparison</p>
-          <p className="text-xs text-gray-500 mt-0.5">Normalized to 100 · 1-year trailing returns</p>
+          <p className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-wider">Performance Comparison</p>
+          <p className="font-mono text-[9px] text-gray-500 mt-0.5 uppercase">Normalized to 100 · 1-year trailing returns</p>
         </div>
-        <div className="flex items-center gap-1 text-[10px] text-gray-600 font-mono bg-[#0D1220] px-2 py-1 rounded">
+        <div className="flex items-center gap-1 text-[9px] text-gray-500 font-mono bg-surface-2 px-2 py-1 uppercase">
           Base 100
         </div>
       </div>
 
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis
             dataKey="date"
-            tick={{ fill: "#6B7280", fontSize: 10 }}
+            tick={{ fill: "var(--muted)", fontSize: 10, fontFamily: "monospace" }}
             tickFormatter={(d) => d.slice(5)}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fill: "#6B7280", fontSize: 10 }}
+            tick={{ fill: "var(--muted)", fontSize: 10, fontFamily: "monospace" }}
             width={42}
             tickFormatter={(v) => `${(v - 100).toFixed(0)}%`}
           />
-          <ReferenceLine y={100} stroke="#374151" strokeDasharray="4 4" />
+          <ReferenceLine y={100} stroke="var(--muted-2)" strokeDasharray="4 4" />
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            formatter={(v) => v === "NIFTY50" ? "NIFTY 50" : v.replace(".NS", "")}
-            wrapperStyle={{ fontSize: 10, color: "#9CA3AF" }}
+            formatter={(v) => <span className="font-mono text-[10px] font-bold uppercase" style={{ color: "var(--muted)" }}>{v === "NIFTY50" ? "NIFTY 50" : v.replace(".NS", "")}</span>}
+            wrapperStyle={{ fontSize: 10, color: "var(--muted)" }}
           />
           {series.map((s, i) => (
             <Line

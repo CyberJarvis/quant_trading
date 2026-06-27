@@ -44,21 +44,35 @@ export default function CandlestickChart({ candles, symbol, livePrice, liveChang
         width:  el.clientWidth  || el.offsetWidth  || 600,
         height: 380,
         layout: {
-          background: { type: ColorType.Solid, color: "#111827" },
-          textColor:  "#9CA3AF",
+          background: { type: ColorType.Solid, color: "#FFFFFF" },
+          textColor:  "#475569",
           fontSize:   11,
         },
+        localization: {
+          timeFormatter: (t: any) => {
+            if (typeof t === "number") {
+              const d = new Date(t * 1000);
+              const mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+              const hh = String(d.getHours()).padStart(2,"0");
+              const mm = String(d.getMinutes()).padStart(2,"0");
+              return `${d.getDate()} ${mo} ${d.getFullYear()} ${hh}:${mm}`;
+            }
+            const bd = t as { year: number; month: number; day: number };
+            const mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][bd.month - 1];
+            return `${bd.day} ${mo} ${bd.year}`;
+          },
+        },
         grid: {
-          vertLines: { color: "#1F2937" },
-          horzLines: { color: "#1F2937" },
+          vertLines: { color: "#F1F5F9" },
+          horzLines: { color: "#F1F5F9" },
         },
         crosshair: { mode: CrosshairMode.Normal },
         rightPriceScale: {
-          borderColor: "#1F2937",
+          borderColor: "#E2E8F0",
           scaleMargins: { top: 0.08, bottom: 0.28 },
         },
         timeScale: {
-          borderColor:    "#1F2937",
+          borderColor:    "#E2E8F0",
           timeVisible:    true,
           secondsVisible: false,
         },
@@ -79,7 +93,7 @@ export default function CandlestickChart({ candles, symbol, livePrice, liveChang
         wickDownColor: "#EF4444",
       });
       candleSeries.setData(
-        candles.map((c) => ({ time: c.date as any, open: c.open, high: c.high, low: c.low, close: c.close }))
+        candles.map((c) => ({ time: (c.timestamp ?? c.date) as any, open: c.open, high: c.high, low: c.low, close: c.close }))
       );
 
       // Volume histogram
@@ -90,7 +104,7 @@ export default function CandlestickChart({ candles, symbol, livePrice, liveChang
       chart.priceScale("volume").applyOptions({ scaleMargins: { top: 0.78, bottom: 0 } });
       volumeSeries.setData(
         candles.map((c) => ({
-          time:  c.date as any,
+          time:  (c.timestamp ?? c.date) as any,
           value: c.volume,
           color: c.close >= c.open ? "#10B98133" : "#EF444433",
         }))
@@ -123,8 +137,8 @@ export default function CandlestickChart({ candles, symbol, livePrice, liveChang
 
   if (!candles.length) {
     return (
-      <div className="h-[380px] bg-[#111827] border border-[#1F2937] rounded-xl flex items-center justify-center">
-        <p className="text-gray-600 text-sm">Select a stock to view chart</p>
+      <div className="h-[380px] bg-surface border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-xs text-gray-500 uppercase">Select a stock to view chart</p>
       </div>
     );
   }
@@ -140,13 +154,13 @@ export default function CandlestickChart({ candles, symbol, livePrice, liveChang
   const up           = displayChg >= 0;
 
   return (
-    <div className="bg-[#111827] border border-[#1F2937] rounded-xl overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#1F2937]">
+    <div className="bg-surface border overflow-hidden" style={{ borderColor: "var(--border)" }}>
+      <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: "var(--border)" }}>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-200">{symbol.replace(".NS", "")}</span>
-          <span className="text-xs text-gray-500">Candlestick · Volume</span>
+          <span className="font-mono text-xs font-bold text-gray-200">{symbol.replace(".NS", "")}</span>
+          <span className="font-mono text-[9px] uppercase tracking-wider text-gray-500">Candlestick · Volume</span>
           {livePrice && (
-            <span className="text-[10px] text-emerald-500 font-mono bg-emerald-500/10 px-1.5 py-0.5 rounded">LIVE</span>
+            <span className="font-mono text-[9px] font-bold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5">LIVE</span>
           )}
         </div>
         <div className="flex items-center gap-3 text-xs font-mono">
@@ -154,9 +168,9 @@ export default function CandlestickChart({ candles, symbol, livePrice, liveChang
             ₹{displayPrice.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
           </span>
           <span className={up ? "text-emerald-400" : "text-red-400"}>
-            {up ? "+" : ""}{displayChg.toFixed(2)} ({displayPct.toFixed(2)}%)
+            {up ? "▲" : "▼"}{Math.abs(displayChg).toFixed(2)} ({displayPct.toFixed(2)}%)
           </span>
-          <span className="text-gray-600 hidden md:block">
+          <span className="text-gray-600 hidden md:block text-[10px]">
             H {last.high.toFixed(0)} · L {last.low.toFixed(0)}
           </span>
         </div>

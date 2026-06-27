@@ -18,15 +18,15 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   const alpha = strategy && market ? strategy.value - market.value : 0;
 
   return (
-    <div className="bg-[#1a2235] border border-[#2a3347] rounded-lg px-3 py-2 text-xs">
-      <p className="text-gray-400 mb-1">{label}</p>
+    <div className="bg-surface border px-3 py-2 text-xs" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-gray-500 mb-1">{label}</p>
       {strategy && (
-        <p className="text-emerald-400 font-mono">Strategy ₹{strategy.value.toLocaleString("en-IN")}</p>
+        <p className="text-emerald-600 font-mono font-bold">Strategy ₹{strategy.value.toLocaleString("en-IN")}</p>
       )}
       {market && (
-        <p className="text-blue-400 font-mono">Nifty 50  ₹{market.value.toLocaleString("en-IN")}</p>
+        <p className="text-blue-600 font-mono font-bold">Nifty 50  ₹{market.value.toLocaleString("en-IN")}</p>
       )}
-      <p className={`font-mono mt-1 ${alpha >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+      <p className={`font-mono mt-1 font-bold ${alpha >= 0 ? "text-emerald-600" : "text-red-650"}`}>
         Alpha {alpha >= 0 ? "+" : ""}₹{Math.abs(alpha).toLocaleString("en-IN")}
       </p>
     </div>
@@ -36,8 +36,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export default function EquityCurve({ data, capital = 100000 }: Props) {
   if (!data?.length) {
     return (
-      <div className="h-64 bg-[#111827] border border-[#1F2937] rounded-xl flex items-center justify-center">
-        <p className="text-gray-600 text-sm">No backtest data</p>
+      <div className="h-64 bg-surface border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-xs text-gray-500 uppercase">No backtest data</p>
       </div>
     );
   }
@@ -45,31 +45,31 @@ export default function EquityCurve({ data, capital = 100000 }: Props) {
   const sampled = data.length > 120 ? data.filter((_, i) => i % Math.ceil(data.length / 120) === 0) : data;
 
   return (
-    <div className="bg-[#111827] border border-[#1F2937] rounded-xl p-4">
-      <p className="text-sm font-medium text-gray-300 mb-3">Strategy vs Nifty 50</p>
+    <div className="bg-surface border p-4" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-wider">Strategy vs Nifty 50</p>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={sampled}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis
             dataKey="date"
-            tick={{ fill: "#6B7280", fontSize: 10 }}
+            tick={{ fill: "var(--muted)", fontSize: 10, fontFamily: "monospace" }}
             tickFormatter={(d) => d.slice(5)}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fill: "#6B7280", fontSize: 10 }}
+            tick={{ fill: "var(--muted)", fontSize: 10, fontFamily: "monospace" }}
             tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
             width={55}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            wrapperStyle={{ fontSize: 11, color: "#9CA3AF" }}
-            formatter={(v) => v === "strategy" ? "Strategy" : "Nifty 50"}
+            wrapperStyle={{ fontSize: 10, color: "var(--muted)" }}
+            formatter={(v) => <span className="font-mono text-[10px] font-bold uppercase" style={{ color: "var(--muted)" }}>{v === "strategy" ? "Strategy" : "Nifty 50"}</span>}
           />
           <Line
             type="monotone"
             dataKey="strategy"
-            stroke="#10B981"
+            stroke="var(--bull)"
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 3 }}
@@ -77,7 +77,7 @@ export default function EquityCurve({ data, capital = 100000 }: Props) {
           <Line
             type="monotone"
             dataKey="market"
-            stroke="#3B82F6"
+            stroke="var(--sideways)"
             strokeWidth={1.5}
             dot={false}
             strokeDasharray="4 2"

@@ -1,10 +1,12 @@
 import re
+import random
+from datetime import datetime
 from fastapi import APIRouter
 from pydantic import BaseModel
 from regime_detector import detect_regime
 from signal_engine import compute_signals, NIFTY50_TICKERS
 from data_cache import get_sectors, compute_portfolio_metrics, prefetch_candles, get_cached_candles
-from angel_client import get_candles
+from angel_client import get_candles, get_holdings, get_positions
 
 router = APIRouter()
 
@@ -120,4 +122,62 @@ def create_portfolio(body: PortfolioBrief):
                                 if metrics["expected_return"] is not None
                                 else "Insufficient price history to compute metrics",
         },
+    }
+
+
+@router.get("/portfolio/holdings")
+def live_holdings():
+    """Live holdings pulled directly from Angel One account."""
+    holdings = get_holdings()
+    if not holdings:
+        return {
+            "error": "No holdings found in this Angel One account. Add stocks to your demat first.",
+            "holdings": [],
+            "total_value": 0,
+            "count": 0,
+        }
+    total = round(sum(h["total_value"] for h in holdings), 2)
+    return {"holdings": holdings, "total_value": total, "count": len(holdings)}
+
+
+@router.get("/portfolio/positions")
+def live_positions():
+    """Open intraday/short-term positions from Angel One."""
+    positions = get_positions()
+    return {"positions": positions, "count": len(positions)}
+
+
+class OrderRequest(BaseModel):
+    symbol: str
+    display_symbol: str
+    qty: int
+    price: float
+    transaction_type: str  # "BUY" | "SELL"
+    order_type: str = "MARKET"
+    product_type: str = "DELIVERY"
+
+
+@router.post("/portfolio/order")
+def place_order(body: OrderRequest):
+    """Mock order placement — simulates Angel One response for demo."""
+    order_id = f"AO{random.randint(100000000000, 999999999999)}"
+    slippage = round(body.price * random.uniform(-0.001, 0.002), 2)
+    executed_price = round(body.price + slippage, 2)
+    total_value = round(executed_price * body.qty, 2)
+    return {
+        "order_id":         order_id,
+        "status":           "COMPLETE",
+        "message":          "Order executed successfully",
+        "symbol":           body.symbol,
+        "display_symbol":   body.display_symbol,
+        "qty":              body.qty,
+        "transaction_type": body.transaction_type,
+        "order_type":       body.order_type,
+        "product_type":     body.product_type,
+        "price_requested":  body.price,
+        "executed_price":   executed_price,
+        "total_value":      total_value,
+        "exchange":         "NSE",
+        "timestamp":        datetime.now().isoformat(),
+        "mock":             True,
     }

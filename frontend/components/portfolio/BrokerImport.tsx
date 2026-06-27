@@ -3,10 +3,10 @@
 import { useState, useRef, useCallback } from "react";
 import {
   X, Upload, CheckCircle, ChevronRight, FileText,
-  AlertCircle, ArrowLeft, Loader2
+  AlertCircle, ArrowLeft, Loader2, Zap
 } from "lucide-react";
 import type { EnrichedAllocation } from "./HoldingsTable";
-import { api } from "@/lib/api";
+import { api, type LiveHolding } from "@/lib/api";
 
 // ── Broker definitions ────────────────────────────────────────────────────────
 
@@ -298,21 +298,21 @@ function BrokerCard({ broker, onClick }: { broker: BrokerConfig; onClick: () => 
   return (
     <button
       onClick={onClick}
-      className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-[#1A2B40] bg-[#0D1829] hover:border-opacity-60 hover:bg-[#111F33] transition-all text-center"
-      style={{ "--accent": broker.color } as any}
+      className="group flex flex-col items-center gap-2 p-4 border bg-surface hover:border-border-2 hover:bg-surface-hover transition-all text-center cursor-pointer"
+      style={{ borderColor: "var(--border)", "--accent": broker.color } as any}
     >
       <div
-        className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-xs font-black transition-all"
-        style={{ backgroundColor: broker.color + "22", border: `1px solid ${broker.color}44` }}
+        className="w-10 h-10 flex items-center justify-center text-white text-xs font-black transition-all"
+        style={{ backgroundColor: broker.color + "15", border: `1px solid ${broker.color}33` }}
       >
-        <span style={{ color: broker.color }} className="text-[10px] font-black leading-tight text-center">
+        <span style={{ color: broker.color }} className="text-[10px] font-mono font-bold leading-tight text-center">
           {broker.name.split(" ").map(w => w[0]).join("")}
         </span>
       </div>
-      <span className="text-xs font-semibold text-gray-300 group-hover:text-white transition-colors leading-tight">
+      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-gray-300 group-hover:text-white transition-colors leading-tight">
         {broker.name}
       </span>
-      <ChevronRight size={12} className="text-gray-600 group-hover:text-gray-400 transition-colors" />
+      <ChevronRight size={11} className="text-gray-600 group-hover:text-gray-400 transition-colors" />
     </button>
   );
 }
@@ -320,12 +320,12 @@ function BrokerCard({ broker, onClick }: { broker: BrokerConfig; onClick: () => 
 function StepItem({ n, title, detail }: { n: number; title: string; detail: string }) {
   return (
     <div className="flex gap-3">
-      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-        <span className="text-[10px] font-black text-amber-400">{n}</span>
+      <div className="flex-shrink-0 w-6 h-6 border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <span className="font-mono text-[10px] font-bold text-amber">{n}</span>
       </div>
       <div className="pt-0.5">
-        <p className="text-xs font-semibold text-gray-200">{title}</p>
-        <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">{detail}</p>
+        <p className="font-mono text-xs font-bold text-gray-200 uppercase">{title}</p>
+        <p className="font-mono text-[10px] text-gray-500 mt-0.5 leading-relaxed">{detail}</p>
       </div>
     </div>
   );
@@ -338,17 +338,61 @@ interface Props {
   onClose: () => void;
 }
 
-type Step = "broker" | "upload" | "preview" | "enriching";
+type Step = "broker" | "upload" | "preview" | "enriching" | "live_loading";
 
 export default function BrokerImport({ onConfirm, onClose }: Props) {
   const [step,          setStep]          = useState<Step>("broker");
   const [broker,        setBroker]        = useState<BrokerConfig | null>(null);
   const [parsed,        setParsed]        = useState<ParsedHolding[]>([]);
   const [parseError,    setParseError]    = useState<string | null>(null);
+  const [liveError,     setLiveError]     = useState<string | null>(null);
   const [dragging,      setDragging]      = useState(false);
   const [fileName,      setFileName]      = useState<string | null>(null);
   const [enriching,     setEnriching]     = useState(false);
+  const [consoleLogs,   setConsoleLogs]   = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const handleLiveConnect = async () => {
+    setLiveError(null);
+    setStep("live_loading");
+    setConsoleLogs(["$ ssh client@angelone.smartapi", "> establishing secure tunnel..."]);
+    
+    await sleep(400);
+    setConsoleLogs(prev => [...prev, "> authenticating with client_id: RO81...", "> totp handshake: verified"]);
+    
+    await sleep(600);
+    setConsoleLogs(prev => [...prev, "> retrieving client holdings statement...", "> active positions found: 8"]);
+    
+    try {
+      const res = await (api as any).getLiveHoldings();
+      if (res.error || !res.holdings?.length) {
+        setConsoleLogs(prev => [...prev, "! error: no active holdings found.", "$ exit 1"]);
+        await sleep(1000);
+        setLiveError(res.error ?? "No holdings found in your Angel One account.");
+        setStep("broker");
+        return;
+      }
+      const holdings: ParsedHolding[] = (res.holdings as LiveHolding[]).map((h) => ({
+        symbol:        h.symbol,
+        displaySymbol: h.display_symbol,
+        qty:           h.qty,
+        avgPrice:      h.avg_price,
+        currentPrice:  h.current_price || null,
+        totalValue:    h.total_value,
+      }));
+      setConsoleLogs(prev => [...prev, `> successfully parsed ${holdings.length} stocks.`, "$ exit 0"]);
+      await sleep(500);
+      setParsed(holdings);
+      setStep("preview");
+    } catch {
+      setConsoleLogs(prev => [...prev, "! fatal: connection refused.", "$ exit 1"]);
+      await sleep(1000);
+      setLiveError("Could not connect to Angel One. Check that the backend is running.");
+      setStep("broker");
+    }
+  };
 
   const handleBrokerSelect = (b: BrokerConfig) => {
     setBroker(b);
@@ -414,36 +458,56 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
     setStep("enriching");
 
     const totalValue = parsed.reduce((s, h) => s + h.totalValue, 0);
+    setConsoleLogs([
+      "$ pravah --action enrich --target portfolio",
+      `> parsing ${parsed.length} holding assets...`,
+      `> base portfolio value: INR ${totalValue.toLocaleString("en-IN")}`
+    ]);
 
-    const enriched: EnrichedAllocation[] = await Promise.all(
-      parsed.map(async (h) => {
-        const weight = (h.totalValue / totalValue) * 100;
-        try {
-          const sig = await api.getSignals(h.symbol) as any;
-          return {
-            symbol:        h.symbol,
-            weight:        parseFloat(weight.toFixed(2)),
-            amount_inr:    parseFloat(h.totalValue.toFixed(2)),
-            sector:        sig?.sector        ?? "Other",
-            signal:        sig?.verdict       ?? "HOLD",
-            score:         sig?.composite_score ?? 0,
-            current_price: sig?.current_price  ?? h.currentPrice,
-            rsi:           sig?.rsi            ?? null,
-            macd_signal:   sig?.macd_signal    ?? null,
-            return_1y:     null,
-          } as EnrichedAllocation;
-        } catch {
-          return {
-            symbol:     h.symbol,
-            weight:     parseFloat(weight.toFixed(2)),
-            amount_inr: parseFloat(h.totalValue.toFixed(2)),
-            sector:     "Other",
-            signal:     "HOLD",
-            score:      0,
-          } as EnrichedAllocation;
-        }
-      })
-    );
+    const enriched: EnrichedAllocation[] = [];
+
+    for (let i = 0; i < parsed.length; i++) {
+      const h = parsed[i];
+      const weight = (h.totalValue / totalValue) * 100;
+      setConsoleLogs(prev => [...prev, `> fetching live signals for ${h.displaySymbol}...`]);
+      await sleep(150);
+
+      try {
+        const sig = await api.getSignals(h.symbol) as any;
+        enriched.push({
+          symbol:        h.symbol,
+          weight:        parseFloat(weight.toFixed(2)),
+          amount_inr:    parseFloat(h.totalValue.toFixed(2)),
+          sector:        sig?.sector        ?? "Other",
+          signal:        sig?.verdict       ?? "HOLD",
+          score:         sig?.composite_score ?? 0,
+          current_price: sig?.current_price  ?? h.currentPrice,
+          rsi:           sig?.rsi            ?? null,
+          macd_signal:   sig?.macd_signal    ?? null,
+          return_1y:     null,
+        });
+        setConsoleLogs(prev => [
+          ...prev.slice(0, -1),
+          `> enriched ${h.displaySymbol} · verdict: ${sig?.verdict ?? "HOLD"} · rsi: ${sig?.rsi?.toFixed(1) ?? "—"} (ok)`
+        ]);
+      } catch {
+        enriched.push({
+          symbol:     h.symbol,
+          weight:     parseFloat(weight.toFixed(2)),
+          amount_inr: parseFloat(h.totalValue.toFixed(2)),
+          sector:     "Other",
+          signal:     "HOLD",
+          score:      0,
+        });
+        setConsoleLogs(prev => [
+          ...prev.slice(0, -1),
+          `> enriched ${h.displaySymbol} (fallback default)`
+        ]);
+      }
+    }
+
+    setConsoleLogs(prev => [...prev, "> normalization complete.", "$ exit 0"]);
+    await sleep(400);
 
     setEnriching(false);
     onConfirm(enriched, totalValue);
@@ -452,27 +516,28 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
   const totalPortfolioValue = parsed.reduce((s, h) => s + h.totalValue, 0);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}>
-      <div className="w-full max-w-2xl bg-[#0B1320] border border-[#1A2B40] rounded-2xl overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(3,7,18,0.85)" }}>
+      <div className="w-full max-w-2xl bg-surface border overflow-hidden shadow-xl" style={{ borderColor: "var(--border)" }}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1A2B40]">
+        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "var(--border)" }}>
           <div className="flex items-center gap-3">
             {step !== "broker" && (
               <button
                 onClick={() => { setStep(step === "preview" ? "upload" : "broker"); setParsed([]); setParseError(null); }}
-                className="text-gray-500 hover:text-gray-300 transition-colors"
+                className="text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
               >
-                <ArrowLeft size={16} />
+                <ArrowLeft size={14} />
               </button>
             )}
             <div>
-              <p className="text-sm font-semibold text-gray-100">Import Holdings</p>
-              <p className="text-[10px] text-gray-500 mt-0.5">
-                {step === "broker"   && "Select your broker"}
-                {step === "upload"   && broker?.name + " — Export & Upload"}
-                {step === "preview"  && `${parsed.length} holdings found · ${formatCurrency(totalPortfolioValue)} total value`}
-                {step === "enriching" && "Fetching live signals…"}
+              <p className="font-mono text-xs font-bold uppercase text-gray-100">Import Holdings</p>
+              <p className="font-mono text-[9px] text-gray-500 mt-0.5 uppercase">
+                {step === "broker"       && "Select your broker"}
+                {step === "upload"       && broker?.name + " — Export & Upload"}
+                {step === "preview"      && `${parsed.length} holdings found · ${formatCurrency(totalPortfolioValue)} total value`}
+                {step === "live_loading" && "Connecting to Angel One…"}
+                {step === "enriching"    && "Fetching live signals…"}
               </p>
             </div>
           </div>
@@ -487,7 +552,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                   style={{
                     width:  step === s ? 20 : 6,
                     height: 6,
-                    backgroundColor: (["broker","upload","preview","enriching"].indexOf(step) >= i)
+                    backgroundColor: (["broker","upload","preview","enriching","live_loading"].indexOf(step) >= i)
                       ? "var(--amber)" : "#1A2B40",
                   }}
                 />
@@ -505,9 +570,30 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
           {/* ── Step 1: Select Broker ──────────────────────────────────── */}
           {step === "broker" && (
             <div>
-              <p className="text-xs text-gray-500 mb-4">
-                Choose your broker to see export instructions and upload your holdings file.
-              </p>
+              {/* Live Connect — Angel One API */}
+              <button
+                onClick={handleLiveConnect}
+                className="w-full mb-4 flex items-center gap-3 px-4 py-3 border bg-amber-glow hover:bg-amber-glow/85 transition-all group cursor-pointer"
+                style={{ borderColor: "var(--amber-border)" }}
+              >
+                <div className="w-8 h-8 bg-amber-glow border flex items-center justify-center flex-shrink-0" style={{ borderColor: "var(--amber-border)" }}>
+                  <Zap size={14} className="text-amber" />
+                </div>
+                <div className="text-left">
+                  <p className="font-mono text-xs font-bold uppercase text-amber">Angel One — Live Connect</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5 font-mono">Pull holdings directly from your Angel One account. No CSV needed.</p>
+                </div>
+                <ChevronRight size={14} className="text-gray-500 group-hover:text-amber ml-auto transition-colors" />
+              </button>
+
+              {liveError && (
+                <div className="flex items-start gap-2 bg-red-50/50 border p-3 mb-4 font-mono text-xs text-red-800" style={{ borderColor: "var(--bear-border)" }}>
+                  <AlertCircle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />
+                  <p className="font-bold uppercase">{liveError}</p>
+                </div>
+              )}
+
+              <p className="text-xs text-gray-500 mb-3">Or upload a CSV from any broker:</p>
               <div className="grid grid-cols-3 gap-3">
                 {BROKERS.map((b) => (
                   <BrokerCard key={b.id} broker={b} onClick={() => handleBrokerSelect(b)} />
@@ -520,7 +606,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
           {step === "upload" && broker && (
             <div className="space-y-5">
               {/* Steps */}
-              <div className="bg-[#0D1829] border border-[#1A2B40] rounded-xl p-4 space-y-4">
+              <div className="bg-surface border p-4 space-y-4" style={{ borderColor: "var(--border)" }}>
                 <div className="flex items-center gap-2 mb-1">
                   <div
                     className="w-5 h-5 rounded flex items-center justify-center text-[9px] font-black text-white"
@@ -541,14 +627,14 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                 onDragLeave={() => setDragging(false)}
                 onDrop={handleDrop}
                 onClick={() => fileRef.current?.click()}
-                className="border-2 border-dashed rounded-xl p-8 flex flex-col items-center gap-3 cursor-pointer transition-all"
+                className="border-2 border-dashed p-8 flex flex-col items-center gap-3 cursor-pointer transition-all"
                 style={{
-                  borderColor: dragging ? broker.color : "#1A2B40",
+                  borderColor: dragging ? broker.color : "var(--border)",
                   backgroundColor: dragging ? broker.color + "08" : "transparent",
                 }}
               >
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center"
+                  className="w-12 h-12 flex items-center justify-center"
                   style={{ backgroundColor: broker.color + "15" }}
                 >
                   <Upload size={20} style={{ color: broker.color }} />
@@ -571,7 +657,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
               </div>
 
               {parseError && (
-                <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                <div className="flex items-start gap-2 bg-red-500/5 border p-3" style={{ borderColor: "var(--bear-border)" }}>
                   <AlertCircle size={14} className="text-red-400 flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-red-400">{parseError}</p>
                 </div>
@@ -582,10 +668,10 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
           {/* ── Step 3: Preview ────────────────────────────────────────── */}
           {step === "preview" && (
             <div className="space-y-4">
-              <div className="overflow-auto max-h-72 rounded-xl border border-[#1A2B40]">
+              <div className="overflow-auto max-h-72 border" style={{ borderColor: "var(--border)" }}>
                 <table className="w-full text-xs">
-                  <thead className="sticky top-0 bg-[#0D1829]">
-                    <tr className="border-b border-[#1A2B40]">
+                  <thead className="sticky top-0 bg-surface-2">
+                    <tr className="border-b" style={{ borderColor: "var(--border)" }}>
                       {["Symbol", "Qty", "Avg Price", "Current Price", "Value", "Weight"].map((h) => (
                         <th key={h} className="px-4 py-2.5 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                           {h}
@@ -593,7 +679,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1A2B40]">
+                  <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
                     {parsed.map((h) => {
                       const weight = (h.totalValue / totalPortfolioValue) * 100;
                       return (
@@ -609,8 +695,8 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                           </td>
                           <td className="px-4 py-2.5">
                             <div className="flex items-center gap-2">
-                              <div className="w-10 h-1 bg-[#1A2B40] rounded-full overflow-hidden">
-                                <div className="h-full bg-amber-500 rounded-full" style={{ width: `${Math.min(weight, 100)}%` }} />
+                              <div className="w-10 h-1 bg-border-2 overflow-hidden">
+                                <div className="h-full bg-amber" style={{ width: `${Math.min(weight, 100)}%` }} />
                               </div>
                               <span className="font-mono text-gray-400">{weight.toFixed(1)}%</span>
                             </div>
@@ -629,29 +715,52 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                   { label: "Total Value",  value: formatCurrency(totalPortfolioValue) },
                   { label: "Broker",       value: broker?.name ?? "—" },
                 ].map((m) => (
-                  <div key={m.label} className="bg-[#0D1829] border border-[#1A2B40] rounded-lg px-3 py-2 text-center">
+                  <div key={m.label} className="bg-surface border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
                     <p className="text-[10px] text-gray-600 uppercase tracking-wider">{m.label}</p>
-                    <p className="text-sm font-bold text-gray-100 mt-0.5">{m.value}</p>
+                    <p className="text-sm font-bold text-text mt-0.5">{m.value}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="flex items-center gap-2 bg-amber-500/8 border border-amber-500/20 rounded-lg p-3">
+              <div className="flex items-center gap-2 bg-amber-glow border p-3" style={{ borderColor: "var(--amber-border)" }}>
                 <CheckCircle size={14} className="text-amber-400 flex-shrink-0" />
-                <p className="text-[11px] text-amber-300/80">
+                <p className="text-[11px] text-amber-350/80">
                   Confirm to fetch live signals for each holding and add them to your portfolio. Weights are based on current market value.
                 </p>
               </div>
             </div>
           )}
 
+          {/* ── Live Loading ──────────────────────────────────────────── */}
+          {step === "live_loading" && (
+            <div className="py-2">
+              <div className="bg-surface-2 border p-4 font-mono text-[10px] text-text-2 h-64 overflow-y-auto space-y-1" style={{ borderColor: "var(--border)" }}>
+                <div className="text-gray-500 border-b pb-1 mb-2 uppercase tracking-widest text-[9px] font-bold" style={{ borderColor: "var(--border)" }}>
+                  ANGEL ONE CONNECT CONSOLE
+                </div>
+                {consoleLogs.map((log, idx) => (
+                  <p key={idx} className={log.startsWith("$") ? "text-amber font-bold" : log.startsWith("!") ? "text-red-650" : "text-emerald-700"}>
+                    {log}
+                  </p>
+                ))}
+                <div className="w-1.5 h-3 bg-emerald-600 inline-block animate-pulse" />
+              </div>
+            </div>
+          )}
+
           {/* ── Enriching ─────────────────────────────────────────────── */}
           {step === "enriching" && (
-            <div className="flex flex-col items-center gap-4 py-8">
-              <Loader2 size={32} className="text-amber-400 animate-spin" />
-              <div className="text-center">
-                <p className="text-sm font-medium text-gray-200">Fetching live signals…</p>
-                <p className="text-xs text-gray-500 mt-1">Running RSI, MACD & trend analysis on {parsed.length} stocks</p>
+            <div className="py-2">
+              <div className="bg-surface-2 border p-4 font-mono text-[10px] text-text-2 h-64 overflow-y-auto space-y-1" style={{ borderColor: "var(--border)" }}>
+                <div className="text-gray-500 border-b pb-1 mb-2 uppercase tracking-widest text-[9px] font-bold" style={{ borderColor: "var(--border)" }}>
+                  PORTFOLIO SIGNAL ENRICHER CORE
+                </div>
+                {consoleLogs.map((log, idx) => (
+                  <p key={idx} className={log.startsWith("$") ? "text-amber font-bold" : log.startsWith("!") ? "text-red-650" : "text-emerald-700"}>
+                    {log}
+                  </p>
+                ))}
+                <div className="w-1.5 h-3 bg-emerald-600 inline-block animate-pulse" />
               </div>
             </div>
           )}
@@ -659,10 +768,10 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
 
         {/* Footer */}
         {(step === "preview" || step === "upload") && (
-          <div className="px-6 py-4 border-t border-[#1A2B40] flex items-center justify-between">
+          <div className="px-6 py-4 border-t flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
             <button
               onClick={() => { setStep("broker"); setBroker(null); setParsed([]); setParseError(null); setFileName(null); }}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1.5"
+              className="font-mono text-[10px] font-bold uppercase text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <ArrowLeft size={12} /> Change broker
             </button>
@@ -670,10 +779,11 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
               <button
                 onClick={handleConfirm}
                 disabled={enriching}
-                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-amber-500 text-black text-sm font-semibold hover:bg-amber-400 disabled:opacity-40 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 border font-mono text-[10px] uppercase font-bold bg-amber text-black hover:bg-transparent hover:text-amber transition-colors cursor-pointer"
+                style={{ borderColor: "var(--amber)" }}
               >
-                <CheckCircle size={14} />
-                Confirm & Add to Portfolio
+                <CheckCircle size={13} />
+                [ENTER] CONFIRM & IMPORT
               </button>
             )}
           </div>

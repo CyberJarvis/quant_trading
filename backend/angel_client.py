@@ -8,6 +8,7 @@ import time
 import pyotp
 import requests
 from datetime import datetime, timedelta
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -92,19 +93,39 @@ def _load_instrument_master():
     global _master_loaded
     if _master_loaded:
         return
-    try:
-        resp = requests.get(_MASTER_URL, timeout=20)
-        if resp.status_code != 200:
-            return
-        for row in resp.json():
-            sym   = row.get("symbol", "")
-            token = row.get("token", "")
-            exch  = row.get("exch_seg", "")
-            if exch in ("NSE", "BSE") and token:
-                _instrument_cache[sym] = {"token": token, "exchange": exch}
-        _master_loaded = True
-    except Exception:
-        pass
+    cache_path = os.path.join(os.path.dirname(__file__), "OpenAPIScripMaster.json")
+    data = None
+    if os.path.exists(cache_path):
+        mtime = os.path.getmtime(cache_path)
+        if time.time() - mtime < 86400:  # 24 hours TTL
+            try:
+                with open(cache_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except Exception:
+                pass
+    if not data:
+        try:
+            resp = requests.get(_MASTER_URL, timeout=20)
+            if resp.status_code == 200:
+                data = resp.json()
+                try:
+                    with open(cache_path, "w", encoding="utf-8") as f:
+                        json.dump(data, f)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+    if data:
+        try:
+            for row in data:
+                sym   = row.get("symbol", "")
+                token = row.get("token", "")
+                exch  = row.get("exch_seg", "")
+                if exch in ("NSE", "BSE") and token:
+                    _instrument_cache[sym] = {"token": token, "exchange": exch}
+            _master_loaded = True
+        except Exception:
+            pass
 
 
 def _nse_symbol(yf_symbol: str) -> str:
@@ -165,20 +186,37 @@ def get_ltp(symbol: str) -> dict | None:
 def get_candles(symbol: str, interval: str = "ONE_DAY",
                 days_back: int = 365) -> list[dict]:
     """
-    Fetch OHLCV candle data.
-    For periods > 30 days, yfinance is preferred — Angel One free tier caps
-    historical lookback and returns partial data silently.
+    Fetch OHLCV candle data. Checks MongoDB cache first — cold fetch only on miss.
+    For periods > 30 days, yfinance is preferred over Angel One free tier.
     """
-    # Prefer yfinance for historical data (reliable, full history)
-    # Use Angel One only for very recent data (≤ 30 days) where it's faster
+    try:
+        from data_cache import get_cached_candles, _store_candles
+        cached = get_cached_candles(symbol, days_back)
+        if cached is not None:
+            return cached
+    except Exception:
+        pass
+
     if days_back > 30:
         data = _yfinance_fallback(symbol, days_back)
         if data:
+            try:
+                from data_cache import _store_candles
+                _store_candles(symbol, days_back, data)
+            except Exception:
+                pass
             return data
-        # yfinance failed — try Angel One as backup
-        return _angel_candles(symbol, interval, days_back)
+        result = _angel_candles(symbol, interval, days_back)
+    else:
+        result = _angel_candles(symbol, interval, days_back)
 
-    return _angel_candles(symbol, interval, days_back)
+    if result:
+        try:
+            from data_cache import _store_candles
+            _store_candles(symbol, days_back, result)
+        except Exception:
+            pass
+    return result
 
 
 def _angel_candles(symbol: str, interval: str, days_back: int) -> list[dict]:
@@ -235,11 +273,91 @@ def _angel_candles(symbol: str, interval: str, days_back: int) -> list[dict]:
         return _yfinance_fallback(symbol, days_back)
 
 
+def get_holdings() -> list[dict]:
+    """Fetch live equity holdings from Angel One portfolio."""
+    try:
+        jwt = get_token()
+        resp = requests.get(
+            f"{BASE_URL}/rest/secure/angelbroking/portfolio/v1/getHolding",
+            headers=_headers(jwt),
+            timeout=10,
+        )
+        if resp.status_code != 200:
+            return []
+        data = resp.json().get("data", []) or []
+        result = []
+        for h in data:
+            qty = int(h.get("quantity", 0) or 0)
+            if qty <= 0:
+                continue
+            ltp = round(float(h.get("ltp", 0) or 0), 2)
+            avg = round(float(h.get("averageprice", 0) or 0), 2)
+            trading_sym = h.get("tradingsymbol", "")
+            display = trading_sym.replace("-EQ", "").replace("-BE", "").strip()
+            total_val = round(ltp * qty if ltp else avg * qty, 2)
+            result.append({
+                "symbol":         display + ".NS",
+                "display_symbol": display,
+                "qty":            qty,
+                "avg_price":      avg,
+                "current_price":  ltp,
+                "pnl":            round(float(h.get("profitandloss", 0) or 0), 2),
+                "pnl_pct":        round(float(h.get("pnlpercentage", 0) or 0), 2),
+                "total_value":    total_val,
+                "isin":           h.get("isin", ""),
+            })
+        return result
+    except Exception:
+        return []
+
+
+def get_positions() -> list[dict]:
+    """Fetch intraday/open positions from Angel One."""
+    try:
+        jwt = get_token()
+        resp = requests.get(
+            f"{BASE_URL}/rest/secure/angelbroking/order/v1/getPosition",
+            headers=_headers(jwt),
+            timeout=10,
+        )
+        if resp.status_code != 200:
+            return []
+        data = resp.json().get("data", []) or []
+        result = []
+        for p in data:
+            net_qty = int(p.get("netqty", 0) or 0)
+            if net_qty == 0:
+                continue
+            ltp = round(float(p.get("ltp", 0) or 0), 2)
+            avg = round(float(p.get("netprice", 0) or 0), 2)
+            trading_sym = p.get("tradingsymbol", "")
+            display = trading_sym.replace("-EQ", "").replace("-BE", "").strip()
+            result.append({
+                "symbol":         display + ".NS",
+                "display_symbol": display,
+                "qty":            net_qty,
+                "avg_price":      avg,
+                "current_price":  ltp,
+                "pnl":            round(float(p.get("pnl", 0) or 0), 2),
+                "product":        p.get("producttype", "CNC"),
+                "exchange":       p.get("exchange", "NSE"),
+            })
+        return result
+    except Exception:
+        return []
+
+
 def _yfinance_fallback(symbol: str, days_back: int = 365) -> list[dict]:
     """yfinance historical OHLCV — raw (unadjusted) prices to match NSE/BSE quotes."""
     try:
         import yfinance as yf
-        period = f"{days_back}d" if days_back <= 730 else ("5y" if days_back <= 1800 else "10y")
+        if days_back <= 30:    period = "1mo"
+        elif days_back <= 90:  period = "3mo"
+        elif days_back <= 180: period = "6mo"
+        elif days_back <= 365: period = "1y"
+        elif days_back <= 730: period = "2y"
+        elif days_back <= 1825: period = "5y"
+        else:                   period = "10y"
         # auto_adjust=False → raw traded prices that match what NSE/BSE display
         df = yf.download(symbol, period=period, progress=False, auto_adjust=False)
         if df.empty:

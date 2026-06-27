@@ -4,6 +4,11 @@ from angel_client import get_candles
 
 
 def detect_regime() -> dict:
+    from data_cache import _get, _set
+    cached = _get("regime_v1", 900)  # 15min TTL
+    if cached:
+        return cached
+
     nifty_candles = get_candles("^NSEI", interval="ONE_DAY", days_back=400)
     vix_candles   = get_candles("^INDIAVIX", interval="ONE_DAY", days_back=30)
 
@@ -38,7 +43,7 @@ def detect_regime() -> dict:
         regime = "SIDEWAYS"
         hint   = "Neutral — use RSI mean reversion"
 
-    return {
+    result = {
         "regime":        regime,
         "score":         score,
         "vix":           round(vix_now, 2),
@@ -49,6 +54,8 @@ def detect_regime() -> dict:
         "description":   f"Nifty {'above' if current > sma200 else 'below'} SMA200, VIX at {vix_now:.1f}",
         "strategy_hint": hint,
     }
+    _set("regime_v1", result, 900)
+    return result
 
 
 def _default_regime() -> dict:

@@ -7,46 +7,48 @@ interface Props {
 
 export default function VixGauge({ vix, sentiment }: Props) {
   const pct = vix !== null ? Math.min(Math.max((vix / 40) * 100, 0), 100) : 0;
-  const color = vix === null ? "#6B7280"
-    : vix < 15 ? "#10B981"
-    : vix > 22 ? "#EF4444"
-    : "#3B82F6";
+  const color = vix === null ? "var(--muted)"
+    : vix < 15 ? "var(--bull)"
+    : vix > 22 ? "var(--bear)"
+    : "var(--sideways)";
 
   return (
-    <div className="bg-[#111827] border border-[#1F2937] rounded-xl px-4 py-4">
-      <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">India VIX</p>
+    <div className="bg-surface border" style={{ borderColor: "var(--border)" }}>
+      <div className="px-4 py-3">
+        <p className="font-mono text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--muted)" }}>India VIX</p>
 
-      {/* Gauge bar */}
-      <div className="relative h-3 bg-[#1F2937] rounded-full overflow-hidden mb-3">
-        <div
-          className="absolute left-0 top-0 h-full rounded-full transition-all duration-700"
-          style={{ width: `${pct}%`, backgroundColor: color }}
-        />
-        {/* Zone markers */}
-        <div className="absolute top-0 h-full w-px bg-[#374151]" style={{ left: "37.5%" }} />
-        <div className="absolute top-0 h-full w-px bg-[#374151]" style={{ left: "55%" }} />
-      </div>
-
-      <div className="flex justify-between text-[10px] text-gray-600 mb-3">
-        <span>0</span>
-        <span>15</span>
-        <span>22</span>
-        <span>40+</span>
-      </div>
-
-      <div className="flex items-end justify-between">
-        <div>
-          <p className="font-mono font-black text-3xl" style={{ color }}>
-            {vix?.toFixed(1) ?? "—"}
-          </p>
-          <p className="text-xs mt-0.5" style={{ color }}>
-            {sentiment ?? "Loading…"}
-          </p>
+        {/* Gauge bar */}
+        <div className="relative h-2.5 bg-border overflow-hidden mb-2">
+          <div
+            className="absolute left-0 top-0 h-full transition-all duration-700"
+            style={{ width: `${pct}%`, backgroundColor: color }}
+          />
+          {/* Zone markers */}
+          <div className="absolute top-0 h-full w-px" style={{ left: "37.5%", background: "var(--bg)" }} />
+          <div className="absolute top-0 h-full w-px" style={{ left: "55%", background: "var(--bg)" }} />
         </div>
-        <div className="text-right text-[10px] text-gray-600 space-y-0.5">
-          <p className="text-emerald-600">{"<15 Low Fear"}</p>
-          <p className="text-yellow-600">15-22 Moderate</p>
-          <p className="text-red-600">{">22 High Fear"}</p>
+
+        <div className="flex justify-between font-mono text-[9px] mb-3" style={{ color: "var(--muted-2)" }}>
+          <span>0</span>
+          <span>15</span>
+          <span>22</span>
+          <span>40+</span>
+        </div>
+
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="font-mono font-bold text-2xl leading-none" style={{ color }}>
+              {vix?.toFixed(1) ?? "—"}
+            </p>
+            <p className="font-mono text-[10px] mt-1 uppercase font-bold" style={{ color }}>
+              {sentiment ?? "Loading…"}
+            </p>
+          </div>
+          <div className="text-right font-mono text-[9px] space-y-0.5" style={{ color: "var(--muted-2)" }}>
+            <p style={{ color: "var(--bull)" }}>{"<15 Low Fear"}</p>
+            <p style={{ color: "var(--sideways)" }}>15-22 Moderate</p>
+            <p style={{ color: "var(--bear)" }}>{">22 High Fear"}</p>
+          </div>
         </div>
       </div>
     </div>

@@ -86,7 +86,7 @@ export default function LandingPage() {
       {/* Navbar */}
       <header style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-        background: isScrolled ? 'rgba(8, 12, 20, 0.85)' : 'transparent',
+        background: isScrolled ? 'rgba(248, 250, 252, 0.95)' : 'transparent',
         backdropFilter: isScrolled ? 'blur(12px)' : 'none',
         WebkitBackdropFilter: isScrolled ? 'blur(12px)' : 'none',
         borderBottom: isScrolled ? '1px solid var(--border)' : 'none',
@@ -137,7 +137,7 @@ export default function LandingPage() {
       {/* Infinite scrolling ticker below navbar */}
       <div style={{
         marginTop: 56,
-        background: '#080C14',
+        background: 'var(--surface-hover)',
         borderBottom: '1px solid var(--border)',
         padding: '8px 0',
       }} className="animate-marquee-container">
@@ -297,7 +297,7 @@ export default function LandingPage() {
               {/* Calculated Outputs */}
               <div style={{
                 padding: 20, borderRadius: 'var(--radius)',
-                background: '#0B0F19', border: '1px solid var(--border)',
+                background: 'var(--bg-2)', border: '1px solid var(--border)',
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
               }}>
                 <div>
@@ -343,7 +343,7 @@ export default function LandingPage() {
           <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
-                <tr style={{ background: '#0B0F19', borderBottom: '1px solid var(--border)' }}>
+                <tr style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--border)' }}>
                   <th style={{ padding: '14px 18px', textAlign: 'left', color: 'var(--muted)', fontWeight: 600 }}>Performance Metric</th>
                   <th style={{ padding: '14px 18px', textAlign: 'right', color: 'var(--amber)', fontWeight: 700 }}>PRAVAH Adaptive</th>
                   <th style={{ padding: '14px 18px', textAlign: 'right', color: 'var(--muted)', fontWeight: 600 }}>Nifty 50 Index</th>
@@ -499,7 +499,7 @@ export default function LandingPage() {
       <section style={{ padding: '60px 24px 80px' }}>
         <div style={{
           maxWidth: 1040, margin: '0 auto', borderRadius: 12,
-          background: 'linear-gradient(135deg, #0C1220 0%, #060913 100%)',
+          background: 'linear-gradient(135deg, var(--surface) 0%, var(--bg-2) 100%)',
           border: '1px solid var(--border)', padding: '54px 40px',
           display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 32, alignItems: 'center',
           boxShadow: '0 20px 48px rgba(0,0,0,0.4)', textAlign: 'left'
@@ -544,7 +544,7 @@ export default function LandingPage() {
       </section>
 
       {/* Multi-Column Regulatory Compliant Footer */}
-      <footer style={{ borderTop: '1px solid var(--border)', padding: '56px 40px 32px', background: '#070A12' }}>
+      <footer style={{ borderTop: '1px solid var(--border)', padding: '56px 40px 32px', background: 'var(--bg-2)' }}>
         <div style={{ maxWidth: 1040, margin: '0 auto' }}>
           
           {/* Main columns */}

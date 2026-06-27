@@ -1,7 +1,19 @@
+import asyncio
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from angel_client import login
+
+
+def _warm_cache():
+    """Background: prefetch all Nifty50 candles + compute signals into MongoDB."""
+    try:
+        from signal_engine import get_top_signals, _compute_all_signals_bg
+        get_top_signals(50)   # warms Nifty50 synchronously, triggers BG for all 379
+        print("[cache] startup warm complete")
+    except Exception as e:
+        print(f"[cache] Warm failed: {e}")
 
 
 @asynccontextmanager
@@ -11,6 +23,8 @@ async def lifespan(app: FastAPI):
         print("Angel One login successful")
     except Exception as e:
         print(f"Angel One login failed (will retry on first request): {e}")
+    # Fire-and-forget cache warm — don't block startup
+    asyncio.get_event_loop().run_in_executor(None, _warm_cache)
     yield
 
 
@@ -22,6 +36,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(Exception)
+async def unhandled_exception(request: Request, exc: Exception):
+    import traceback
+    traceback.print_exc()
+    origin = request.headers.get("origin", "")
+    headers = {"Access-Control-Allow-Origin": origin} if origin else {}
+    return JSONResponse(
+        status_code=500,
+        content={"error": str(exc), "type": type(exc).__name__},
+        headers=headers,
+    )
 
 from routers import regime, market, signals, portfolio, backtest, stress, auth
 

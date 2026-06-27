@@ -44,3 +44,6 @@ holdings-*.xlsx
 skills-lock.json
 *.tmp
 *.bak
+
+# Large data files
+backend/OpenAPIScripMaster.json

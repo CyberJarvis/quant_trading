@@ -26,17 +26,18 @@ export default function ScenarioPicker({ selected, customDrop, onSelect, onCusto
           key={s.id}
           onClick={() => onSelect(s.id)}
           className={cn(
-            "w-full flex items-center justify-between px-4 py-3 rounded-xl border text-sm transition-all",
+            "w-full flex items-center justify-between px-4 py-2.5 border font-mono text-xs uppercase font-bold transition-colors cursor-pointer",
             selected === s.id
-              ? "bg-red-500/10 border-red-500/40 text-red-300"
-              : "bg-[#111827] border-[#1F2937] text-gray-400 hover:border-[#374151] hover:text-gray-200"
+              ? "bg-red-500/5 text-red-600"
+              : "bg-surface text-gray-500 hover:text-text"
           )}
+          style={{ borderColor: selected === s.id ? "var(--bear-border)" : "var(--border)" }}
         >
           <div className="text-left">
-            <p className="font-medium">{s.label}</p>
-            <p className="text-[10px] opacity-60">{s.period}</p>
+            <p>{s.label}</p>
+            <p className="text-[9px] opacity-60 font-normal normal-case mt-0.5">{s.period}</p>
           </div>
-          <span className="font-mono font-bold text-red-400">{s.drop}%</span>
+          <span className="font-bold text-red-600">{s.drop}%</span>
         </button>
       ))}
 
@@ -44,13 +45,14 @@ export default function ScenarioPicker({ selected, customDrop, onSelect, onCusto
       <div
         onClick={() => onSelect("custom")}
         className={cn(
-          "px-4 py-3 rounded-xl border cursor-pointer transition-all",
+          "px-4 py-2.5 border cursor-pointer transition-colors font-mono text-xs uppercase font-bold",
           selected === "custom"
-            ? "bg-amber-500/10 border-amber-500/40"
-            : "bg-[#111827] border-[#1F2937] hover:border-[#374151]"
+            ? "bg-amber-glow"
+            : "bg-surface text-gray-500 hover:text-text"
         )}
+        style={{ borderColor: selected === "custom" ? "var(--amber-border)" : "var(--border)" }}
       >
-        <p className="text-sm font-medium text-gray-300 mb-2">Custom Scenario</p>
+        <p className="mb-2">Custom Simulation</p>
         <div className="flex items-center gap-3">
           <input
             type="range"
@@ -61,7 +63,7 @@ export default function ScenarioPicker({ selected, customDrop, onSelect, onCusto
             className="flex-1 accent-amber-500"
             onClick={(e) => e.stopPropagation()}
           />
-          <span className="font-mono font-bold text-amber-400 w-10 text-right">
+          <span className="text-amber w-10 text-right">
             {customDrop}%
           </span>
         </div>
