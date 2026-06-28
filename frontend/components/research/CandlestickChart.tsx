@@ -137,8 +137,8 @@ export default function CandlestickChart({ candles, symbol, livePrice, liveChang
 
   if (!candles.length) {
     return (
-      <div className="h-[380px] bg-surface border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
-        <p className="font-mono text-xs text-gray-500 uppercase">Select a stock to view chart</p>
+      <div className="h-[380px] bg-[var(--surface)] border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-xs text-[color:var(--muted-2)] uppercase">Select a stock to view chart</p>
       </div>
     );
   }
@@ -154,17 +154,17 @@ export default function CandlestickChart({ candles, symbol, livePrice, liveChang
   const up           = displayChg >= 0;
 
   return (
-    <div className="bg-surface border overflow-hidden" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border overflow-hidden" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: "var(--border)" }}>
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-bold text-gray-200">{symbol.replace(".NS", "")}</span>
-          <span className="font-mono text-[9px] uppercase tracking-wider text-gray-500">Candlestick · Volume</span>
+          <span className="font-mono text-xs font-bold text-[color:var(--text)]">{symbol.replace(".NS", "")}</span>
+          <span className="font-mono text-[9px] uppercase tracking-wider text-[color:var(--muted-2)]">Candlestick · Volume</span>
           {livePrice && (
             <span className="font-mono text-[9px] font-bold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5">LIVE</span>
           )}
         </div>
         <div className="flex items-center gap-3 text-xs font-mono">
-          <span className="text-gray-200 font-semibold text-sm">
+          <span className="text-[color:var(--text)] font-semibold text-sm">
             ₹{displayPrice.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
           </span>
           <span className={up ? "text-emerald-400" : "text-red-400"}>

@@ -13,8 +13,8 @@ interface Props {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-surface border px-3 py-2 text-xs space-y-0.5" style={{ borderColor: "var(--border)" }}>
-      <p className="font-mono text-gray-500 mb-1">Day {label}</p>
+    <div className="bg-[var(--surface)] border px-3 py-2 text-xs space-y-0.5" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-[color:var(--muted-2)] mb-1">Day {label}</p>
       {payload.map((p: any) => (
         <p key={p.name} className="font-mono" style={{ color: p.color }}>
           {p.name}: <span className="font-bold">₹{Number(p.value).toLocaleString("en-IN")}</span>
@@ -41,10 +41,10 @@ export default function ForecastChart({ data }: Props) {
   const maxVal = Math.max(...allVals) * 1.015;
 
   return (
-    <div className="bg-surface border p-4" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border p-4" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
         <div>
-          <p className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+          <p className="font-mono text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">
             {symbol.replace(".NS", "")} · GBM Scenarios · {horizon_days}D
           </p>
           <p className="font-mono text-[9px] text-gray-600 mt-0.5 uppercase">

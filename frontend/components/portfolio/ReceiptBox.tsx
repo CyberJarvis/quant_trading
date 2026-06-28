@@ -10,7 +10,7 @@ interface Props {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between items-center py-2 border-b" style={{ borderColor: "var(--border)" }}>
-      <span className="font-mono text-[10px] text-gray-500 uppercase tracking-wider">{label}</span>
+      <span className="font-mono text-[10px] text-[color:var(--muted-2)] uppercase tracking-wider">{label}</span>
       <span className="font-mono text-xs font-bold text-text uppercase">{value}</span>
     </div>
   );
@@ -18,7 +18,7 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export default function ReceiptBox({ receipt, metrics }: Props) {
   return (
-    <div className="bg-surface border p-5" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border p-5" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center gap-2 mb-4">
         <CheckCircle size={14} className="text-emerald-400" />
         <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-text">Receipt Details</h3>
@@ -39,14 +39,14 @@ export default function ReceiptBox({ receipt, metrics }: Props) {
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <div className="bg-surface-2 border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
-          <p className="font-mono text-[9px] text-gray-500 uppercase tracking-wider mb-0.5">Est. Annual Return</p>
+        <div className="bg-[var(--surface-hover)] border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
+          <p className="font-mono text-[9px] text-[color:var(--muted-2)] uppercase tracking-wider mb-0.5">Est. Annual Return</p>
           <p className="font-mono font-bold text-emerald-500 text-base" style={{ fontVariantNumeric: "tabular-nums" }}>
             {metrics.expected_return !== null ? `${formatNumber(metrics.expected_return)}%` : "—"}
           </p>
         </div>
-        <div className="bg-surface-2 border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
-          <p className="font-mono text-[9px] text-gray-500 uppercase tracking-wider mb-0.5">Sharpe Ratio</p>
+        <div className="bg-[var(--surface-hover)] border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
+          <p className="font-mono text-[9px] text-[color:var(--muted-2)] uppercase tracking-wider mb-0.5">Sharpe Ratio</p>
           <p className="font-mono font-bold text-amber text-base" style={{ fontVariantNumeric: "tabular-nums" }}>
             {metrics.sharpe_estimate !== null ? formatNumber(metrics.sharpe_estimate) : "—"}
           </p>

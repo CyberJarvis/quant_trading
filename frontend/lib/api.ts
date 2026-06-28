@@ -1,7 +1,7 @@
 import type {
   RegimeData, MarketIndices, StockSignal, StockData,
   PortfolioResult, BacktestResult, StressTestResult, ForecastData,
-  OptimizerComparison, RiskBrief,
+  OptimizerComparison, RiskBrief, NewsResponse, SentimentResponse,
 } from "./types";
 
 export interface OrderResult {
@@ -124,4 +124,10 @@ export const api = {
 
   getPortfolioBrief: (portfolio: Record<string, number>, regime = "SIDEWAYS") =>
     post<RiskBrief>("/api/portfolio/brief", { portfolio, regime, run_optimizer: false }),
+
+  getNews: (limit = 20) =>
+    get<NewsResponse>(`/api/news?limit=${limit}`),
+
+  getSymbolSentiment: (symbols: string[]) =>
+    get<SentimentResponse>(`/api/news/sentiment?symbols=${symbols.join(",")}`),
 };

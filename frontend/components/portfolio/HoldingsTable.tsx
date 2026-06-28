@@ -35,7 +35,7 @@ function ReturnBadge({ v }: { v: number | null | undefined }) {
 
 function RsiBadge({ v }: { v: number | null | undefined }) {
   if (v == null) return <span className="text-gray-600">—</span>;
-  const color = v > 70 ? "text-red-400" : v < 30 ? "text-emerald-400" : "text-gray-300";
+  const color = v > 70 ? "text-red-400" : v < 30 ? "text-emerald-400" : "text-[color:var(--muted)]";
   const label = v > 70 ? "OB" : v < 30 ? "OS" : "";
   return (
     <span className={`font-mono text-xs ${color}`}>
@@ -48,18 +48,18 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
   const totalWeight = allocations.reduce((s, a) => s + a.weight, 0);
 
   return (
-    <div className="bg-surface border" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border" style={{ borderColor: "var(--border)" }}>
       <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
         <div>
           <p className="font-mono text-xs font-bold uppercase tracking-wider text-text">Holdings</p>
-          <p className="font-mono text-[10px] text-gray-500 mt-0.5 uppercase">
+          <p className="font-mono text-[10px] text-[color:var(--muted-2)] mt-0.5 uppercase">
             {allocations.length} stocks · {totalWeight.toFixed(1)}% allocated · {formatInr(budget)} total
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={onImport}
-            className="flex items-center gap-1.5 px-3 py-1.5 border font-mono text-[10px] uppercase font-bold text-gray-500 hover:text-text cursor-pointer transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 border font-mono text-[10px] uppercase font-bold text-[color:var(--muted-2)] hover:text-text cursor-pointer transition-colors"
             style={{ borderColor: "var(--border)" }}
           >
             <Upload size={11} /> Import
@@ -75,7 +75,7 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
               {["Symbol", "Sector", "Price", "Weight", "Amount", "1Y Return", "RSI", "Signal", "Score", ""].map((h) => (
                 <th
                   key={h}
-                  className="px-4 py-2.5 text-left font-mono text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap"
+                  className="px-4 py-2.5 text-left font-mono text-[9px] font-bold text-[color:var(--muted)] uppercase tracking-widest whitespace-nowrap"
                 >
                   {h}
                 </th>
@@ -84,11 +84,11 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
           </thead>
           <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
             {allocations.map((a) => (
-              <tr key={a.symbol} className="hover:bg-surface-hover transition-colors group">
+              <tr key={a.symbol} className="hover:bg-[var(--surface)]-hover transition-colors group">
                 <td className="px-4 py-3 font-mono font-bold text-amber text-xs whitespace-nowrap">
                   {a.symbol.replace(".NS", "")}
                 </td>
-                <td className="px-4 py-3 font-mono text-[10px] text-gray-500 uppercase whitespace-nowrap">{a.sector || "—"}</td>
+                <td className="px-4 py-3 font-mono text-[10px] text-[color:var(--muted-2)] uppercase whitespace-nowrap">{a.sector || "—"}</td>
                 <td className="px-4 py-3 font-mono text-text text-xs whitespace-nowrap">
                   {a.current_price != null ? `₹${a.current_price.toLocaleString("en-IN")}` : "—"}
                 </td>
@@ -100,10 +100,10 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
                         style={{ width: `${Math.min(a.weight, 100)}%` }}
                       />
                     </div>
-                    <span className="font-mono text-text-2 text-xs">{a.weight.toFixed(1)}%</span>
+                    <span className="font-mono text-[color:var(--text-2)] text-xs">{a.weight.toFixed(1)}%</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 font-mono text-text-2 text-xs whitespace-nowrap">
+                <td className="px-4 py-3 font-mono text-[color:var(--text-2)] text-xs whitespace-nowrap">
                   {formatInr(a.amount_inr)}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
@@ -117,13 +117,13 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
                     {a.signal}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-mono text-gray-500 text-xs whitespace-nowrap">
+                <td className="px-4 py-3 font-mono text-[color:var(--muted-2)] text-xs whitespace-nowrap">
                   {a.score.toFixed(1)}
                 </td>
                 <td className="px-4 py-3">
                   <button
                     onClick={() => onRemove(a.symbol)}
-                    className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                    className="opacity-0 group-hover:opacity-100 text-[color:var(--muted)] hover:text-red-500 transition-colors cursor-pointer"
                     title="Remove"
                   >
                     <X size={14} />
@@ -159,7 +159,7 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
             <div className="flex-1 bg-border-2" title="Unallocated" />
           )}
         </div>
-        <div className="flex justify-between font-mono text-[9px] text-gray-500 mt-1 uppercase">
+        <div className="flex justify-between font-mono text-[9px] text-[color:var(--muted-2)] mt-1 uppercase">
           <span>Allocated: {totalWeight.toFixed(1)}%</span>
           {totalWeight < 100 && <span className="text-amber">Unallocated: {(100 - totalWeight).toFixed(1)}%</span>}
           {totalWeight > 100 && <span className="text-red-500 font-bold">Overallocated by {(totalWeight - 100).toFixed(1)}%</span>}

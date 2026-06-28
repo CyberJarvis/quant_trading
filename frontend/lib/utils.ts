@@ -24,7 +24,7 @@ export function signalColor(signal: Signal): string {
     case "HOLD":       return "text-yellow-400";
     case "SELL":       return "text-red-300";
     case "STRONG SELL":return "text-red-400";
-    default:           return "text-gray-400";
+    default:           return "text-[color:var(--muted)]";
   }
 }
 
@@ -35,7 +35,7 @@ export function signalBg(signal: Signal): string {
     case "HOLD":       return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
     case "SELL":       return "bg-red-500/10 text-red-300 border-red-500/20";
     case "STRONG SELL":return "bg-red-500/20 text-red-400 border-red-500/30";
-    default:           return "bg-gray-500/10 text-gray-400 border-gray-500/20";
+    default:           return "bg-gray-500/10 text-[color:var(--muted)] border-gray-500/20";
   }
 }
 
@@ -44,6 +44,7 @@ export function regimeBg(regime: Regime): string {
     case "BULL":     return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
     case "BEAR":     return "bg-red-500/20 text-red-400 border-red-500/30";
     case "SIDEWAYS": return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+    default:         return "bg-gray-500/20 text-[color:var(--muted)] border-gray-500/30";
   }
 }
 
@@ -52,5 +53,6 @@ export function regimeColor(regime: Regime): string {
     case "BULL":     return "#10B981";
     case "BEAR":     return "#EF4444";
     case "SIDEWAYS": return "#3B82F6";
+    default:         return "#64748B";
   }
 }

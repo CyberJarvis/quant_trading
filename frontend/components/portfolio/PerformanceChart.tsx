@@ -50,8 +50,8 @@ function buildChartData(series: StockSeries[]) {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-surface border px-3 py-2 text-xs space-y-1 min-w-[140px]" style={{ borderColor: "var(--border)" }}>
-      <p className="font-mono text-gray-500 mb-1.5">{label}</p>
+    <div className="bg-[var(--surface)] border px-3 py-2 text-xs space-y-1 min-w-[140px]" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-[color:var(--muted-2)] mb-1.5">{label}</p>
       {payload.map((p: any) => {
         const chg = p.value - 100;
         return (
@@ -76,10 +76,10 @@ interface Props {
 export default function PerformanceChart({ series, benchmarkSeries, loading }: Props) {
   if (loading) {
     return (
-      <div className="bg-surface border p-5" style={{ borderColor: "var(--border)" }}>
-        <p className="font-mono text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-wider">Performance Comparison</p>
-        <div className="h-64 animate-pulse bg-surface-2 flex items-center justify-center">
-          <p className="font-mono text-gray-500 text-[10px] uppercase">Loading chart data…</p>
+      <div className="bg-[var(--surface)] border p-5" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-[10px] font-bold text-[color:var(--muted)] mb-3 uppercase tracking-wider">Performance Comparison</p>
+        <div className="h-64 animate-pulse bg-[var(--surface-hover)] flex items-center justify-center">
+          <p className="font-mono text-[color:var(--muted-2)] text-[10px] uppercase">Loading chart data…</p>
         </div>
       </div>
     );
@@ -94,13 +94,13 @@ export default function PerformanceChart({ series, benchmarkSeries, loading }: P
   if (!data.length) return null;
 
   return (
-    <div className="bg-surface border p-5" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border p-5" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <p className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-wider">Performance Comparison</p>
-          <p className="font-mono text-[9px] text-gray-500 mt-0.5 uppercase">Normalized to 100 · 1-year trailing returns</p>
+          <p className="font-mono text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">Performance Comparison</p>
+          <p className="font-mono text-[9px] text-[color:var(--muted-2)] mt-0.5 uppercase">Normalized to 100 · 1-year trailing returns</p>
         </div>
-        <div className="flex items-center gap-1 text-[9px] text-gray-500 font-mono bg-surface-2 px-2 py-1 uppercase">
+        <div className="flex items-center gap-1 text-[9px] text-[color:var(--muted-2)] font-mono bg-[var(--surface-hover)] px-2 py-1 uppercase">
           Base 100
         </div>
       </div>

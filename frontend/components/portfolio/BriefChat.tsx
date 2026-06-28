@@ -23,10 +23,10 @@ export default function BriefChat({ onSubmit, loading }: Props) {
   };
 
   return (
-    <div className="bg-surface border p-5 flex flex-col gap-4" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border p-5 flex flex-col gap-4" style={{ borderColor: "var(--border)" }}>
       <div>
         <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-text mb-1">Describe Investment Goal</h3>
-        <p className="font-mono text-[9px] text-gray-500 uppercase">
+        <p className="font-mono text-[9px] text-[color:var(--muted-2)] uppercase">
           Define investment amount, horizon, and risk profile in English.
         </p>
       </div>
@@ -36,7 +36,7 @@ export default function BriefChat({ onSubmit, loading }: Props) {
         onChange={(e) => setText(e.target.value)}
         placeholder="e.g. I want to invest 5 lakhs for 5 years with moderate risk…"
         rows={4}
-        className="w-full bg-surface border px-3 py-2.5 font-mono text-xs text-text placeholder:text-gray-400 resize-none focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500 transition-colors"
+        className="w-full bg-[var(--surface)] border px-3 py-2.5 font-mono text-xs text-text placeholder:text-[color:var(--muted)] resize-none focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500 transition-colors"
         style={{ borderColor: "var(--border)" }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && e.ctrlKey) handleSubmit(text);
@@ -62,7 +62,7 @@ export default function BriefChat({ onSubmit, loading }: Props) {
           <button
             key={ex}
             onClick={() => { setText(ex); }}
-            className="block w-full text-left font-mono text-[10px] text-gray-500 hover:text-amber py-1 px-1.5 hover:bg-surface-hover transition-colors cursor-pointer"
+            className="block w-full text-left font-mono text-[10px] text-[color:var(--muted-2)] hover:text-amber py-1 px-1.5 hover:bg-[var(--surface)]-hover transition-colors cursor-pointer"
           >
             → {ex}
           </button>

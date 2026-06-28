@@ -29,7 +29,7 @@ export default function ScenarioPicker({ selected, customDrop, onSelect, onCusto
             "w-full flex items-center justify-between px-4 py-2.5 border font-mono text-xs uppercase font-bold transition-colors cursor-pointer",
             selected === s.id
               ? "bg-red-500/5 text-red-600"
-              : "bg-surface text-gray-500 hover:text-text"
+              : "bg-[var(--surface)] text-[color:var(--muted-2)] hover:text-text"
           )}
           style={{ borderColor: selected === s.id ? "var(--bear-border)" : "var(--border)" }}
         >
@@ -48,13 +48,13 @@ export default function ScenarioPicker({ selected, customDrop, onSelect, onCusto
           "px-4 py-2.5 border cursor-pointer transition-colors font-mono text-xs uppercase font-bold",
           selected === "custom"
             ? "bg-amber-glow"
-            : "bg-surface text-gray-500 hover:text-text"
+            : "bg-[var(--surface)] text-[color:var(--muted-2)] hover:text-text"
         )}
         style={{ borderColor: selected === "custom" ? "var(--amber-border)" : "var(--border)" }}
       >
         <p className="mb-2">Custom Simulation</p>
         <div className="flex items-center gap-3">
-          <input
+          <input aria-label="Input field"
             type="range"
             min={-60}
             max={-1}

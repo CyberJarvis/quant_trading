@@ -8,7 +8,7 @@ interface MetricRowProps { label: string; value: string; color?: string }
 function MetricRow({ label, value, color = "text-text" }: MetricRowProps) {
   return (
     <div className="flex justify-between items-center py-2 border-b" style={{ borderColor: "var(--border)" }}>
-      <span className="font-mono text-[10px] text-gray-500 uppercase tracking-wider">{label}</span>
+      <span className="font-mono text-[10px] text-[color:var(--muted-2)] uppercase tracking-wider">{label}</span>
       <span className={`font-mono text-xs font-bold ${color}`} style={{ fontVariantNumeric: "tabular-nums" }}>{value}</span>
     </div>
   );
@@ -16,7 +16,7 @@ function MetricRow({ label, value, color = "text-text" }: MetricRowProps) {
 
 export default function MetricsPanel({ result }: Props) {
   return (
-    <div className="bg-surface border p-5" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border p-5" style={{ borderColor: "var(--border)" }}>
       <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-text mb-4">Simulation Metrics</h3>
       <MetricRow
         label="Total Return"

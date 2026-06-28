@@ -75,11 +75,13 @@ export default function ProfilePage() {
     setName(parsed.name || 'Quant Investor')
     setEmail(parsed.email || '')
 
+    console.log('Fetching profile for:', parsed.email);
     Promise.all([
       api.getUserProfile(parsed.email),
       api.getHoldingsAnalysis(parsed.holdings || [])
     ])
       .then(([profile, holdings]) => {
+        console.log('Profile fetched:', profile);
         if (profile) {
           setCapital(String(profile.capital ?? '500000'))
           setGoal(profile.goal ?? 'growth')
@@ -101,7 +103,10 @@ export default function ProfilePage() {
       .catch((err) => {
         console.error('Graceful profile fallback:', err)
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        console.log('Setting loading to false');
+        setLoading(false);
+      })
   }, [router])
 
   const handleSaveQuantParams = async (e: React.FormEvent) => {
@@ -156,7 +161,7 @@ export default function ProfilePage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
         <div className="spinner text-amber-500 animate-spin" />
-        <p className="text-xs text-gray-500 font-mono">Fetching quant profile from database...</p>
+        <p className="text-xs text-[color:var(--muted-2)] font-mono">Fetching quant profile from database...</p>
       </div>
     )
   }
@@ -190,16 +195,16 @@ export default function ProfilePage() {
               {name.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h2 className="text-[17px] font-bold text-gray-100 leading-tight">{name}</h2>
-              <p className="text-[12px] text-gray-500 font-mono mt-1">{email}</p>
+              <h2 className="text-[17px] font-bold leading-tight" style={{ color: "var(--text)" }}>{name}</h2>
+              <p className="text-[12px] font-mono mt-1" style={{ color: "var(--muted)" }}>{email}</p>
             </div>
             <div className="w-full border-t pt-4 flex flex-col gap-2.5 text-left text-xs" style={{ borderColor: "var(--border)" }}>
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Account Tier</span>
+                <span className="text-[color:var(--muted-2)]">Account Tier</span>
                 <span className="font-bold text-amber-500 tracking-wider text-[10px]">QUANT EDGE MEMBER</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">Status</span>
+                <span className="text-[color:var(--muted-2)]">Status</span>
                 <span className="flex items-center gap-1.5 font-bold text-emerald-400 text-[10px]">
                   <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                   ACTIVE INVESTOR
@@ -210,26 +215,27 @@ export default function ProfilePage() {
 
           {/* Card B: Credential Secrets */}
           <div className="card p-5 space-y-4">
-            <div className="flex items-center gap-2 text-xs font-semibold text-gray-200">
+            <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: "var(--text)" }}>
               <Key size={14} className="text-amber-500" />
               <span>Credential Secrets</span>
             </div>
 
             {/* GROQ Key */}
             <div className="space-y-1.5">
-              <label className="text-[10px] text-gray-500 uppercase tracking-wider font-mono">Groq API Key</label>
+              <label className="text-[10px] uppercase tracking-wider font-mono" style={{ color: "var(--muted)" }}>Groq API Key</label>
               <div className="relative">
                 <input
                   type={showGroqKey ? 'text' : 'password'}
                   value="gsk_demo_zK98xWqM21P0yLaB76c5"
                   readOnly
-                  style={{ fontSize: '11.5px', fontFamily: 'JetBrains Mono' }}
-                  className="input w-full pr-8 cursor-not-allowed select-none bg-surface-2"
+                  style={{ fontSize: '11.5px', fontFamily: 'JetBrains Mono', background: "var(--surface)", borderColor: "var(--border)", color: "var(--text)" }}
+                  className="input w-full pr-8 cursor-not-allowed select-none"
                 />
                 <button
                   type="button"
                   onClick={() => setShowGroqKey(!showGroqKey)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-text transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: "var(--muted)" }}
                 >
                   {showGroqKey ? <EyeOff size={13} /> : <Eye size={13} />}
                 </button>
@@ -238,19 +244,19 @@ export default function ProfilePage() {
 
             {/* MongoDB Connection URI */}
             <div className="space-y-1.5">
-              <label className="text-[10px] text-gray-500 uppercase tracking-wider font-mono">MongoDB Connection URI</label>
+              <label className="text-[10px] text-[color:var(--muted-2)] uppercase tracking-wider font-mono">MongoDB Connection URI</label>
               <div className="relative">
                 <input
                   type={showMongoUri ? 'text' : 'password'}
                   value="mongodb+srv://pravah_user:secure_password@cluster0.mongodb.net/pravah"
                   readOnly
                   style={{ fontSize: '11.5px', fontFamily: 'JetBrains Mono' }}
-                  className="input w-full pr-8 cursor-not-allowed select-none bg-surface-2"
+                  className="input w-full pr-8 cursor-not-allowed select-none bg-[var(--surface-hover)]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowMongoUri(!showMongoUri)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-text transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[color:var(--muted-2)] hover:text-text transition-colors"
                 >
                   {showMongoUri ? <EyeOff size={13} /> : <Eye size={13} />}
                 </button>
@@ -296,7 +302,7 @@ export default function ProfilePage() {
                     min="10000"
                     value={capital}
                     onChange={(e) => setCapital(e.target.value)}
-                    className="input w-full text-base font-bold font-mono text-gray-200"
+                    className="input w-full text-base font-bold font-mono text-[color:var(--text)]"
                   />
                 </div>
 
@@ -364,19 +370,19 @@ export default function ProfilePage() {
                     onChange={(e) => setSectors(e.target.value)}
                     className="input w-full text-xs"
                   />
-                  <p className="text-[10px] text-gray-500 font-mono mt-0.5">Separate multiple industries using commas.</p>
+                  <p className="text-[10px] text-[color:var(--muted-2)] font-mono mt-0.5">Separate multiple industries using commas.</p>
                 </div>
 
                 {/* Save Feedback Alerts */}
                 {saveSuccess && (
-                  <div className="flex items-start gap-2 bg-surface-2 border p-3 font-mono text-xs text-emerald-800" style={{ borderColor: "var(--bull-border)" }}>
+                  <div className="flex items-start gap-2 bg-[var(--surface-hover)] border p-3 font-mono text-xs text-emerald-800" style={{ borderColor: "var(--bull-border)" }}>
                     <CheckCircle size={14} className="text-emerald-500 flex-shrink-0" />
                     <span className="uppercase font-bold">{saveSuccess}</span>
                   </div>
                 )}
 
                 {saveError && (
-                  <div className="flex items-start gap-2 bg-surface-2 border p-3 font-mono text-xs text-red-800" style={{ borderColor: "var(--bear-border)" }}>
+                  <div className="flex items-start gap-2 bg-[var(--surface-hover)] border p-3 font-mono text-xs text-red-800" style={{ borderColor: "var(--bear-border)" }}>
                     <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
                     <span className="uppercase font-bold">{saveError}</span>
                   </div>
@@ -409,14 +415,14 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-text">Upload Broker Statement (.csv)</p>
-                    <p className="text-[10px] text-gray-500 mt-1 font-mono">Supports Zerodha, Groww, Upstox holdings CSV files.</p>
+                    <p className="text-[10px] text-[color:var(--muted-2)] mt-1 font-mono">Supports Zerodha, Groww, Upstox holdings CSV files.</p>
                   </div>
                   <div className="flex flex-col sm:flex-row items-center gap-3 mt-1">
                     <input
                       type="file"
                       accept=".csv"
                       onChange={(e) => setImportFile(e.target.files?.[0] || null)}
-                      className="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-surface-2 file:text-text hover:file:bg-surface-hover file:text-xs file:font-semibold cursor-pointer"
+                      className="text-xs text-[color:var(--muted)] file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-[var(--surface-hover)] file:text-text hover:file:bg-[var(--surface)]-hover file:text-xs file:font-semibold cursor-pointer"
                     />
                     <button
                       onClick={handleImportCSV}
@@ -445,12 +451,12 @@ export default function ProfilePage() {
                         {
                           label: 'Imported Value',
                           value: `₹${(holdingsData.metrics?.total_value || 0).toLocaleString('en-IN')}`,
-                          accent: 'text-gray-100'
+                          accent: 'text-[color:var(--text)]'
                         },
                         {
                           label: 'Total Invested',
                           value: `₹${(holdingsData.metrics?.total_invested || 0).toLocaleString('en-IN')}`,
-                          accent: 'text-gray-300'
+                          accent: 'text-[color:var(--muted)]'
                         },
                         {
                           label: 'Unrealized P&L',
@@ -463,8 +469,8 @@ export default function ProfilePage() {
                           accent: 'text-amber-500'
                         }
                       ].map((card, i) => (
-                        <div key={i} className="bg-surface border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
-                          <p className="font-mono text-[9px] text-gray-500 uppercase tracking-widest">{card.label}</p>
+                        <div key={i} className="bg-[var(--surface)] border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
+                          <p className="font-mono text-[9px] text-[color:var(--muted-2)] uppercase tracking-widest">{card.label}</p>
                           <p className={`text-sm font-bold font-mono mt-1 ${card.accent}`} style={{ fontVariantNumeric: "tabular-nums" }}>{card.value}</p>
                         </div>
                       ))}
@@ -473,7 +479,7 @@ export default function ProfilePage() {
                     {/* Sector Splits (PieChart) + Rebalancing Insights */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Left: PieChart */}
-                      <div className="bg-surface border p-4 flex flex-col justify-between" style={{ borderColor: "var(--border)" }}>
+                      <div className="bg-[var(--surface)] border p-4 flex flex-col justify-between" style={{ borderColor: "var(--border)" }}>
                         <p className="font-mono text-xs font-bold uppercase tracking-wider text-text mb-4">Sector Allocation Split</p>
                         {pieData.length > 0 ? (
                           <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -496,23 +502,23 @@ export default function ProfilePage() {
                                 </PieChart>
                               </ResponsiveContainer>
                             </div>
-                            <div className="flex-1 grid grid-cols-2 gap-2 text-[10px] font-medium font-mono text-gray-400">
+                            <div className="flex-1 grid grid-cols-2 gap-2 text-[10px] font-medium font-mono text-[color:var(--muted)]">
                               {pieData.map((d: any, idx: number) => (
                                 <div key={idx} className="flex items-center gap-1.5">
                                   <span className="w-2 h-2 flex-shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
                                   <span className="truncate max-w-[80px]" title={d.name}>{d.name}</span>
-                                  <span className="text-gray-500">({typeof d.value === 'number' && holdingsData.metrics?.total_value ? `${((d.value / holdingsData.metrics.total_value) * 100).toFixed(0)}%` : d.value})</span>
+                                  <span className="text-[color:var(--muted-2)]">({typeof d.value === 'number' && holdingsData.metrics?.total_value ? `${((d.value / holdingsData.metrics.total_value) * 100).toFixed(0)}%` : d.value})</span>
                                 </div>
                               ))}
                             </div>
                           </div>
                         ) : (
-                          <p className="text-[11px] text-gray-500 italic py-6 text-center">No sector data to display.</p>
+                          <p className="text-[11px] text-[color:var(--muted-2)] italic py-6 text-center">No sector data to display.</p>
                         )}
                       </div>
 
                       {/* Right: AI Rebalancing Insights */}
-                      <div className="bg-surface border p-4 flex flex-col justify-between" style={{ borderColor: "var(--border)" }}>
+                      <div className="bg-[var(--surface)] border p-4 flex flex-col justify-between" style={{ borderColor: "var(--border)" }}>
                         <p className="font-mono text-xs font-bold uppercase tracking-wider text-text mb-3">AI Rebalancing Insights</p>
                         <div className="space-y-2 max-h-[110px] overflow-auto">
                           {holdingsData.rebalancing && holdingsData.rebalancing.length > 0 ? (
@@ -531,14 +537,14 @@ export default function ProfilePage() {
                                     {item.action}
                                   </span>
                                   <div className="pt-0.5">
-                                    <span className="font-semibold text-gray-200 font-mono mr-1.5">{item.symbol}</span>
-                                    <span className="text-gray-500 leading-normal">{item.reason}</span>
+                                    <span className="font-semibold text-[color:var(--text)] font-mono mr-1.5">{item.symbol}</span>
+                                    <span className="text-[color:var(--muted-2)] leading-normal">{item.reason}</span>
                                   </div>
                                 </div>
                               )
                             })
                           ) : (
-                            <div className="flex items-center gap-1.5 bg-surface border p-2.5" style={{ borderColor: "var(--border)" }}>
+                            <div className="flex items-center gap-1.5 bg-[var(--surface)] border p-2.5" style={{ borderColor: "var(--border)" }}>
                               <CheckCircle size={12} className="text-emerald-500 flex-shrink-0" />
                               <p className="font-mono text-[9px] text-emerald-600 uppercase font-bold leading-normal">Your portfolio is perfectly balanced. No adjustments required.</p>
                             </div>
@@ -552,8 +558,8 @@ export default function ProfilePage() {
                       <p className="font-mono text-xs font-bold uppercase tracking-wider text-text">Detailed Allocation List</p>
                       <div className="overflow-auto max-h-80 border" style={{ borderColor: "var(--border)" }}>
                         <table className="w-full text-xs">
-                          <thead className="sticky top-0 bg-surface-2 z-10">
-                            <tr className="border-b text-left font-mono text-[9px] font-bold text-gray-500 uppercase tracking-widest" style={{ borderColor: "var(--border)" }}>
+                          <thead className="sticky top-0 bg-[var(--surface-hover)] z-10">
+                            <tr className="border-b text-left font-mono text-[9px] font-bold text-[color:var(--muted-2)] uppercase tracking-widest" style={{ borderColor: "var(--border)" }}>
                               <th className="px-4 py-2.5">Symbol</th>
                               <th className="px-4 py-2.5">Sector</th>
                               <th className="px-4 py-2.5">Qty</th>
@@ -568,9 +574,9 @@ export default function ProfilePage() {
                               const valuation = h.totalValue || (h.qty * (h.ltp || h.current_price || h.buyPrice))
                               const pnlPct = h.pnl_pct ?? (h.ltp && h.buyPrice ? ((h.ltp - h.buyPrice) / h.buyPrice) * 100 : 0)
                               return (
-                                <tr key={i} className="hover:bg-surface-hover text-text-2">
+                                <tr key={i} className="hover:bg-[var(--surface)]-hover text-[color:var(--text-2)]">
                                   <td className="px-4 py-2.5 font-bold text-amber">{h.symbol.replace('.NS', '')}</td>
-                                  <td className="px-4 py-2.5 text-gray-500 font-sans">{h.sector}</td>
+                                  <td className="px-4 py-2.5 text-[color:var(--muted-2)] font-sans">{h.sector}</td>
                                   <td className="px-4 py-2.5">{h.qty}</td>
                                   <td className="px-4 py-2.5">₹{(h.buyPrice ?? h.avgPrice ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
                                   <td className="px-4 py-2.5 text-amber">₹{(h.ltp ?? h.current_price ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
@@ -588,11 +594,11 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   /* Empty state when no holdings */
-                  <div className="flex flex-col items-center justify-center py-16 gap-3 border bg-surface" style={{ borderColor: "var(--border)" }}>
+                  <div className="flex flex-col items-center justify-center py-16 gap-3 border bg-[var(--surface)]" style={{ borderColor: "var(--border)" }}>
                     <Database size={24} className="text-gray-600" />
                     <div>
-                      <p className="font-mono text-xs font-bold uppercase text-gray-400">No Holdings Imported Yet</p>
-                      <p className="font-mono text-[9px] text-gray-500 mt-1 uppercase">Upload a standard CSV portfolio file above to compute sector splits and rebalancing suggestions.</p>
+                      <p className="font-mono text-xs font-bold uppercase text-[color:var(--muted)]">No Holdings Imported Yet</p>
+                      <p className="font-mono text-[9px] text-[color:var(--muted-2)] mt-1 uppercase">Upload a standard CSV portfolio file above to compute sector splits and rebalancing suggestions.</p>
                     </div>
                   </div>
                 )}

@@ -256,7 +256,7 @@ export default function LandingPage() {
                       ₹{budget.toLocaleString('en-IN')}
                     </span>
                   </div>
-                  <input
+                  <input aria-label="Input field"
                     type="range" min={50000} max={1000000} step={50000}
                     value={budget} onChange={e => setBudget(Number(e.target.value))}
                     style={{ width: '100%', accentColor: 'var(--amber)', cursor: 'pointer' }}

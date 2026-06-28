@@ -271,11 +271,11 @@ export default function PortfolioPage() {
           <ReceiptBox receipt={result.receipt} metrics={result.metrics} />
         ) : (
           <div
-            className="border flex flex-col items-center justify-center min-h-[220px] gap-4 bg-surface"
+            className="border flex flex-col items-center justify-center min-h-[220px] gap-4 bg-[var(--surface)]"
             style={{ borderColor: "var(--border)" }}
           >
             <div className="text-center px-4">
-              <p className="font-mono text-xs font-bold uppercase tracking-wider text-gray-400">
+              <p className="font-mono text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
                 Analysis Pending
               </p>
               <p className="font-mono text-[9px] uppercase mt-1" style={{ color: "var(--muted-2)" }}>
@@ -289,7 +289,7 @@ export default function PortfolioPage() {
             </div>
             <button
               onClick={() => setShowImport(true)}
-              className="flex items-center gap-2 px-4 py-2 border font-mono text-[10px] uppercase font-bold text-gray-400 hover:border-amber/45 hover:text-amber transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 border font-mono text-[10px] uppercase font-bold text-[color:var(--muted)] hover:border-amber/45 hover:text-amber transition-colors cursor-pointer"
               style={{ borderColor: "var(--border)" }}
             >
               <Upload size={12} /> Import Broker Statement
@@ -358,9 +358,9 @@ export default function PortfolioPage() {
 
           {/* Optimizer comparison table */}
           {optimizerResult && (
-            <div className="bg-surface border overflow-hidden" style={{ borderColor: "var(--border)" }}>
+            <div className="bg-[var(--surface)] border overflow-hidden" style={{ borderColor: "var(--border)" }}>
               <div className="px-4 py-2 border-b flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
-                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-gray-400">Optimizer Comparison</span>
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[color:var(--muted)]">Optimizer Comparison</span>
                 <span className="font-mono text-[9px] font-bold uppercase px-2 py-0.5 bg-amber/15 text-amber">
                   Winner: {optimizerResult.winner === "pravah_bl" ? "PRAVAH B-L" : optimizerResult.winner.toUpperCase()}
                 </span>
@@ -369,23 +369,23 @@ export default function PortfolioPage() {
                 <table className="w-full font-mono text-[10px]">
                   <thead>
                     <tr className="border-b" style={{ borderColor: "var(--border)" }}>
-                      <th className="text-left px-4 py-2 text-gray-500 uppercase font-bold">Metric</th>
+                      <th className="text-left px-4 py-2 text-[color:var(--muted-2)] uppercase font-bold">Metric</th>
                       <th className="text-right px-4 py-2 text-amber font-bold uppercase">PRAVAH B-L</th>
-                      <th className="text-right px-4 py-2 text-gray-400 font-bold uppercase">Markowitz</th>
-                      <th className="text-right px-4 py-2 text-gray-400 font-bold uppercase">HRP</th>
+                      <th className="text-right px-4 py-2 text-[color:var(--muted)] font-bold uppercase">Markowitz</th>
+                      <th className="text-right px-4 py-2 text-[color:var(--muted)] font-bold uppercase">HRP</th>
                     </tr>
                   </thead>
                   <tbody>
                     {optimizerResult.comparison_table.map((row) => (
                       <tr key={row.metric} className="border-b last:border-0" style={{ borderColor: "var(--border)" }}>
-                        <td className="px-4 py-1.5 text-gray-500">{row.metric}</td>
+                        <td className="px-4 py-1.5 text-[color:var(--muted-2)]">{row.metric}</td>
                         <td className="px-4 py-1.5 text-right text-amber font-bold">
                           {row.pravah_bl != null ? row.pravah_bl.toFixed(3) : "—"}
                         </td>
-                        <td className="px-4 py-1.5 text-right text-gray-300">
+                        <td className="px-4 py-1.5 text-right text-[color:var(--muted)]">
                           {row.markowitz != null ? row.markowitz.toFixed(3) : "—"}
                         </td>
-                        <td className="px-4 py-1.5 text-right text-gray-300">
+                        <td className="px-4 py-1.5 text-right text-[color:var(--muted)]">
                           {row.hrp != null ? row.hrp.toFixed(3) : "—"}
                         </td>
                       </tr>
@@ -398,19 +398,19 @@ export default function PortfolioPage() {
 
           {/* AI Risk Brief */}
           {riskBrief && (
-            <div className="bg-surface border overflow-hidden" style={{ borderColor: "var(--border)" }}>
+            <div className="bg-[var(--surface)] border overflow-hidden" style={{ borderColor: "var(--border)" }}>
               <div className="px-4 py-2 border-b flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
-                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-gray-400">AI Risk Brief</span>
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-[color:var(--muted)]">AI Risk Brief</span>
                 <span className="font-mono text-[8px] text-gray-600 uppercase">{riskBrief.model}</span>
               </div>
               <div className="p-4 space-y-3">
-                <p className="font-mono text-[11px] text-gray-200 leading-relaxed">{riskBrief.brief}</p>
+                <p className="font-mono text-[11px] text-[color:var(--text)] leading-relaxed">{riskBrief.brief}</p>
                 {riskBrief.risk_flags?.length > 0 && (
                   <div>
                     <p className="font-mono text-[9px] font-bold uppercase text-red-400 mb-1">Risk Flags</p>
                     <ul className="space-y-0.5">
                       {riskBrief.risk_flags.map((f, i) => (
-                        <li key={i} className="font-mono text-[10px] text-gray-400 flex gap-1.5">
+                        <li key={i} className="font-mono text-[10px] text-[color:var(--muted)] flex gap-1.5">
                           <span className="text-red-400">▸</span>{f}
                         </li>
                       ))}
@@ -422,7 +422,7 @@ export default function PortfolioPage() {
                     <p className="font-mono text-[9px] font-bold uppercase text-emerald-400 mb-1">Opportunities</p>
                     <ul className="space-y-0.5">
                       {riskBrief.opportunities.map((o, i) => (
-                        <li key={i} className="font-mono text-[10px] text-gray-400 flex gap-1.5">
+                        <li key={i} className="font-mono text-[10px] text-[color:var(--muted)] flex gap-1.5">
                           <span className="text-emerald-400">▸</span>{o}
                         </li>
                       ))}

@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, PieChart, LineChart,
   FlaskConical, Zap, Activity, User
@@ -17,6 +18,20 @@ const NAV = [
 
 export default function Sidebar() {
   const path = usePathname()
+  const router = useRouter()
+  const [isReady, setIsReady] = useState(false)
+
+  useEffect(() => {
+    const user = localStorage.getItem('pravah_user')
+    if (!user) {
+      router.push('/login')
+    } else {
+      setIsReady(true)
+    }
+  }, [router])
+
+  if (!isReady) return null // Avoid flash of sidebar content before redirect
+
 
   return (
     <aside className="app-sidebar" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

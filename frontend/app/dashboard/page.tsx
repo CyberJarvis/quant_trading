@@ -9,6 +9,7 @@ import MetricCard from "@/components/dashboard/MetricCard";
 import EquityCurve from "@/components/dashboard/EquityCurve";
 import SignalFeed from "@/components/dashboard/SignalFeed";
 import VixGauge from "@/components/dashboard/VixGauge";
+import NewsIntelligence from "@/components/dashboard/NewsIntelligence";
 
 function isValidBacktest(bt: unknown): bt is BacktestResult {
   return (
@@ -109,7 +110,7 @@ export default function DashboardPage() {
 
       {/* Equity curve */}
       <div
-        className="border overflow-hidden bg-surface"
+        className="border overflow-hidden bg-[var(--surface)]"
         style={{ borderColor: "var(--border)" }}
       >
         <div className="px-5 py-3 border-b" style={{ borderColor: "var(--border)" }}>
@@ -158,7 +159,7 @@ export default function DashboardPage() {
                 <button
                   onClick={() => setPage(p => Math.max(0, p - 1))}
                   disabled={page === 0}
-                  className="w-6 h-6 border flex items-center justify-center disabled:opacity-30 hover:bg-surface-hover transition-colors cursor-pointer"
+                  className="w-6 h-6 border flex items-center justify-center disabled:opacity-30 hover:bg-[var(--surface)]-hover transition-colors cursor-pointer"
                   style={{ borderColor: "var(--border)" }}
                 >
                   <ChevronLeft size={12} style={{ color: "var(--text)" }} />
@@ -166,7 +167,7 @@ export default function DashboardPage() {
                 <button
                   onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                   disabled={page >= totalPages - 1}
-                  className="w-6 h-6 border flex items-center justify-center disabled:opacity-30 hover:bg-surface-hover transition-colors cursor-pointer"
+                  className="w-6 h-6 border flex items-center justify-center disabled:opacity-30 hover:bg-[var(--surface)]-hover transition-colors cursor-pointer"
                   style={{ borderColor: "var(--border)" }}
                 >
                   <ChevronRight size={12} style={{ color: "var(--text)" }} />
@@ -202,7 +203,7 @@ export default function DashboardPage() {
 
           {regime && (
             <div
-              className="mt-3 border px-4 py-3 bg-surface"
+              className="mt-3 border px-4 py-3 bg-[var(--surface)]"
               style={{ borderColor: "var(--border)" }}
             >
               <p className="font-mono text-[9px] uppercase tracking-widest mb-2" style={{ color: "var(--muted)" }}>
@@ -235,6 +236,11 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Market Intelligence — full-width news feed */}
+      <div>
+        <NewsIntelligence />
       </div>
     </div>
   );

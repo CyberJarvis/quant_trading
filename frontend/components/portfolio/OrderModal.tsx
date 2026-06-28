@@ -49,15 +49,15 @@ export default function OrderModal({ symbol, displaySymbol, currentPrice, sugges
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(15,23,42,0.6)", backdropFilter: "blur(4px)" }}>
-      <div className="w-full max-w-sm bg-surface border shadow-2xl" style={{ borderColor: "var(--border)" }}>
+      <div className="w-full max-w-sm bg-[var(--surface)] border shadow-2xl" style={{ borderColor: "var(--border)" }}>
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--border)" }}>
           <div>
             <p className="font-mono text-xs font-bold text-text uppercase">{displaySymbol}</p>
-            <p className="font-mono text-[9px] text-gray-500 mt-0.5 uppercase">NSE · DELIVERY</p>
+            <p className="font-mono text-[9px] text-[color:var(--muted-2)] mt-0.5 uppercase">NSE · DELIVERY</p>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-text transition-colors cursor-pointer">
+          <button onClick={onClose} className="text-[color:var(--muted-2)] hover:text-text transition-colors cursor-pointer">
             <X size={16} />
           </button>
         </div>
@@ -70,10 +70,10 @@ export default function OrderModal({ symbol, displaySymbol, currentPrice, sugges
             </div>
             <div>
               <p className="font-mono text-xs font-bold uppercase text-text">Order Executed</p>
-              <p className="font-mono text-[9px] text-gray-500 uppercase mt-1">Mock · simulated execution</p>
+              <p className="font-mono text-[9px] text-[color:var(--muted-2)] uppercase mt-1">Mock · simulated execution</p>
             </div>
 
-            <div className="w-full bg-surface-2 border p-4 space-y-2.5 text-left" style={{ borderColor: "var(--border)" }}>
+            <div className="w-full bg-[var(--surface-hover)] border p-4 space-y-2.5 text-left" style={{ borderColor: "var(--border)" }}>
               {[
                 ["Order ID",    result.order_id],
                 ["Symbol",      result.display_symbol],
@@ -84,7 +84,7 @@ export default function OrderModal({ symbol, displaySymbol, currentPrice, sugges
                 ["Status",      result.status],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between font-mono text-[10px] uppercase">
-                  <span className="text-gray-500">{label}</span>
+                  <span className="text-[color:var(--muted-2)]">{label}</span>
                   <span className={`font-bold ${label === "Side" ? (value === "BUY" ? "text-emerald-500" : "text-red-500") : label === "Status" ? "text-emerald-500" : "text-text"}`}>
                     {value}
                   </span>
@@ -94,7 +94,7 @@ export default function OrderModal({ symbol, displaySymbol, currentPrice, sugges
 
             <button
               onClick={onClose}
-              className="w-full py-2.5 border font-mono text-xs uppercase font-bold bg-surface hover:bg-surface-hover text-text transition-colors cursor-pointer"
+              className="w-full py-2.5 border font-mono text-xs uppercase font-bold bg-[var(--surface)] hover:bg-[var(--surface)]-hover text-text transition-colors cursor-pointer"
               style={{ borderColor: "var(--border)" }}
             >
               Close Dialog
@@ -123,30 +123,30 @@ export default function OrderModal({ symbol, displaySymbol, currentPrice, sugges
             </div>
 
             {/* Price (read-only) */}
-            <div className="bg-surface-2 border px-4 py-3" style={{ borderColor: "var(--border)" }}>
-              <p className="font-mono text-[9px] text-gray-500 uppercase tracking-wider mb-1">Market Price</p>
+            <div className="bg-[var(--surface-hover)] border px-4 py-3" style={{ borderColor: "var(--border)" }}>
+              <p className="font-mono text-[9px] text-[color:var(--muted-2)] uppercase tracking-wider mb-1">Market Price</p>
               <p className="font-mono text-base font-bold text-text">
                 ₹{currentPrice.toLocaleString("en-IN")}
               </p>
             </div>
 
             {/* Qty */}
-            <div className="bg-surface-2 border px-4 py-3" style={{ borderColor: "var(--border)" }}>
-              <p className="font-mono text-[9px] text-gray-500 uppercase tracking-wider mb-2">Quantity</p>
+            <div className="bg-[var(--surface-hover)] border px-4 py-3" style={{ borderColor: "var(--border)" }}>
+              <p className="font-mono text-[9px] text-[color:var(--muted-2)] uppercase tracking-wider mb-2">Quantity</p>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setQty(q => Math.max(1, q - 1))}
-                  className="w-8 h-8 border bg-surface text-text hover:bg-surface-hover transition-colors font-mono font-bold cursor-pointer"
+                  className="w-8 h-8 border bg-[var(--surface)] text-text hover:bg-[var(--surface)]-hover transition-colors font-mono font-bold cursor-pointer"
                   style={{ borderColor: "var(--border)" }}
                 >−</button>
-                <input
+                <input aria-label="Input field"
                   type="number" min={1} value={qty}
                   onChange={e => setQty(Math.max(1, parseInt(e.target.value) || 1))}
                   className="flex-1 bg-transparent text-center text-lg font-mono font-bold text-text outline-none"
                 />
                 <button
                   onClick={() => setQty(q => q + 1)}
-                  className="w-8 h-8 border bg-surface text-text hover:bg-surface-hover transition-colors font-mono font-bold cursor-pointer"
+                  className="w-8 h-8 border bg-[var(--surface)] text-text hover:bg-[var(--surface)]-hover transition-colors font-mono font-bold cursor-pointer"
                   style={{ borderColor: "var(--border)" }}
                 >+</button>
               </div>
@@ -154,7 +154,7 @@ export default function OrderModal({ symbol, displaySymbol, currentPrice, sugges
 
             {/* Total */}
             <div className="flex justify-between px-1 font-mono text-[10px] uppercase">
-              <span className="text-gray-500">Estimated Total</span>
+              <span className="text-[color:var(--muted-2)]">Estimated Total</span>
               <span className="font-bold text-text">{formatINR(totalValue)}</span>
             </div>
 

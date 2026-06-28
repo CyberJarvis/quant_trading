@@ -161,18 +161,18 @@ export default function MacdChart({ data, onChartInit }: { data: MacdPoint[]; on
   const bullish = hasValues && last.macd > last.signal;
 
   return (
-    <div className="bg-surface border overflow-hidden" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border overflow-hidden" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between px-4 py-2 border-b" style={{ borderColor: "var(--border)" }}>
-        <span className="font-mono text-[9px] font-bold text-gray-400 uppercase tracking-widest">MACD (12, 26, 9)</span>
+        <span className="font-mono text-[9px] font-bold text-[color:var(--muted)] uppercase tracking-widest">MACD (12, 26, 9)</span>
         <div className="flex items-center gap-3 text-[10px] font-mono">
           <span className="flex items-center gap-1">
             <span className="w-3 h-0.5 bg-blue-400 inline-block" />
-            <span className="text-gray-500 text-[9px] uppercase font-bold">MACD</span>
+            <span className="text-[color:var(--muted-2)] text-[9px] uppercase font-bold">MACD</span>
             <span className="text-blue-400 font-bold">{hasValues ? last.macd.toFixed(3) : "—"}</span>
           </span>
           <span className="flex items-center gap-1">
             <span className="w-3 h-0.5 bg-amber inline-block" />
-            <span className="text-gray-500 text-[9px] uppercase font-bold">Sig</span>
+            <span className="text-[color:var(--muted-2)] text-[9px] uppercase font-bold">Sig</span>
             <span className="text-amber font-bold">{hasValues ? last.signal.toFixed(3) : "—"}</span>
           </span>
           {hasValues && (

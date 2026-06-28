@@ -41,7 +41,7 @@ export default function BacktestPage() {
     <div className="space-y-5 max-w-7xl mx-auto">
       <div>
         <h1 className="font-mono text-lg font-bold uppercase tracking-wider text-text">Backtest Desk</h1>
-        <p className="font-mono text-[10px] text-gray-500 mt-0.5 uppercase">
+        <p className="font-mono text-[10px] text-[color:var(--muted-2)] mt-0.5 uppercase">
           Test quantitative strategies against historical Nifty 50 data
         </p>
       </div>
@@ -57,13 +57,13 @@ export default function BacktestPage() {
             </div>
           )}
           {!result && !loading && (
-            <div className="h-64 bg-surface border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
-              <p className="font-mono text-xs text-gray-500 uppercase">Configure and run a backtest to see results</p>
+            <div className="h-64 bg-[var(--surface)] border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+              <p className="font-mono text-xs text-[color:var(--muted-2)] uppercase">Configure and run a backtest to see results</p>
             </div>
           )}
           {loading && (
-            <div className="h-64 bg-surface border flex items-center justify-center animate-pulse" style={{ borderColor: "var(--border)" }}>
-              <p className="font-mono text-xs text-gray-500 uppercase">Running backtest…</p>
+            <div className="h-64 bg-[var(--surface)] border flex items-center justify-center animate-pulse" style={{ borderColor: "var(--border)" }}>
+              <p className="font-mono text-xs text-[color:var(--muted-2)] uppercase">Running backtest…</p>
             </div>
           )}
           {result && !loading && (

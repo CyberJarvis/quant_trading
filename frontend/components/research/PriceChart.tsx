@@ -17,12 +17,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   const change = d.close - d.open;
   const changePct = (change / d.open) * 100;
   return (
-    <div className="bg-surface border px-3 py-2 text-xs space-y-0.5" style={{ borderColor: "var(--border)" }}>
-      <p className="font-mono text-gray-500 mb-1">{label}</p>
-      <p className="font-mono text-text-2">O <span className="font-bold text-text">{d.open.toFixed(2)}</span></p>
-      <p className="font-mono text-text-2">H <span className="font-bold text-emerald-500">{d.high.toFixed(2)}</span></p>
-      <p className="font-mono text-text-2">L <span className="font-bold text-red-500">{d.low.toFixed(2)}</span></p>
-      <p className="font-mono text-text-2">C <span className="font-bold text-amber">{d.close.toFixed(2)}</span></p>
+    <div className="bg-[var(--surface)] border px-3 py-2 text-xs space-y-0.5" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-[color:var(--muted-2)] mb-1">{label}</p>
+      <p className="font-mono text-[color:var(--text-2)]">O <span className="font-bold text-text">{d.open.toFixed(2)}</span></p>
+      <p className="font-mono text-[color:var(--text-2)]">H <span className="font-bold text-emerald-500">{d.high.toFixed(2)}</span></p>
+      <p className="font-mono text-[color:var(--text-2)]">L <span className="font-bold text-red-500">{d.low.toFixed(2)}</span></p>
+      <p className="font-mono text-[color:var(--text-2)]">C <span className="font-bold text-amber">{d.close.toFixed(2)}</span></p>
       <p className={`font-mono mt-1 font-bold ${changePct >= 0 ? "text-emerald-500" : "text-red-500"}`}>
         {changePct >= 0 ? "+" : ""}{changePct.toFixed(2)}%
       </p>
@@ -33,8 +33,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export default function PriceChart({ candles, symbol }: Props) {
   if (!candles.length) {
     return (
-      <div className="h-72 bg-surface border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
-        <p className="font-mono text-xs text-gray-500 uppercase">Select a stock to view chart</p>
+      <div className="h-72 bg-[var(--surface)] border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-xs text-[color:var(--muted-2)] uppercase">Select a stock to view chart</p>
       </div>
     );
   }
@@ -48,9 +48,9 @@ export default function PriceChart({ candles, symbol }: Props) {
   const domain = [minClose * 0.99, maxClose * 1.01];
 
   return (
-    <div className="bg-surface border p-4" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border p-4" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between mb-3">
-        <p className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+        <p className="font-mono text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">
           {symbol.replace(".NS", "")} Price History
         </p>
         <p className="font-mono text-lg font-bold text-emerald-500" style={{ fontVariantNumeric: "tabular-nums" }}>

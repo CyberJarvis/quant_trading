@@ -22,7 +22,7 @@ export default function MetricCard({ label, value, unit, trend, description, mon
 
   return (
     <div
-      className="border px-4 py-3 bg-surface"
+      className="border px-4 py-3 bg-[var(--surface)]"
       style={{ borderColor: "var(--border)" }}
     >
       <div className="flex items-center justify-between mb-1.5">

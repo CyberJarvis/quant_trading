@@ -2,7 +2,7 @@ import type { StockSignal, PredictionInterval } from "@/lib/types";
 import { signalBg } from "@/lib/utils";
 
 function label(v: string | undefined): string {
-  if (!v) return "text-gray-400";
+  if (!v) return "text-[color:var(--muted)]";
   if (v.includes("BUY") || v.includes("GOLDEN") || v === "OVERSOLD")
     return "text-emerald-400";
   if (v === "BULLISH" || v === "BULLISH CROSSOVER")
@@ -13,7 +13,7 @@ function label(v: string | undefined): string {
     return "text-orange-400";   // still positive territory but losing momentum
   if (v.includes("SELL") || v.includes("DEATH") || v.includes("BEARISH") || v === "OVERBOUGHT")
     return "text-red-400";
-  if (v === "NEUTRAL") return "text-gray-400";
+  if (v === "NEUTRAL") return "text-[color:var(--muted)]";
   return "text-yellow-400";
 }
 
@@ -22,7 +22,7 @@ function Row({ k, v, sub, color }: { k: string; v: string; sub?: string; color?:
     <div className="py-1.5 border-b" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between font-mono text-[10px]">
         <span style={{ color: "var(--muted)" }}>{k}</span>
-        <span className={`font-bold ${color ?? "text-gray-300"}`} style={{ fontVariantNumeric: "tabular-nums" }}>{v}</span>
+        <span className={`font-bold ${color ?? "text-[color:var(--muted)]"}`} style={{ fontVariantNumeric: "tabular-nums" }}>{v}</span>
       </div>
       {sub && <p className="font-mono text-[8px] mt-0.5 text-right uppercase" style={{ color: "var(--muted-2)" }}>{sub}</p>}
     </div>
@@ -43,15 +43,15 @@ interface Props {
 export default function SignalsPanel({ signal, error }: Props) {
   if (error) {
     return (
-      <div className="bg-surface border p-5 h-full flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+      <div className="bg-[var(--surface)] border p-5 h-full flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
         <p className="font-mono text-red-400 text-xs text-center">{error}</p>
       </div>
     );
   }
   if (!signal || signal.composite_score === undefined) {
     return (
-      <div className="bg-surface border p-5 h-full flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
-        <p className="font-mono text-gray-500 text-xs text-center uppercase">Select stock to view signal</p>
+      <div className="bg-[var(--surface)] border p-5 h-full flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-[color:var(--muted-2)] text-xs text-center uppercase">Select stock to view signal</p>
       </div>
     );
   }
@@ -65,15 +65,15 @@ export default function SignalsPanel({ signal, error }: Props) {
     : null;
 
   return (
-    <div className="bg-surface border overflow-y-auto h-full" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border overflow-y-auto h-full" style={{ borderColor: "var(--border)" }}>
       {/* Verdict header */}
       <div className="px-4 pt-4 pb-3 border-b text-center" style={{ borderColor: "var(--border)" }}>
-        <p className="font-mono text-[9px] text-gray-500 uppercase tracking-widest mb-2">Composite Signal</p>
+        <p className="font-mono text-[9px] text-[color:var(--muted-2)] uppercase tracking-widest mb-2">Composite Signal</p>
         <span className={`font-mono text-[10px] font-bold px-2.5 py-1 border ${signalBg(signal.verdict)}`}>
           {signal.verdict}
         </span>
-        <p className="font-mono font-bold text-2xl mt-3 text-gray-100">
-          {score.toFixed(1)}<span className="text-xs text-gray-500 font-normal">/10</span>
+        <p className="font-mono font-bold text-2xl mt-3 text-[color:var(--text)]">
+          {score.toFixed(1)}<span className="text-xs text-[color:var(--muted-2)] font-normal">/10</span>
         </p>
         {/* Score bar */}
         <div className="mt-2.5 h-1.5 bg-border overflow-hidden">
@@ -104,7 +104,7 @@ export default function SignalsPanel({ signal, error }: Props) {
         <Row
           k="RSI Value"
           v={signal.rsi != null ? signal.rsi.toFixed(1) : "—"}
-          color={signal.rsi > 70 ? "text-red-400" : signal.rsi < 30 ? "text-emerald-400" : "text-gray-200"}
+          color={signal.rsi > 70 ? "text-red-400" : signal.rsi < 30 ? "text-emerald-400" : "text-[color:var(--text)]"}
         />
         <Row k="Signal" v={signal.rsi_signal ?? "—"} color={label(signal.rsi_signal)} />
 
@@ -146,10 +146,10 @@ export default function SignalsPanel({ signal, error }: Props) {
         {/* ── Bollinger Bands ───────────────────────────────────────── */}
         <Section title="Bollinger Bands (20, 2)" />
         <Row k="Upper Band" v={signal.bb_upper != null ? `₹${signal.bb_upper.toLocaleString("en-IN")}` : "—"} color="text-red-300" />
-        <Row k="Middle (SMA20)" v={signal.bb_middle != null ? `₹${signal.bb_middle.toLocaleString("en-IN")}` : "—"} color="text-gray-300" />
+        <Row k="Middle (SMA20)" v={signal.bb_middle != null ? `₹${signal.bb_middle.toLocaleString("en-IN")}` : "—"} color="text-[color:var(--muted)]" />
         <Row k="Lower Band" v={signal.bb_lower != null ? `₹${signal.bb_lower.toLocaleString("en-IN")}` : "—"} color="text-emerald-300" />
         {bbWidth != null && (
-          <Row k="Band Width" v={`${bbWidth.toFixed(1)}%`} color="text-gray-400"
+          <Row k="Band Width" v={`${bbWidth.toFixed(1)}%`} color="text-[color:var(--muted)]"
             sub={bbPos != null ? `Price at ${bbPos.toFixed(0)}% of band` : undefined}
           />
         )}
@@ -170,7 +170,7 @@ export default function SignalsPanel({ signal, error }: Props) {
 function CQRBlock({ pi }: { pi: PredictionInterval | null | undefined }) {
   if (!pi) {
     return (
-      <div className="py-2 font-mono text-[9px] text-gray-500 uppercase text-center">
+      <div className="py-2 font-mono text-[9px] text-[color:var(--muted-2)] uppercase text-center">
         Insufficient data for CQR
       </div>
     );
@@ -199,19 +199,19 @@ function CQRBlock({ pi }: { pi: PredictionInterval | null | undefined }) {
       {/* Three-value row */}
       <div className="grid grid-cols-3 text-center">
         <div>
-          <p className="font-mono text-[8px] text-gray-500 uppercase">Lower</p>
+          <p className="font-mono text-[8px] text-[color:var(--muted-2)] uppercase">Lower</p>
           <p className={`font-mono text-[11px] font-bold ${pi.lower_pct < 0 ? "text-red-400" : "text-emerald-400"}`}>
             {pi.lower_pct >= 0 ? "+" : ""}{pi.lower_pct.toFixed(1)}%
           </p>
         </div>
         <div>
-          <p className="font-mono text-[8px] text-gray-500 uppercase">Realist</p>
+          <p className="font-mono text-[8px] text-[color:var(--muted-2)] uppercase">Realist</p>
           <p className={`font-mono text-[11px] font-bold ${pi.pred_realist >= 0 ? "text-emerald-400" : "text-red-400"}`}>
             {pi.pred_realist >= 0 ? "+" : ""}{pi.pred_realist.toFixed(1)}%
           </p>
         </div>
         <div>
-          <p className="font-mono text-[8px] text-gray-500 uppercase">Upper</p>
+          <p className="font-mono text-[8px] text-[color:var(--muted-2)] uppercase">Upper</p>
           <p className={`font-mono text-[11px] font-bold ${pi.upper_pct >= 0 ? "text-emerald-400" : "text-red-400"}`}>
             {pi.upper_pct >= 0 ? "+" : ""}{pi.upper_pct.toFixed(1)}%
           </p>

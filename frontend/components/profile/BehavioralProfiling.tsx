@@ -92,7 +92,7 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
             >
               <div>
                 <p className="text-xs font-bold text-text font-mono uppercase">{exp.label}</p>
-                <p className="text-[10.5px] text-gray-500 mt-1 leading-relaxed">{exp.desc}</p>
+                <p className="text-[10.5px] text-[color:var(--muted-2)] mt-1 leading-relaxed">{exp.desc}</p>
               </div>
               {pastExperience === exp.id && (
                 <div className="absolute top-3 right-3">
@@ -125,7 +125,7 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
             >
               <div>
                 <p className="text-xs font-bold text-text font-mono uppercase">{style.label}</p>
-                <p className="text-[10.5px] text-gray-500 mt-1 leading-relaxed">{style.desc}</p>
+                <p className="text-[10.5px] text-[color:var(--muted-2)] mt-1 leading-relaxed">{style.desc}</p>
               </div>
               {investmentStyle === style.id && (
                 <div className="absolute top-3 right-3">
@@ -157,7 +157,7 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
             >
               <div>
                 <p className="text-xs font-bold text-text font-mono uppercase">{react.label}</p>
-                <p className="text-[10.5px] text-gray-500 mt-1 leading-relaxed">{react.desc}</p>
+                <p className="text-[10.5px] text-[color:var(--muted-2)] mt-1 leading-relaxed">{react.desc}</p>
               </div>
               {lossBehavior === react.id && (
                 <div className="absolute top-3 right-3">
@@ -180,7 +180,7 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
             {financialKnowledge}: {KNOWLEDGE_LABELS[financialKnowledge]}
           </span>
         </div>
-        <div className="bg-surface border p-4" style={{ borderColor: "var(--border)" }}>
+        <div className="bg-[var(--surface)] border p-4" style={{ borderColor: "var(--border)" }}>
           <input
             type="range"
             min="1"
@@ -190,7 +190,7 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
             onChange={(e) => setFinancialKnowledge(parseInt(e.target.value))}
             className="w-full h-1.5 bg-border-2 appearance-none cursor-pointer accent-amber-500"
           />
-          <div className="flex justify-between text-[9px] text-gray-500 mt-2 font-mono uppercase">
+          <div className="flex justify-between text-[9px] text-[color:var(--muted-2)] mt-2 font-mono uppercase">
             <span>1: Novice</span>
             <span>2: Familiar</span>
             <span>3: Proficient</span>
@@ -221,7 +221,7 @@ export default function BehavioralProfiling({ email, initialData, onSaveSuccess 
             >
               <div>
                 <p className="text-xs font-bold text-text font-mono uppercase">{tax.label}</p>
-                <p className="text-[10.5px] text-gray-500 mt-1 leading-relaxed">{tax.desc}</p>
+                <p className="text-[10.5px] text-[color:var(--muted-2)] mt-1 leading-relaxed">{tax.desc}</p>
               </div>
               {taxSlab === tax.id && (
                 <div className="absolute top-3 right-3">

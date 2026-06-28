@@ -298,7 +298,7 @@ function BrokerCard({ broker, onClick }: { broker: BrokerConfig; onClick: () => 
   return (
     <button
       onClick={onClick}
-      className="group flex flex-col items-center gap-2 p-4 border bg-surface hover:border-border-2 hover:bg-surface-hover transition-all text-center cursor-pointer"
+      className="group flex flex-col items-center gap-2 p-4 border bg-[var(--surface)] hover:border-[var(--border)]-2 hover:bg-[var(--surface)]-hover transition-all text-center cursor-pointer"
       style={{ borderColor: "var(--border)", "--accent": broker.color } as any}
     >
       <div
@@ -309,10 +309,10 @@ function BrokerCard({ broker, onClick }: { broker: BrokerConfig; onClick: () => 
           {broker.name.split(" ").map(w => w[0]).join("")}
         </span>
       </div>
-      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-gray-300 group-hover:text-white transition-colors leading-tight">
+      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] group-hover:text-white transition-colors leading-tight">
         {broker.name}
       </span>
-      <ChevronRight size={11} className="text-gray-600 group-hover:text-gray-400 transition-colors" />
+      <ChevronRight size={11} className="text-gray-600 group-hover:text-[color:var(--muted)] transition-colors" />
     </button>
   );
 }
@@ -324,8 +324,8 @@ function StepItem({ n, title, detail }: { n: number; title: string; detail: stri
         <span className="font-mono text-[10px] font-bold text-amber">{n}</span>
       </div>
       <div className="pt-0.5">
-        <p className="font-mono text-xs font-bold text-gray-200 uppercase">{title}</p>
-        <p className="font-mono text-[10px] text-gray-500 mt-0.5 leading-relaxed">{detail}</p>
+        <p className="font-mono text-xs font-bold text-[color:var(--text)] uppercase">{title}</p>
+        <p className="font-mono text-[10px] text-[color:var(--muted-2)] mt-0.5 leading-relaxed">{detail}</p>
       </div>
     </div>
   );
@@ -521,7 +521,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(3,7,18,0.85)" }}>
-      <div className="w-full max-w-2xl bg-surface border overflow-hidden shadow-xl" style={{ borderColor: "var(--border)" }}>
+      <div className="w-full max-w-2xl bg-[var(--surface)] border overflow-hidden shadow-xl" style={{ borderColor: "var(--border)" }}>
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "var(--border)" }}>
@@ -529,14 +529,14 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
             {step !== "broker" && (
               <button
                 onClick={() => { setStep(step === "preview" ? "upload" : "broker"); setParsed([]); setParseError(null); }}
-                className="text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                className="text-[color:var(--muted-2)] hover:text-[color:var(--muted)] transition-colors cursor-pointer"
               >
                 <ArrowLeft size={14} />
               </button>
             )}
             <div>
-              <p className="font-mono text-xs font-bold uppercase text-gray-100">Import Holdings</p>
-              <p className="font-mono text-[9px] text-gray-500 mt-0.5 uppercase">
+              <p className="font-mono text-xs font-bold uppercase text-[color:var(--text)]">Import Holdings</p>
+              <p className="font-mono text-[9px] text-[color:var(--muted-2)] mt-0.5 uppercase">
                 {step === "broker"       && "Select your broker"}
                 {step === "upload"       && broker?.name + " — Export & Upload"}
                 {step === "preview"      && `${parsed.length} holdings found · ${formatCurrency(totalPortfolioValue)} total value`}
@@ -562,7 +562,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                 />
               ))}
             </div>
-            <button onClick={onClose} className="text-gray-600 hover:text-gray-300 transition-colors">
+            <button onClick={onClose} className="text-gray-600 hover:text-[color:var(--muted)] transition-colors">
               <X size={18} />
             </button>
           </div>
@@ -585,9 +585,9 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                 </div>
                 <div className="text-left">
                   <p className="font-mono text-xs font-bold uppercase text-amber">Angel One — Live Connect</p>
-                  <p className="text-[10px] text-gray-500 mt-0.5 font-mono">Pull holdings directly from your Angel One account. No CSV needed.</p>
+                  <p className="text-[10px] text-[color:var(--muted-2)] mt-0.5 font-mono">Pull holdings directly from your Angel One account. No CSV needed.</p>
                 </div>
-                <ChevronRight size={14} className="text-gray-500 group-hover:text-amber ml-auto transition-colors" />
+                <ChevronRight size={14} className="text-[color:var(--muted-2)] group-hover:text-amber ml-auto transition-colors" />
               </button>
 
               {liveError && (
@@ -597,7 +597,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                 </div>
               )}
 
-              <p className="text-xs text-gray-500 mb-3">Or upload a CSV from any broker:</p>
+              <p className="text-xs text-[color:var(--muted-2)] mb-3">Or upload a CSV from any broker:</p>
               <div className="grid grid-cols-3 gap-3">
                 {BROKERS.map((b) => (
                   <BrokerCard key={b.id} broker={b} onClick={() => handleBrokerSelect(b)} />
@@ -610,7 +610,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
           {step === "upload" && broker && (
             <div className="space-y-5">
               {/* Steps */}
-              <div className="bg-surface border p-4 space-y-4" style={{ borderColor: "var(--border)" }}>
+              <div className="bg-[var(--surface)] border p-4 space-y-4" style={{ borderColor: "var(--border)" }}>
                 <div className="flex items-center gap-2 mb-1">
                   <div
                     className="w-5 h-5 rounded flex items-center justify-center text-[9px] font-black text-white"
@@ -618,7 +618,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                   >
                     {broker.name.split(" ").map(w => w[0]).join("")}
                   </div>
-                  <p className="text-xs font-semibold text-gray-300">How to export from {broker.name}</p>
+                  <p className="text-xs font-semibold text-[color:var(--muted)]">How to export from {broker.name}</p>
                 </div>
                 {broker.steps.map((s, i) => (
                   <StepItem key={i} n={i + 1} title={s.title} detail={s.detail} />
@@ -644,14 +644,14 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                   <Upload size={20} style={{ color: broker.color }} />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium text-gray-300">
+                  <p className="text-sm font-medium text-[color:var(--muted)]">
                     {fileName ? fileName : "Drop your CSV file here"}
                   </p>
                   <p className="text-[11px] text-gray-600 mt-1">
                     or click to browse · {broker.fileType === "csv" ? "CSV only" : "CSV or Excel"}
                   </p>
                 </div>
-                <input
+                <input aria-label="Input field"
                   ref={fileRef}
                   type="file"
                   accept=".csv,.xls,.xlsx"
@@ -674,10 +674,10 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
             <div className="space-y-4">
               <div className="overflow-auto max-h-72 border" style={{ borderColor: "var(--border)" }}>
                 <table className="w-full text-xs">
-                  <thead className="sticky top-0 bg-surface-2">
+                  <thead className="sticky top-0 bg-[var(--surface-hover)]">
                     <tr className="border-b" style={{ borderColor: "var(--border)" }}>
                       {["Symbol", "Qty", "Avg Price", "Current Price", "Value", "Weight"].map((h) => (
-                        <th key={h} className="px-4 py-2.5 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        <th key={h} className="px-4 py-2.5 text-left text-[10px] font-medium text-[color:var(--muted-2)] uppercase tracking-wider whitespace-nowrap">
                           {h}
                         </th>
                       ))}
@@ -689,12 +689,12 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                       return (
                         <tr key={h.symbol} className="hover:bg-white/[0.02]">
                           <td className="px-4 py-2.5 font-mono font-semibold text-amber-400">{h.displaySymbol}</td>
-                          <td className="px-4 py-2.5 font-mono text-gray-300">{h.qty}</td>
-                          <td className="px-4 py-2.5 font-mono text-gray-300">₹{h.avgPrice.toLocaleString("en-IN")}</td>
-                          <td className="px-4 py-2.5 font-mono text-gray-400">
+                          <td className="px-4 py-2.5 font-mono text-[color:var(--muted)]">{h.qty}</td>
+                          <td className="px-4 py-2.5 font-mono text-[color:var(--muted)]">₹{h.avgPrice.toLocaleString("en-IN")}</td>
+                          <td className="px-4 py-2.5 font-mono text-[color:var(--muted)]">
                             {h.currentPrice ? `₹${h.currentPrice.toLocaleString("en-IN")}` : "—"}
                           </td>
-                          <td className="px-4 py-2.5 font-mono text-gray-200">
+                          <td className="px-4 py-2.5 font-mono text-[color:var(--text)]">
                             {formatCurrency(h.totalValue)}
                           </td>
                           <td className="px-4 py-2.5">
@@ -702,7 +702,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                               <div className="w-10 h-1 bg-border-2 overflow-hidden">
                                 <div className="h-full bg-amber" style={{ width: `${Math.min(weight, 100)}%` }} />
                               </div>
-                              <span className="font-mono text-gray-400">{weight.toFixed(1)}%</span>
+                              <span className="font-mono text-[color:var(--muted)]">{weight.toFixed(1)}%</span>
                             </div>
                           </td>
                         </tr>
@@ -719,7 +719,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
                   { label: "Total Value",  value: formatCurrency(totalPortfolioValue) },
                   { label: "Broker",       value: broker?.name ?? "—" },
                 ].map((m) => (
-                  <div key={m.label} className="bg-surface border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
+                  <div key={m.label} className="bg-[var(--surface)] border px-3 py-2 text-center" style={{ borderColor: "var(--border)" }}>
                     <p className="text-[10px] text-gray-600 uppercase tracking-wider">{m.label}</p>
                     <p className="text-sm font-bold text-text mt-0.5">{m.value}</p>
                   </div>
@@ -738,8 +738,8 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
           {/* ── Live Loading ──────────────────────────────────────────── */}
           {step === "live_loading" && (
             <div className="py-2">
-              <div className="bg-surface-2 border p-4 font-mono text-[10px] text-text-2 h-64 overflow-y-auto space-y-1" style={{ borderColor: "var(--border)" }}>
-                <div className="text-gray-500 border-b pb-1 mb-2 uppercase tracking-widest text-[9px] font-bold" style={{ borderColor: "var(--border)" }}>
+              <div className="bg-[var(--surface-hover)] border p-4 font-mono text-[10px] text-[color:var(--text-2)] h-64 overflow-y-auto space-y-1" style={{ borderColor: "var(--border)" }}>
+                <div className="text-[color:var(--muted-2)] border-b pb-1 mb-2 uppercase tracking-widest text-[9px] font-bold" style={{ borderColor: "var(--border)" }}>
                   ANGEL ONE CONNECT CONSOLE
                 </div>
                 {consoleLogs.map((log, idx) => (
@@ -755,8 +755,8 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
           {/* ── Enriching ─────────────────────────────────────────────── */}
           {step === "enriching" && (
             <div className="py-2">
-              <div className="bg-surface-2 border p-4 font-mono text-[10px] text-text-2 h-64 overflow-y-auto space-y-1" style={{ borderColor: "var(--border)" }}>
-                <div className="text-gray-500 border-b pb-1 mb-2 uppercase tracking-widest text-[9px] font-bold" style={{ borderColor: "var(--border)" }}>
+              <div className="bg-[var(--surface-hover)] border p-4 font-mono text-[10px] text-[color:var(--text-2)] h-64 overflow-y-auto space-y-1" style={{ borderColor: "var(--border)" }}>
+                <div className="text-[color:var(--muted-2)] border-b pb-1 mb-2 uppercase tracking-widest text-[9px] font-bold" style={{ borderColor: "var(--border)" }}>
                   PORTFOLIO SIGNAL ENRICHER CORE
                 </div>
                 {consoleLogs.map((log, idx) => (
@@ -775,7 +775,7 @@ export default function BrokerImport({ onConfirm, onClose }: Props) {
           <div className="px-6 py-4 border-t flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
             <button
               onClick={() => { setStep("broker"); setBroker(null); setParsed([]); setParseError(null); setFileName(null); }}
-              className="font-mono text-[10px] font-bold uppercase text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="font-mono text-[10px] font-bold uppercase text-[color:var(--muted-2)] hover:text-[color:var(--muted)] transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <ArrowLeft size={12} /> Change broker
             </button>

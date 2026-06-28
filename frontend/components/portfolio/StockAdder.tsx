@@ -54,35 +54,35 @@ export default function StockAdder({ existing, onAdd }: Props) {
     <div className="flex items-center gap-2 flex-wrap">
       {/* Stock selector */}
       <div className="relative">
-        <select
+        <select aria-label="Select dropdown"
           value={symbol}
           onChange={(e) => setSymbol(e.target.value)}
-          className="bg-surface border pl-3 pr-7 py-1.5 font-mono text-xs text-text focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500 appearance-none cursor-pointer"
+          className="bg-[var(--surface)] border pl-3 pr-7 py-1.5 font-mono text-xs text-text focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500 appearance-none cursor-pointer"
           style={{ borderColor: "var(--border)" }}
         >
-          <option value="" className="bg-surface">Select asset…</option>
+          <option value="" className="bg-[var(--surface)]">Select asset…</option>
           {available.map((s) => (
-            <option key={s} value={s} className="bg-surface">
+            <option key={s} value={s} className="bg-[var(--surface)]">
               {s.replace(".NS", "")}
             </option>
           ))}
         </select>
-        <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+        <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-[color:var(--muted-2)] pointer-events-none" />
       </div>
 
       {/* Weight */}
       <div className="flex items-center gap-1">
-        <input
+        <input aria-label="Input field"
           type="number"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
           min={1}
           max={100}
           step={1}
-          className="w-16 bg-surface border px-2 py-1.5 font-mono text-xs text-text focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500 text-center"
+          className="w-16 bg-[var(--surface)] border px-2 py-1.5 font-mono text-xs text-text focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500 text-center"
           style={{ borderColor: "var(--border)" }}
         />
-        <span className="font-mono text-[10px] text-gray-500 uppercase">%</span>
+        <span className="font-mono text-[10px] text-[color:var(--muted-2)] uppercase">%</span>
       </div>
 
       <button
@@ -97,7 +97,7 @@ export default function StockAdder({ existing, onAdd }: Props) {
 
       <button
         onClick={() => { setOpen(false); setSymbol(""); }}
-        className="font-mono text-xs uppercase text-gray-500 hover:text-text px-2 py-2 cursor-pointer transition-colors"
+        className="font-mono text-xs uppercase text-[color:var(--muted-2)] hover:text-text px-2 py-2 cursor-pointer transition-colors"
       >
         Cancel
       </button>

@@ -28,11 +28,11 @@ const CustomTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
   const d: PortfolioAllocation = payload[0].payload;
   return (
-    <div className="bg-surface border px-3 py-2 text-xs" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border px-3 py-2 text-xs" style={{ borderColor: "var(--border)" }}>
       <p className="font-mono font-bold text-text mb-1">{d.symbol.replace(".NS", "")}</p>
-      <p className="font-mono text-gray-500 uppercase text-[9px] mb-0.5">{d.sector}</p>
+      <p className="font-mono text-[color:var(--muted-2)] uppercase text-[9px] mb-0.5">{d.sector}</p>
       <p className="text-amber font-mono font-bold">{d.weight.toFixed(1)}%</p>
-      <p className="text-text-2 font-mono">{formatInr(d.amount_inr)}</p>
+      <p className="text-[color:var(--text-2)] font-mono">{formatInr(d.amount_inr)}</p>
       <p className={`font-mono text-[9px] uppercase font-bold mt-1 ${signalColor(d.signal)}`}>{d.signal}</p>
     </div>
   );
@@ -42,8 +42,8 @@ export default function AllocationPie({ allocations }: { allocations: PortfolioA
   const [active, setActive] = useState<string | null>(null);
 
   return (
-    <div className="bg-surface border p-5" style={{ borderColor: "var(--border)" }}>
-      <p className="font-mono text-[10px] font-bold text-gray-400 mb-4 uppercase tracking-wider">Portfolio Allocation</p>
+    <div className="bg-[var(--surface)] border p-5" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-[10px] font-bold text-[color:var(--muted)] mb-4 uppercase tracking-wider">Portfolio Allocation</p>
       <ResponsiveContainer width="100%" height={260}>
         <PieChart>
           <Pie

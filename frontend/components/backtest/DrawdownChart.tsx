@@ -11,9 +11,9 @@ export default function DrawdownChart({ data }: { data: DrawdownPoint[] }) {
   const minDd = Math.min(...data.map((d) => d.drawdown));
 
   return (
-    <div className="bg-surface border p-4" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border p-4" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between mb-3">
-        <p className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-wider">Drawdown Analysis</p>
+        <p className="font-mono text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">Drawdown Analysis</p>
         <span className="font-mono text-xs text-red-600 font-bold">
           Max: {minDd.toFixed(2)}%
         </span>

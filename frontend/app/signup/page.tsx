@@ -64,7 +64,7 @@ export default function SignupPage() {
       {/* Main split */}
       <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 480px' }}>
         {/* Left */}
-        <div style={{ padding: '60px 64px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(145deg, #060B14 0%, #080F1A 100%)' }}>
+        <div style={{ padding: '60px 64px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--surface)' }}>
           <div style={{ marginBottom: 32 }}>
             <h2 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', lineHeight: 1.2, marginBottom: 12 }}>
               Join PRAVAH <br /><span style={{ color: 'var(--amber)' }}>Quant Intelligence</span>

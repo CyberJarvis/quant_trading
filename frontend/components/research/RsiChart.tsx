@@ -147,9 +147,9 @@ export default function RsiChart({ data, onChartInit }: { data: RsiPoint[]; onCh
   const rsiLabel = rsiVal != null ? (rsiVal > 70 ? "Overbought" : rsiVal < 30 ? "Oversold" : "Neutral") : "N/A";
 
   return (
-    <div className="bg-surface border overflow-hidden" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border overflow-hidden" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between px-4 py-2 border-b" style={{ borderColor: "var(--border)" }}>
-        <span className="font-mono text-[9px] font-bold text-gray-400 uppercase tracking-widest">RSI (14)</span>
+        <span className="font-mono text-[9px] font-bold text-[color:var(--muted)] uppercase tracking-widest">RSI (14)</span>
         <div className="flex items-center gap-2 text-xs font-mono">
           <span style={{ color: rsiColor }} className="font-bold">{rsiVal != null ? rsiVal.toFixed(1) : "—"}</span>
           <span className="text-[9px] uppercase font-bold" style={{ color: rsiColor }}>{rsiLabel}</span>

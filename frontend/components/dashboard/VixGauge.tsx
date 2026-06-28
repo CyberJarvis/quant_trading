@@ -13,7 +13,7 @@ export default function VixGauge({ vix, sentiment }: Props) {
     : "var(--sideways)";
 
   return (
-    <div className="bg-surface border" style={{ borderColor: "var(--border)" }}>
+    <div className="bg-[var(--surface)] border" style={{ borderColor: "var(--border)" }}>
       <div className="px-4 py-3">
         <p className="font-mono text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--muted)" }}>India VIX</p>
 

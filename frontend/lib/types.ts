@@ -236,3 +236,33 @@ export interface RiskBrief {
   model: string;
   sentiment?: { scores: Record<string, SentimentScore> };
 }
+
+export type ImpactDirection = "BULLISH" | "BEARISH" | "NEUTRAL";
+export type NewsCategory =
+  | "RBI_POLICY" | "GEOPOLITICAL" | "BUDGET_FISCAL" | "FII_DII"
+  | "EARNINGS" | "SECTOR_SPECIFIC" | "GLOBAL_MACRO" | "CURRENCY" | "GENERAL";
+
+export interface NewsItem {
+  title: string;
+  source: string;
+  published: string;
+  link: string;
+  description: string;
+  category: NewsCategory;
+  impact_direction: ImpactDirection;
+  impact_score: number;       // -1.0 to +1.0
+  affected_sectors: string[];
+  summary: string;            // LLM one-liner on why it matters
+}
+
+export interface NewsResponse {
+  items: NewsItem[];
+  total: number;
+  fetched_at: string;
+  groq_enabled: boolean;
+}
+
+export interface SentimentResponse {
+  headlines: { title: string; source: string; published: string }[];
+  scores: Record<string, SentimentScore>;
+}

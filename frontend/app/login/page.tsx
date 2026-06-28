@@ -91,7 +91,7 @@ export default function LoginPage() {
       {/* Main split */}
       <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 480px' }}>
         {/* Left: regime panel */}
-        <div style={{ padding: '60px 64px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(145deg, #060B14 0%, #080F1A 100%)' }}>
+        <div style={{ padding: '60px 64px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--surface)' }}>
           <div style={{ marginBottom: 32 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 'var(--radius-sm)', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)', marginBottom: 16 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bull)' }} />
@@ -121,7 +121,7 @@ export default function LoginPage() {
                 { label: 'Trend Signal', val: '+0.34%', up: true },
                 { label: 'FII Flow', val: '₹1,842 Cr', up: true },
               ].map(item => (
-                <div key={item.label} style={{ padding: '10px 12px', background: '#0B0F19', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+                <div key={item.label} style={{ padding: '10px 12px', background: 'var(--bg-2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
                   <div style={{ fontSize: 10, color: 'var(--muted-2)', marginBottom: 4 }}>{item.label}</div>
                   <div className="font-mono" style={{ color: item.up ? 'var(--bull)' : 'var(--bear)', fontWeight: 600, fontSize: 13 }}>{item.val}</div>
                 </div>

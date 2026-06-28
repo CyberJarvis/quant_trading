@@ -18,8 +18,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   const alpha = strategy && market ? strategy.value - market.value : 0;
 
   return (
-    <div className="bg-surface border px-3 py-2 text-xs" style={{ borderColor: "var(--border)" }}>
-      <p className="font-mono text-gray-500 mb-1">{label}</p>
+    <div className="bg-[var(--surface)] border px-3 py-2 text-xs" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-[color:var(--muted-2)] mb-1">{label}</p>
       {strategy && (
         <p className="text-emerald-600 font-mono font-bold">Strategy ₹{strategy.value.toLocaleString("en-IN")}</p>
       )}
@@ -36,8 +36,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export default function EquityCurve({ data, capital = 100000 }: Props) {
   if (!data?.length) {
     return (
-      <div className="h-64 bg-surface border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
-        <p className="font-mono text-xs text-gray-500 uppercase">No backtest data</p>
+      <div className="h-64 bg-[var(--surface)] border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+        <p className="font-mono text-xs text-[color:var(--muted-2)] uppercase">No backtest data</p>
       </div>
     );
   }
@@ -45,8 +45,8 @@ export default function EquityCurve({ data, capital = 100000 }: Props) {
   const sampled = data.length > 120 ? data.filter((_, i) => i % Math.ceil(data.length / 120) === 0) : data;
 
   return (
-    <div className="bg-surface border p-4" style={{ borderColor: "var(--border)" }}>
-      <p className="font-mono text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-wider">Strategy vs Nifty 50</p>
+    <div className="bg-[var(--surface)] border p-4" style={{ borderColor: "var(--border)" }}>
+      <p className="font-mono text-[10px] font-bold text-[color:var(--muted)] mb-3 uppercase tracking-wider">Strategy vs Nifty 50</p>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={sampled}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />

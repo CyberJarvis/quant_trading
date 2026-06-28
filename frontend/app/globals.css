@@ -4,7 +4,7 @@
 :root {
   /* Legacy vars (used by existing Tailwind pages) */
   --bg-base:         #F8FAFC;
-  --bg-surface:      #FFFFFF;
+  --bg-[var(--surface)]:      #FFFFFF;
   --bg-elevated:     #F1F5F9;
   --bg-border:       #E2E8F0;
   --bg-border-bright:#CBD5E1;
@@ -59,7 +59,7 @@
 
 @theme inline {
   --color-background:   var(--bg-base);
-  --color-surface:      var(--bg-surface);
+  --color-surface:      var(--bg-[var(--surface)]);
   --color-border-base:  var(--bg-border);
   --color-amber:        var(--color-amber);
   --color-bull:         var(--color-bull);
@@ -89,7 +89,7 @@ body {
 .glow-bull   { box-shadow: 0 0 24px rgba(16, 185, 129, 0.05); }
 .glow-bear   { box-shadow: 0 0 24px rgba(239, 68, 68, 0.05); }
 .gradient-card { background: linear-gradient(135deg, var(--surface) 0%, var(--bg-2) 100%); }
-.card-base { background: var(--bg-surface); border: 1px solid var(--bg-border); border-radius: var(--radius); }
+.card-base { background: var(--bg-[var(--surface)]); border: 1px solid var(--bg-border); border-radius: var(--radius); }
 @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 .animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
 

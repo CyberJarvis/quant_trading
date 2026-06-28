@@ -43,7 +43,7 @@ export default function RegimeBadge({ data }: { data: RegimeData | null }) {
     );
   }
 
-  const s   = REGIME_STYLES[data.regime];
+  const s   = REGIME_STYLES[data.regime as keyof typeof REGIME_STYLES] ?? REGIME_STYLES.SIDEWAYS;
   const Icon = s.icon;
 
   return (
