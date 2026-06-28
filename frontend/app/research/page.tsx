@@ -461,7 +461,7 @@ function ResearchDeskInner() {
     setVerifyLoading(true);
     setVerifyData(null);
     try {
-      const v = await fetch(`/api/verify/${encodeURIComponent(sym)}`).then(r => r.json());
+      const v = await fetch(`http://localhost:8000/api/verify/${encodeURIComponent(sym)}`).then(r => r.json());
       setVerifyData(v);
     } catch (e) {
       console.error(e);

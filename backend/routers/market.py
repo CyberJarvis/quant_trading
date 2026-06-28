@@ -295,7 +295,7 @@ def verify_prediction(symbol: str):
         pred_lo  = float(m_lo.predict(X_new)[0])  - q_hat
         pred_mid = float(m_mid.predict(X_new)[0])
         pred_hi  = float(m_hi.predict(X_new)[0])  + q_hat
-        covered  = pred_lo <= y_actual <= pred_hi
+        covered  = bool(pred_lo <= y_actual <= pred_hi)
 
         # Anchor date = candles[-6], realized date = candles[-1]
         anchor_date   = candles[-6]["date"] if len(candles) >= 6 else candles[0]["date"]
@@ -333,7 +333,7 @@ def verify_prediction(symbol: str):
             "hits":                hits,
             "coverage_achieved":   rate,
             "coverage_target":     0.90,
-            "guarantee_met":       rate >= 0.90,
+            "guarantee_met":       bool(rate >= 0.90),
             "verdict": f"PASS — {rate*100:.1f}% coverage ≥ 90% target" if rate >= 0.90
                        else f"FAIL — {rate*100:.1f}% coverage < 90% target",
         }
@@ -347,15 +347,15 @@ def verify_prediction(symbol: str):
     loss_arr = np.where(delta_c < 0, -delta_c, 0.0)
     avg_gain = np.mean(gain_arr[-14:])
     avg_loss = np.mean(loss_arr[-14:])
-    rsi_val  = round(100 - (100 / (1 + avg_gain / avg_loss)) if avg_loss > 0 else 100.0, 2)
-    rsi_ok   = 0 <= rsi_val <= 100
+    rsi_val  = float(round(100 - (100 / (1 + avg_gain / avg_loss)) if avg_loss > 0 else 100.0, 2))
+    rsi_ok   = bool(0 <= rsi_val <= 100)
 
     # MACD histogram sign consistency
     s = pd.Series(closes)
     macd_line = s.ewm(span=12).mean() - s.ewm(span=26).mean()
     macd_sig  = macd_line.ewm(span=9).mean()
     hist_last = float(macd_line.iloc[-1] - macd_sig.iloc[-1])
-    macd_ok   = abs(hist_last) < abs(float(closes[-1])) * 0.05  # histogram < 5% of price
+    macd_ok   = bool(abs(hist_last) < abs(float(closes[-1])) * 0.05)  # histogram < 5% of price
 
     # GBM P50[0] drift check
     mu    = float(log_ret.mean())
@@ -365,7 +365,7 @@ def verify_prediction(symbol: str):
     rng   = np.random.default_rng(seed=42)
     paths = S0 * np.exp(np.cumsum((mu - 0.5*sigma**2) + sigma*rng.standard_normal((1000, 1)), axis=1))
     actual_p50_step1   = round(float(np.percentile(paths, 50)), 2)
-    gbm_drift_ok = abs(actual_p50_step1 - S0) / S0 < 0.05  # P50 within 5% of S0 for 1-day
+    gbm_drift_ok = bool(abs(actual_p50_step1 - S0) / S0 < 0.05)  # P50 within 5% of S0 for 1-day
 
     # Live intraday status
     intraday = None
