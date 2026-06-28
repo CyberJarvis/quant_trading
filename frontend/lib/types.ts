@@ -1,4 +1,4 @@
-export type Regime = "BULL" | "BEAR" | "SIDEWAYS";
+export type Regime = "BULL" | "BEAR" | "SIDEWAYS" | "UNKNOWN";
 export type Signal = "STRONG BUY" | "BUY" | "HOLD" | "SELL" | "STRONG SELL";
 export type Risk = "LOW" | "MODERATE" | "HIGH";
 
