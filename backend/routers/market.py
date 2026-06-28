@@ -260,68 +260,73 @@ def verify_prediction(symbol: str):
     params = {"objective": "quantile", "n_estimators": 200,
               "learning_rate": 0.05, "num_leaves": 31, "verbose": -1}
 
-    # ── 1. Retrospective: prediction made 5 trading days ago ─────────────────
-    LOOKBACK = 5
-    candles_past = candles[:-LOOKBACK]
-    feats_past   = _build_cqr_features(candles_past)
+    # ── 1. Retrospective: verify yesterday (candles[-1]) out-of-sample ──────────
+    #
+    # With target = log(close[t+5]/close[t]), after dropna() the LAST valid row
+    # corresponds to the candle 5 trading days before candles[-1].
+    # e.g. today = Sat June 28 → candles[-1] = June 27 (Friday close, known),
+    #      last feature row = June 20 features, target = log(June27/June20).
+    #
+    # We exclude that last row from calibration and use it purely for inference,
+    # then compare the predicted interval against the KNOWN realized return.
+    feats_all = _build_cqr_features(candles)   # includes candles[-1] (yesterday) in targets
 
     retro = None
-    if feats_past:
-        X_p, y_p, _ = feats_past
-        split = int(len(X_p) * 0.8)
-        X_tr, X_cal = X_p.iloc[:split], X_p.iloc[split:]
-        y_tr, y_cal = y_p[:split], y_p[split:]
+    if feats_all:
+        X_all, y_all, _ = feats_all
+
+        # Last row = prediction anchored at candles[-6], realized at candles[-1]
+        X_new   = X_all.iloc[[-1]]
+        y_actual = float(y_all[-1])              # log(close[-1]/close[-6]) — realized
+
+        # Train on 80 %, calibrate on remaining EXCLUDING the final inference row
+        X_tv, y_tv = X_all.iloc[:-1], y_all[:-1]
+        split       = int(len(X_tv) * 0.8)
+        X_tr, X_cal = X_tv.iloc[:split], X_tv.iloc[split:]
+        y_tr, y_cal = y_tv[:split], y_tv[split:]
 
         m_lo  = lgb.LGBMRegressor(**{**params, "alpha": 0.05}); m_lo.fit(X_tr, y_tr)
         m_mid = lgb.LGBMRegressor(**{**params, "alpha": 0.50}); m_mid.fit(X_tr, y_tr)
         m_hi  = lgb.LGBMRegressor(**{**params, "alpha": 0.95}); m_hi.fit(X_tr, y_tr)
 
-        E = np.maximum(m_lo.predict(X_cal) - y_cal, y_cal - m_hi.predict(X_cal))
+        E     = np.maximum(m_lo.predict(X_cal) - y_cal, y_cal - m_hi.predict(X_cal))
         q_hat = float(np.quantile(E, min(0.90 * (1 + 1/len(X_cal)), 1.0)))
 
-        X_new    = X_p.iloc[[-1]]
         pred_lo  = float(m_lo.predict(X_new)[0])  - q_hat
         pred_mid = float(m_mid.predict(X_new)[0])
         pred_hi  = float(m_hi.predict(X_new)[0])  + q_hat
+        covered  = pred_lo <= y_actual <= pred_hi
 
-        price_t0    = float(candles_past[-1]["close"])
-        price_t5    = float(candles[-1]["close"])
-        # cumulative log return — same units as model target
-        actual_ret  = round(np.log(price_t5 / price_t0) * 100, 4)
-        covered     = (pred_lo * 100) <= actual_ret <= (pred_hi * 100)
+        # Anchor date = candles[-6], realized date = candles[-1]
+        anchor_date   = candles[-6]["date"] if len(candles) >= 6 else candles[0]["date"]
+        realized_date = candles[-1]["date"]
+        price_anchor  = float(candles[-6]["close"]) if len(candles) >= 6 else float(candles[0]["close"])
+        price_realized = float(candles[-1]["close"])
 
         retro = {
-            "prediction_window":    f"{candles_past[-1]['date']} → {candles[-1]['date']}",
-            "price_at_prediction":  round(price_t0, 2),
-            "price_realized":       round(price_t5, 2),
-            "actual_log_return_pct": actual_ret,   # log(p_t5/p_t0)*100 — matches model target
-            "predicted_lower_pct": round(pred_lo * 100, 2),
-            "predicted_median_pct": round(pred_mid * 100, 2),
-            "predicted_upper_pct": round(pred_hi * 100, 2),
-            "covered":             covered,
+            "anchor_date":            anchor_date,
+            "realized_date":          realized_date,
+            "price_at_anchor":        round(price_anchor, 2),
+            "price_realized":         round(price_realized, 2),
+            "actual_log_return_pct":  round(y_actual * 100, 4),
+            "predicted_lower_pct":    round(pred_lo  * 100, 2),
+            "predicted_median_pct":   round(pred_mid * 100, 2),
+            "predicted_upper_pct":    round(pred_hi  * 100, 2),
+            "covered":                covered,
+            "note": "Model trained on data up to anchor_date. Realized return on realized_date is out-of-sample ground truth.",
             "verdict": "PASS — actual return inside predicted interval" if covered
                        else "MISS — actual return outside predicted interval",
         }
 
-    # ── 2. Historical calibration coverage rate ───────────────────────────────
-    feats_full = _build_cqr_features(candles)
+    # ── 2. Historical calibration coverage rate (reuse models from section 1) ───
     coverage = None
-    if feats_full:
-        X_f, y_f, _ = feats_full
-        split = int(len(X_f) * 0.8)
-        X_tr2, X_cal2 = X_f.iloc[:split], X_f.iloc[split:]
-        y_tr2, y_cal2 = y_f[:split], y_f[split:]
-
-        m2_lo  = lgb.LGBMRegressor(**{**params, "alpha": 0.05}); m2_lo.fit(X_tr2, y_tr2)
-        m2_hi  = lgb.LGBMRegressor(**{**params, "alpha": 0.95}); m2_hi.fit(X_tr2, y_tr2)
-        E2     = np.maximum(m2_lo.predict(X_cal2) - y_cal2, y_cal2 - m2_hi.predict(X_cal2))
-        q2     = float(np.quantile(E2, min(0.90 * (1 + 1/len(X_cal2)), 1.0)))
-
-        lo_preds = m2_lo.predict(X_cal2) - q2
-        hi_preds = m2_hi.predict(X_cal2) + q2
-        hits     = int(np.sum((lo_preds <= y_cal2) & (y_cal2 <= hi_preds)))
-        total    = len(y_cal2)
-        rate     = round(hits / total, 4)
+    if feats_all and retro:
+        # X_cal / y_cal already computed; m_lo and m_hi already trained
+        lo_cal = m_lo.predict(X_cal) - q_hat
+        hi_cal = m_hi.predict(X_cal) + q_hat
+        hits   = int(np.sum((lo_cal <= y_cal) & (y_cal <= hi_cal)))
+        total  = len(y_cal)
+        rate   = round(hits / total, 4)
 
         coverage = {
             "calibration_samples": total,
