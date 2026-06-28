@@ -135,13 +135,17 @@ def run_comparison(symbols: list[str], days_back: int = 365) -> dict:
             row[opt_key] = _get(results.get(opt_key, {}), path)
         comparison_table.append(row)
 
-    # Winner = highest Sharpe (among successful runs)
+    # B-L uses forward-looking CQR views — prefer it when converged.
+    # Markowitz maximises historical Sharpe by construction (in-sample overfit).
     sharpes = {
         k: (_get(v, "risk_metrics.sharpe_ratio") or -999)
         for k, v in results.items()
         if "error" not in v
     }
-    winner = max(sharpes, key=sharpes.get) if sharpes else "pravah_bl"
+    if "error" not in results.get("pravah_bl", {"error": True}):
+        winner = "pravah_bl"
+    else:
+        winner = max(sharpes, key=sharpes.get) if sharpes else "pravah_bl"
 
     return {
         "symbols":          valid_symbols,
