@@ -106,7 +106,7 @@ def login(req: UserLogin):
 
 @router.post("/onboarding")
 def save_onboarding(req: UserOnboarding):
-    if not MONGO_AVAILABLE or users_collection is None:
+    if not MONGO_AVAILABLE or users_collection is None or req.email == "demo@pravah.ai":
         return {"message": "Onboarding saved (demo)."}
 
     user = users_collection.find_one({"email": req.email})
@@ -146,7 +146,7 @@ def get_user_profile(email: str):
 
 @router.post("/user/profiling")
 def save_user_profiling(req: UserProfilingUpdate):
-    if not MONGO_AVAILABLE or users_collection is None:
+    if not MONGO_AVAILABLE or users_collection is None or req.email == "demo@pravah.ai":
         return {"message": "Profiling updated (demo)."}
 
     user = users_collection.find_one({"email": req.email})

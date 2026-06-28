@@ -292,7 +292,7 @@ export default function ProfilePage() {
                   <label className="label">Investment Capital (₹)</label>
                   <input
                     type="number"
-                    step="50000"
+                    step="10000"
                     min="10000"
                     value={capital}
                     onChange={(e) => setCapital(e.target.value)}
