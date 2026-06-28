@@ -361,6 +361,8 @@ function ResearchDeskInner() {
   const [forecastEnabled, setForecastEnabled] = useState(false);
   const [forecastData, setForecastData]       = useState<ForecastData | null>(null);
   const [forecastLoading, setForecastLoading] = useState(false);
+  const [verifyData, setVerifyData]           = useState<any | null>(null);
+  const [verifyLoading, setVerifyLoading]     = useState(false);
 
   // Sync ref for multi-chart scrolling and panning
   const syncRef = useRef<{
@@ -455,15 +457,30 @@ function ResearchDeskInner() {
     }
   }, []);
 
+  const runVerify = useCallback(async (sym: string) => {
+    setVerifyLoading(true);
+    setVerifyData(null);
+    try {
+      const v = await fetch(`/api/verify/${encodeURIComponent(sym)}`).then(r => r.json());
+      setVerifyData(v);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setVerifyLoading(false);
+    }
+  }, []);
+
   useEffect(() => { load(symbol, period, interval, cqrEnabled); }, [symbol, period, interval, cqrEnabled, load]);
   useEffect(() => { if (forecastEnabled) loadForecast(symbol); else setForecastData(null); }, [symbol, forecastEnabled, loadForecast]);
+  // Reset verify when symbol changes
+  useEffect(() => { setVerifyData(null); setVerifyLoading(false); }, [symbol]);
 
   const candles  = stockData?.candles ?? [];
   const rsiData  = computeRsi(candles);
   const macdData = computeMacd(candles);
 
   const selectClass =
-    "bg-surface border border-border px-3 py-1.5 text-xs font-mono font-bold uppercase text-gray-200 " +
+    "bg-[var(--surface)] border border-[var(--border)] px-3 py-1.5 text-xs font-mono font-bold uppercase text-[color:var(--text)] " +
     "focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500 appearance-none cursor-pointer";
 
   return (
@@ -471,8 +488,8 @@ function ResearchDeskInner() {
       {/* Header + controls */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="font-mono text-lg font-bold uppercase tracking-wider text-gray-100">Research Desk</h1>
-          <p className="font-mono text-[10px] text-gray-500 mt-0.5 uppercase">
+          <h1 className="font-mono text-lg font-bold uppercase tracking-wider text-[color:var(--text)]">Research Desk</h1>
+          <p className="font-mono text-[10px] text-[color:var(--muted-2)] mt-0.5 uppercase">
             Candlestick · RSI · MACD · Composite Signals · CQR · GBM
           </p>
         </div>
@@ -480,7 +497,7 @@ function ResearchDeskInner() {
         <div className="flex gap-2 flex-wrap">
           {/* Category dropdown */}
           <div className="relative">
-            <select
+            <select aria-label="Select dropdown"
               value={category}
               onChange={(e) => {
                 const cat = e.target.value;
@@ -491,32 +508,32 @@ function ResearchDeskInner() {
               className={selectClass}
             >
               {STOCK_CATEGORIES.map((cat) => (
-                <option key={cat.label} value={cat.label} className="bg-surface">
+                <option key={cat.label} value={cat.label} className="bg-[var(--surface)]">
                   {cat.label}
                 </option>
               ))}
             </select>
-            <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[color:var(--muted-2)] pointer-events-none" />
           </div>
 
           {/* Fund dropdown — filtered by category */}
           <div className="relative">
-            <select
+            <select aria-label="Select dropdown"
               value={symbol}
               onChange={(e) => setSymbol(e.target.value)}
               className={selectClass}
             >
               {(STOCK_CATEGORIES.find(c => c.label === category)?.tickers ?? []).map((s) => (
-                <option key={s} value={s} className="bg-surface">
+                <option key={s} value={s} className="bg-[var(--surface)]">
                   {s.replace(".NS", "")}
                 </option>
               ))}
             </select>
-            <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[color:var(--muted-2)] pointer-events-none" />
           </div>
 
           <div className="relative">
-            <select
+            <select aria-label="Select dropdown"
               value={period}
               onChange={(e) => {
                 const p = e.target.value;
@@ -527,16 +544,16 @@ function ResearchDeskInner() {
               className={selectClass}
             >
               {PERIODS.map((p) => (
-                <option key={p.value} value={p.value} className="bg-surface">
+                <option key={p.value} value={p.value} className="bg-[var(--surface)]">
                   {p.label}
                 </option>
               ))}
             </select>
-            <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[color:var(--muted-2)] pointer-events-none" />
           </div>
 
           {/* Interval toggle */}
-          <div className="flex border border-border overflow-hidden">
+          <div className="flex border border-[var(--border)] overflow-hidden">
             {INTERVALS.map((ivl) => {
               const disabled = INTERVAL_MAX_DAYS[ivl.value] < (PERIOD_DAYS[period] ?? 365);
               const active   = interval === ivl.value;
@@ -545,8 +562,8 @@ function ResearchDeskInner() {
                   key={ivl.value}
                   disabled={disabled}
                   onClick={() => setInterval(ivl.value)}
-                  className={`px-2 py-1.5 font-mono text-[10px] font-bold uppercase transition-colors border-r last:border-r-0 border-border
-                    ${disabled ? "text-gray-700 cursor-not-allowed" : active ? "bg-amber/20 text-amber" : "text-gray-500 hover:text-gray-300"}`}
+                  className={`px-2 py-1.5 font-mono text-[10px] font-bold uppercase transition-colors border-r last:border-r-0 border-[var(--border)]
+                    ${disabled ? "text-gray-700 cursor-not-allowed" : active ? "bg-amber/20 text-amber" : "text-[color:var(--muted-2)] hover:text-[color:var(--muted)]"}`}
                 >
                   {ivl.label}
                 </button>
@@ -560,7 +577,7 @@ function ResearchDeskInner() {
             className={`px-2.5 py-1.5 font-mono text-[11px] font-bold uppercase border transition-colors ${
               cqrEnabled
                 ? "bg-blue-500/20 border-blue-500/60 text-blue-400"
-                : "border-border text-gray-500 hover:text-gray-300"
+                : "border-[var(--border)] text-[color:var(--muted-2)] hover:text-[color:var(--muted)]"
             }`}
             title="Conformalized Quantile Regression — 90% prediction interval"
           >
@@ -573,20 +590,34 @@ function ResearchDeskInner() {
             className={`px-2.5 py-1.5 font-mono text-[11px] font-bold uppercase border transition-colors ${
               forecastEnabled
                 ? "bg-emerald-500/20 border-emerald-500/60 text-emerald-400"
-                : "border-border text-gray-500 hover:text-gray-300"
+                : "border-[var(--border)] text-[color:var(--muted-2)] hover:text-[color:var(--muted)]"
             }`}
             title="GBM Monte Carlo fan chart — scenario visualization"
           >
             GBM
+          </button>
+
+          {/* Verify Model */}
+          <button
+            onClick={() => runVerify(symbol)}
+            disabled={verifyLoading}
+            className={`px-2.5 py-1.5 font-mono text-[11px] font-bold uppercase border transition-colors ${
+              verifyData
+                ? "bg-amber-500/20 border-amber-500/60 text-amber-400"
+                : "border-[var(--border)] text-[color:var(--muted-2)] hover:text-[color:var(--muted)]"
+            } disabled:opacity-40 disabled:cursor-not-allowed`}
+            title="Verify CQR model accuracy against real market data"
+          >
+            {verifyLoading ? "…" : "VERIFY"}
           </button>
         </div>
       </div>
 
       {loading && (
         <div className="space-y-3">
-          <div className="h-[380px] bg-surface border animate-pulse" style={{ borderColor: "var(--border)" }} />
-          <div className="h-28 bg-surface border animate-pulse" style={{ borderColor: "var(--border)" }} />
-          <div className="h-36 bg-surface border animate-pulse" style={{ borderColor: "var(--border)" }} />
+          <div className="h-[380px] bg-[var(--surface)] border animate-pulse" style={{ borderColor: "var(--border)" }} />
+          <div className="h-28 bg-[var(--surface)] border animate-pulse" style={{ borderColor: "var(--border)" }} />
+          <div className="h-36 bg-[var(--surface)] border animate-pulse" style={{ borderColor: "var(--border)" }} />
         </div>
       )}
 
@@ -607,13 +638,89 @@ function ResearchDeskInner() {
             <MacdChart data={macdData} onChartInit={(chart) => handleChartInit("macd", chart)} />
             {forecastEnabled && (
               forecastLoading
-                ? <div className="h-[270px] bg-surface border animate-pulse" style={{ borderColor: "var(--border)" }} />
+                ? <div className="h-[270px] bg-[var(--surface)] border animate-pulse" style={{ borderColor: "var(--border)" }} />
                 : forecastData
                   ? <ForecastChart data={forecastData} />
-                  : <div className="h-[270px] bg-surface border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
-                      <p className="font-mono text-xs text-gray-500 uppercase">Failed to load GBM forecast</p>
+                  : <div className="h-[270px] bg-[var(--surface)] border flex items-center justify-center" style={{ borderColor: "var(--border)" }}>
+                      <p className="font-mono text-xs text-[color:var(--muted-2)] uppercase">Failed to load GBM forecast</p>
                     </div>
             )}
+
+            {/* ── Verify result card ───────────────────────────────────────── */}
+            {verifyLoading && (
+              <div className="border border-[var(--border)] bg-[var(--surface)] px-4 py-3 flex items-center gap-3">
+                <span className="inline-block w-3 h-3 rounded-full bg-amber-400 animate-ping" />
+                <span className="font-mono text-[11px] text-amber-400 uppercase">Training CQR models on {symbol} — ~15s</span>
+              </div>
+            )}
+            {verifyData && !verifyLoading && (() => {
+              const r = verifyData.retrospective_5d;
+              const c = verifyData.coverage_rate;
+              if (!r || !c) return null;
+              const pass = r.covered;
+              const coverOk = c.guarantee_met;
+              return (
+                <div className="border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[color:var(--text)]">
+                      CQR Verification — {symbol.replace(".NS","")}
+                    </span>
+                    <span className={`font-mono text-[9px] font-bold uppercase px-2 py-0.5 border ${pass ? "text-emerald-400 border-emerald-500/40 bg-emerald-500/10" : "text-red-400 border-red-500/40 bg-red-500/10"}`}>
+                      {pass ? "✓ PASS" : "✗ MISS"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 divide-x divide-[var(--border)]">
+                    {/* Retrospective */}
+                    <div className="px-4 py-3 space-y-2">
+                      <p className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--muted-2)]">Out-of-sample · 5-day window</p>
+                      <div className="flex gap-4">
+                        <div>
+                          <p className="font-mono text-[8px] text-[color:var(--muted-2)]">Anchor</p>
+                          <p className="font-mono text-[11px] font-bold text-[color:var(--text)]">{r.anchor_date}</p>
+                          <p className="font-mono text-[9px] text-[color:var(--muted)]">₹{r.price_at_anchor.toLocaleString()}</p>
+                        </div>
+                        <div className="font-mono text-[color:var(--muted-2)] self-center text-xs">→</div>
+                        <div>
+                          <p className="font-mono text-[8px] text-[color:var(--muted-2)]">Realized</p>
+                          <p className="font-mono text-[11px] font-bold text-[color:var(--text)]">{r.realized_date}</p>
+                          <p className="font-mono text-[9px] text-[color:var(--muted)]">₹{r.price_realized.toLocaleString()}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="font-mono text-[9px] text-[color:var(--muted-2)]">
+                          Predicted: <span className="text-emerald-400">[{r.predicted_lower_pct.toFixed(1)}%, {r.predicted_upper_pct.toFixed(1)}%]</span>
+                        </p>
+                        <p className="font-mono text-[9px] text-[color:var(--muted-2)]">
+                          Actual: <span className={pass ? "text-emerald-400 font-bold" : "text-red-400 font-bold"}>
+                            {r.actual_log_return_pct > 0 ? "+" : ""}{r.actual_log_return_pct.toFixed(2)}%
+                          </span>
+                          <span className="ml-2 text-[color:var(--muted-2)]">{pass ? "← inside interval" : "← outside interval"}</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Coverage */}
+                    <div className="px-4 py-3 space-y-2">
+                      <p className="font-mono text-[9px] uppercase tracking-widest text-[color:var(--muted-2)]">Historical coverage</p>
+                      <p className={`font-mono text-3xl font-bold ${coverOk ? "text-emerald-400" : "text-amber-400"}`}>
+                        {(c.coverage_achieved * 100).toFixed(1)}%
+                      </p>
+                      <p className="font-mono text-[9px] text-[color:var(--muted-2)]">
+                        {c.hits}/{c.calibration_samples} windows · target ≥ 90%
+                      </p>
+                      <p className={`font-mono text-[9px] font-bold uppercase ${coverOk ? "text-emerald-400" : "text-amber-400"}`}>
+                        {coverOk ? "✓ Guarantee met" : "⚠ Below target"}
+                      </p>
+                      <p className="font-mono text-[8px] text-[color:var(--muted-2)] leading-relaxed">
+                        Conformal prediction guarantees ≥90% coverage — provable from calibration data alone.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Signals column */}
@@ -628,7 +735,7 @@ function ResearchDeskInner() {
 
 export default function ResearchPage() {
   return (
-    <Suspense fallback={<div className="font-mono text-xs uppercase p-6 text-gray-500">Loading Research Core…</div>}>
+    <Suspense fallback={<div className="font-mono text-xs uppercase p-6 text-[color:var(--muted-2)]">Loading Research Core…</div>}>
       <ResearchDeskInner />
     </Suspense>
   );
