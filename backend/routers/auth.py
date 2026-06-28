@@ -66,8 +66,8 @@ def signup(req: UserSignUp):
     else:
         users_collection.insert_one({"name": req.name, "email": req.email, "password": req.password, "otp_code": otp, "verified": False, "onboarding_completed": False})
 
-    sent = send_otp_email(req.email, otp)
-    return {"message": "OTP sent.", "email": req.email, "otp_fallback": otp if not sent else None}
+    send_otp_email(req.email, otp)
+    return {"message": "OTP sent.", "email": req.email}
 
 
 @router.post("/verify-otp")
@@ -99,7 +99,7 @@ def login(req: UserLogin):
         otp = f"{random.randint(100000, 999999)}"
         users_collection.update_one({"email": req.email}, {"$set": {"otp_code": otp}})
         send_otp_email(req.email, otp)
-        raise HTTPException(status_code=403, detail=f"Email not verified. OTP: {otp}")
+        raise HTTPException(status_code=403, detail="Email not verified. OTP sent to your email.")
 
     return {"message": "Login successful.", "name": user["name"], "email": user["email"], "onboarding_completed": user.get("onboarding_completed", False)}
 

@@ -51,7 +51,6 @@ def compute_returns_matrix_from_candles(
 def compute_cov_matrix(returns: np.ndarray) -> np.ndarray:
     """Annualised covariance matrix from daily returns. Adds ridge for stability."""
     cov = np.cov(returns, rowvar=False) * 252
-    # Ridge regularisation: add 1e-6 * I to prevent singular matrix
     return cov + np.eye(cov.shape[0]) * 1e-6
 
 
@@ -63,38 +62,37 @@ def resolve_market_caps(symbols: list[str]) -> dict:
     live_caps = get_market_caps() or {}
 
     # Historical approx caps (INR) — used only when yfinance is unreachable
-    FALLBACK_CAPS = {
-        "RELIANCE.NS": 19_500_000_000_000,
-        "TCS.NS": 15_000_000_000_000,
-        "HDFCBANK.NS": 13_500_000_000_000,
-        "INFY.NS": 8_200_000_000_000,
-        "ICICIBANK.NS": 8_900_000_000_000,
-        "SBIN.NS": 7_400_000_000_000,
-        "BHARTIARTL.NS": 9_100_000_000_000,
-        "ITC.NS": 5_800_000_000_000,
-        "LT.NS": 5_400_000_000_000,
-        "AXISBANK.NS": 3_900_000_000_000,
-        "KOTAKBANK.NS": 4_200_000_000_000,
-        "HINDUNILVR.NS": 5_900_000_000_000,
-        "BAJFINANCE.NS": 5_200_000_000_000,
-        "MARUTI.NS": 3_800_000_000_000,
-        "TITAN.NS": 3_400_000_000_000,
-        "WIPRO.NS": 2_900_000_000_000,
-        "HCLTECH.NS": 4_800_000_000_000,
-        "NESTLEIND.NS": 2_400_000_000_000,
-        "ULTRACEMCO.NS": 3_100_000_000_000,
-        "ASIANPAINT.NS": 2_800_000_000_000,
-    }
+    # FALLBACK_CAPS = {
+    #     "RELIANCE.NS": 19_500_000_000_000,
+    #     "TCS.NS": 15_000_000_000_000,
+    #     "HDFCBANK.NS": 13_500_000_000_000,
+    #     "INFY.NS": 8_200_000_000_000,
+    #     "ICICIBANK.NS": 8_900_000_000_000,
+    #     "SBIN.NS": 7_400_000_000_000,
+    #     "BHARTIARTL.NS": 9_100_000_000_000,
+    #     "ITC.NS": 5_800_000_000_000,
+    #     "LT.NS": 5_400_000_000_000,
+    #     "AXISBANK.NS": 3_900_000_000_000,
+    #     "KOTAKBANK.NS": 4_200_000_000_000,
+    #     "HINDUNILVR.NS": 5_900_000_000_000,
+    #     "BAJFINANCE.NS": 5_200_000_000_000,
+    #     "MARUTI.NS": 3_800_000_000_000,
+    #     "TITAN.NS": 3_400_000_000_000,
+    #     "WIPRO.NS": 2_900_000_000_000,
+    #     "HCLTECH.NS": 4_800_000_000_000,
+    #     "NESTLEIND.NS": 2_400_000_000_000,
+    #     "ULTRACEMCO.NS": 3_100_000_000_000,
+    #     "ASIANPAINT.NS": 2_800_000_000_000,
+    # }
 
     result = {}
     for sym in symbols:
         cap = live_caps.get(sym)
         if not cap:
-            # Try stripping .NS (yfinance sometimes returns bare names)
             bare = sym.replace(".NS", "")
             cap = live_caps.get(bare)
         if not cap:
-            cap = FALLBACK_CAPS.get(sym, 1_000_000_000_000)  # default ~1L Cr
+            cap = FALLBACK_CAPS.get(sym, 1_000_000_000_000)
         result[sym] = int(cap)
     return result
 

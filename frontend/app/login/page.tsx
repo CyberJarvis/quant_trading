@@ -35,12 +35,15 @@ export default function LoginPage() {
     setLoading(true); setError('')
     try {
       const res = await api.login(email, password)
-      if (res.requires_otp) { setMode('otp') }
-      else if (res.user) {
-        localStorage.setItem('pravah_user', JSON.stringify(res.user))
-        const onboarded = localStorage.getItem('pravah_onboarding_completed')
-        router.push(onboarded ? '/dashboard' : '/onboarding')
-      } else setError(res.detail || 'Login failed')
+      if (res.message === 'Login successful.') {
+        const user = { name: res.name, email: res.email }
+        localStorage.setItem('pravah_user', JSON.stringify(user))
+        router.push(res.onboarding_completed ? '/dashboard' : '/onboarding')
+      } else if (res.detail?.includes('not verified')) {
+        setMode('otp')
+      } else {
+        setError(res.detail || 'Login failed')
+      }
     } catch { setError('Connection error. Using demo mode.'); handleDemoLogin() }
     finally { setLoading(false) }
   }
@@ -50,11 +53,13 @@ export default function LoginPage() {
     setLoading(true); setError('')
     try {
       const res = await api.verifyOtp(email, otp)
-      if (res.user) {
-        localStorage.setItem('pravah_user', JSON.stringify(res.user))
-        const onboarded = localStorage.getItem('pravah_onboarding_completed')
-        router.push(onboarded ? '/dashboard' : '/onboarding')
-      } else setError(res.detail || 'Invalid OTP')
+      if (res.message === 'OTP verified.') {
+        const user = { name: res.name, email: res.email }
+        localStorage.setItem('pravah_user', JSON.stringify(user))
+        router.push('/onboarding')
+      } else {
+        setError(res.detail || 'Invalid OTP')
+      }
     } catch { setError('OTP verification failed') }
     finally { setLoading(false) }
   }
@@ -181,7 +186,7 @@ export default function LoginPage() {
               <div>
                 <label className="label">One-Time Password</label>
                 <input className="input" type="text" placeholder="123456" value={otp} onChange={e => setOtp(e.target.value)} maxLength={6} required />
-                <div style={{ fontSize: 11, color: 'var(--muted-2)', marginTop: 6 }}>In demo mode (no email configured), use OTP: 123456</div>
+                <div style={{ fontSize: 11, color: 'var(--muted-2)', marginTop: 6 }}>Demo mode: enter 123456</div>
               </div>
               <button type="submit" className="btn btn-primary" disabled={loading} style={{ padding: '10px', width: '100%' }}>
                 {loading ? <><div className="spinner" />&nbsp;Verifying…</> : 'Verify OTP'}

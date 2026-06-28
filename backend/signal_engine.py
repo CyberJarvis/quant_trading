@@ -418,6 +418,8 @@ def get_top_signals(n: int = 10) -> list:
         except Exception:
             pass
     results.sort(key=lambda x: x["composite_score"], reverse=True)
+    # Store Nifty50 result now so next request returns in <100ms
+    _set("top_signals_v1", results, 600)  # 10min TTL; BG will overwrite with full 379
     # Kick off full 379-stock compute in background
     threading.Thread(target=_compute_all_signals_bg, daemon=True).start()
     return results[:n]

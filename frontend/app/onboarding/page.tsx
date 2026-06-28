@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Activity, TrendingUp, Shield, Cpu, DollarSign } from 'lucide-react'
+import { Activity, TrendingUp, Shield, Cpu, IndianRupee } from 'lucide-react'
 import { api } from '@/lib/api'
 
 const STEPS = ['Investment Goal', 'Risk Tolerance', 'Time Horizon', 'Preferred Sectors']
@@ -99,7 +99,7 @@ export default function OnboardingPage() {
               <div style={{ marginBottom: 24 }}>
                 <label className="label">Capital Budget (₹)</label>
                 <div style={{ position: 'relative' }}>
-                  <DollarSign size={14} color="var(--muted)" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
+                  <IndianRupee size={14} color="var(--muted)" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
                   <input className="input" type="number" min={10000} max={10000000} value={capital} onChange={e => setCapital(Number(e.target.value))} style={{ paddingLeft: 30 }} />
                 </div>
                 <input type="range" min={10000} max={2000000} step={10000} value={capital} onChange={e => setCapital(Number(e.target.value))} style={{ width: '100%', marginTop: 8, accentColor: 'var(--amber)' }} />

@@ -1,6 +1,7 @@
 "use client";
 
 import { X, TrendingUp, TrendingDown, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { PortfolioAllocation } from "@/lib/types";
 import { formatInr, signalBg } from "@/lib/utils";
 import StockAdder from "./StockAdder";
@@ -46,6 +47,7 @@ function RsiBadge({ v }: { v: number | null | undefined }) {
 
 export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, budget }: Props) {
   const totalWeight = allocations.reduce((s, a) => s + a.weight, 0);
+  const router = useRouter();
 
   return (
     <div className="bg-[var(--surface)] border" style={{ borderColor: "var(--border)" }}>
@@ -84,7 +86,11 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
           </thead>
           <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
             {allocations.map((a) => (
-              <tr key={a.symbol} className="hover:bg-[var(--surface)]-hover transition-colors group">
+              <tr
+                key={a.symbol}
+                onClick={() => router.push(`/research?symbol=${encodeURIComponent(a.symbol)}`)}
+                className="hover:border-amber-500/50 hover:bg-amber-500/5 transition-colors group cursor-pointer"
+              >
                 <td className="px-4 py-3 font-mono font-bold text-amber text-xs whitespace-nowrap">
                   {a.symbol.replace(".NS", "")}
                 </td>
@@ -122,7 +128,7 @@ export default function HoldingsTable({ allocations, onRemove, onAdd, onImport, 
                 </td>
                 <td className="px-4 py-3">
                   <button
-                    onClick={() => onRemove(a.symbol)}
+                    onClick={(e) => { e.stopPropagation(); onRemove(a.symbol); }}
                     className="opacity-0 group-hover:opacity-100 text-[color:var(--muted)] hover:text-red-500 transition-colors cursor-pointer"
                     title="Remove"
                   >

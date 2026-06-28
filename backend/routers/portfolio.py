@@ -4,8 +4,7 @@ from datetime import datetime
 from fastapi import APIRouter
 from pydantic import BaseModel
 from regime_detector import detect_regime
-from signal_engine import compute_signals, NIFTY50_TICKERS
-from data_cache import get_sectors, compute_portfolio_metrics, prefetch_candles, get_cached_candles
+from data_cache import get_sectors, compute_portfolio_metrics, get_cached_candles
 from angel_client import get_candles, get_holdings, get_positions
 
 router = APIRouter()
@@ -73,32 +72,23 @@ def _build_portfolio(budget: float, risk: str, signals: list, sectors: dict) -> 
 
 @router.post("/portfolio/create")
 def create_portfolio(body: PortfolioBrief):
+    from signal_engine import get_top_signals
     parsed  = _parse_brief(body.brief)
+    # All three are MongoDB-cached — sub-100ms each
     regime  = detect_regime()
-    sectors = get_sectors()   # live from yfinance, cached 24h
-    signals = []
+    sectors = get_sectors()
+    signals = get_top_signals(200)   # returns cached list instantly if warm
 
-    # Batch-download all tickers — prefetch handles MultiIndex column quirks
-    # and falls back to sequential individual downloads for any misses.
-    prefetch_candles(NIFTY50_TICKERS, days_back=365)
-
-    for ticker in NIFTY50_TICKERS:
-        try:
-            candles = get_cached_candles(ticker, 365) or get_candles(ticker, "ONE_DAY", 365)
-            sig = compute_signals(ticker, candles=candles)
-            if sig:
-                signals.append(sig)
-        except Exception:
-            pass
-
-    signals.sort(key=lambda x: x["composite_score"], reverse=True)
     allocations = _build_portfolio(parsed["budget_inr"], parsed["risk_level"], signals, sectors)
 
-    # Fetch recent candles for selected stocks to compute real return & Sharpe
+    # Candles for selected 10-15 stocks only — all cached from earlier prefetch
     candles_by_symbol = {}
     for alloc in allocations:
         try:
-            candles_by_symbol[alloc["symbol"]] = get_candles(alloc["symbol"], "ONE_DAY", 365)
+            candles_by_symbol[alloc["symbol"]] = (
+                get_cached_candles(alloc["symbol"], 365)
+                or get_candles(alloc["symbol"], "ONE_DAY", 365)
+            )
         except Exception:
             pass
 
@@ -114,8 +104,8 @@ def create_portfolio(body: PortfolioBrief):
         },
         "allocation": allocations,
         "metrics": {
-            "expected_return":  metrics["expected_return"],      # annualised %, from real 1Y data
-            "sharpe_estimate":  metrics["sharpe_estimate"],      # from real weighted returns
+            "expected_return":  metrics["expected_return"],
+            "sharpe_estimate":  metrics["sharpe_estimate"],
             "num_stocks":       len(allocations),
             "total_weight":     round(sum(a["weight"] for a in allocations), 2),
             "metrics_note":     "Based on trailing 1-year historical returns of selected stocks"

@@ -257,23 +257,84 @@ def get_market_caps() -> dict[str, int]:
 
 # ── Sectors ───────────────────────────────────────────────────────────────────
 
+_STATIC_SECTORS: dict[str, str] = {
+    # Banks
+    "HDFCBANK.NS":"Banking","ICICIBANK.NS":"Banking","SBIN.NS":"Banking","AXISBANK.NS":"Banking",
+    "KOTAKBANK.NS":"Banking","INDUSINDBK.NS":"Banking","BANKBARODA.NS":"Banking","CANBK.NS":"Banking",
+    "PNB.NS":"Banking","UNIONBANK.NS":"Banking","INDIANB.NS":"Banking","FEDERALBNK.NS":"Banking",
+    "IDFCFIRSTB.NS":"Banking","BANDHANBNK.NS":"Banking","YESBANK.NS":"Banking","RBLBANK.NS":"Banking",
+    # NBFC / Finance
+    "BAJFINANCE.NS":"NBFC","BAJAJFINSV.NS":"NBFC","LICHSGFIN.NS":"NBFC","CHOLAFIN.NS":"NBFC",
+    "MUTHOOTFIN.NS":"NBFC","MANAPPURAM.NS":"NBFC","SHRIRAMFIN.NS":"NBFC","SUNDARMFIN.NS":"NBFC",
+    "PNBHOUSING.NS":"NBFC","SBICARD.NS":"NBFC","ABCAPITAL.NS":"NBFC","LTFH.NS":"NBFC",
+    # Insurance & AMC
+    "SBILIFE.NS":"Insurance","HDFCLIFE.NS":"Insurance","ICICIPRULI.NS":"Insurance",
+    "ICICIGI.NS":"Insurance","MFSL.NS":"Insurance","LICI.NS":"Insurance","STARHEALTH.NS":"Insurance",
+    "HDFCAMC.NS":"Asset Management","NIPPONLIFE.NS":"Asset Management","ABSLAMC.NS":"Asset Management",
+    "UTI.NS":"Asset Management","360ONE.NS":"Asset Management","ANGELONE.NS":"Broking",
+    # IT
+    "TCS.NS":"IT","INFY.NS":"IT","HCLTECH.NS":"IT","WIPRO.NS":"IT","TECHM.NS":"IT",
+    "LTIM.NS":"IT","MPHASIS.NS":"IT","OFSS.NS":"IT","PERSISTENT.NS":"IT","KPITTECH.NS":"IT",
+    "TATAELXSI.NS":"IT","COFORGE.NS":"IT","CYIENT.NS":"IT","BIRLASOFT.NS":"IT",
+    "ZENSAR.NS":"IT","HEXAWARE.NS":"IT","TATACOMM.NS":"IT","MASTEK.NS":"IT",
+    # Internet / New-Age Tech
+    "ZOMATO.NS":"Internet","NAUKRI.NS":"Internet","POLICYBZR.NS":"Insurance Tech",
+    "INDIAMART.NS":"Internet","CARTRADE.NS":"Internet","PAYTM.NS":"Fintech",
+    "NYKAA.NS":"E-Commerce","EASEMYTRIP.NS":"Travel Tech","IXIGO.NS":"Travel Tech",
+    # Auto
+    "MARUTI.NS":"Automobile","TATAMOTORS.NS":"Automobile","HEROMOTOCO.NS":"Automobile",
+    "EICHERMOT.NS":"Automobile","TVSMOTOR.NS":"Automobile","ASHOKLEY.NS":"Commercial Vehicles",
+    "FORCEMOT.NS":"Automobile","BALKRISIND.NS":"Auto Ancillary","APOLLOTYRE.NS":"Tyres",
+    "MRF.NS":"Tyres","BOSCHLTD.NS":"Auto Ancillary","BHARATFORG.NS":"Auto Ancillary",
+    "MOTHERSON.NS":"Auto Ancillary","TIINDIA.NS":"Auto Ancillary","EXIDEIND.NS":"Auto Ancillary",
+    # Pharma & Healthcare
+    "SUNPHARMA.NS":"Pharma","DRREDDY.NS":"Pharma","CIPLA.NS":"Pharma","DIVISLAB.NS":"Pharma",
+    "LUPIN.NS":"Pharma","AUROPHARMA.NS":"Pharma","TORNTPHARM.NS":"Pharma","ZYDUSLIFE.NS":"Pharma",
+    "ALKEM.NS":"Pharma","GLENMARK.NS":"Pharma","BIOCON.NS":"Pharma","LALPATHLAB.NS":"Diagnostics",
+    "APOLLOHOSP.NS":"Healthcare","FORTIS.NS":"Healthcare","MAXHEALTH.NS":"Healthcare",
+    # FMCG
+    "HINDUNILVR.NS":"FMCG","ITC.NS":"FMCG","NESTLEIND.NS":"FMCG","BRITANNIA.NS":"FMCG",
+    "TATACONSUM.NS":"FMCG","DABUR.NS":"FMCG","MARICO.NS":"FMCG","GODREJCP.NS":"FMCG",
+    "COLPAL.NS":"FMCG","EMAMILTD.NS":"FMCG","RADICO.NS":"Beverages","VBL.NS":"Beverages",
+    "ASIANPAINT.NS":"Paints","TITAN.NS":"Jewellery","TRENT.NS":"Retail","DMART.NS":"Retail",
+    # Energy & Oil
+    "RELIANCE.NS":"Oil & Gas","ONGC.NS":"Oil & Gas","BPCL.NS":"Oil & Gas","IOC.NS":"Oil & Gas",
+    "HINDPETRO.NS":"Oil & Gas","PETRONET.NS":"Oil & Gas","GAIL.NS":"Gas","MGL.NS":"Gas",
+    "IGL.NS":"Gas","COALINDIA.NS":"Mining",
+    # Power & Renewables
+    "NTPC.NS":"Power","POWERGRID.NS":"Power","ADANIGREEN.NS":"Renewables","TATAPOWER.NS":"Power",
+    "TORNTPOWER.NS":"Power","SJVN.NS":"Power","NHPC.NS":"Power","RECLTD.NS":"Power Finance",
+    "PFC.NS":"Power Finance","IRFC.NS":"Infrastructure Finance","SUZLON.NS":"Renewables",
+    # Metals & Mining
+    "HINDALCO.NS":"Metals","JSWSTEEL.NS":"Steel","TATASTEEL.NS":"Steel","GRASIM.NS":"Diversified",
+    "VEDL.NS":"Metals","SAIL.NS":"Steel","NMDC.NS":"Mining","JINDALSTEL.NS":"Steel",
+    "JSPL.NS":"Steel","HINDCOPPER.NS":"Metals","NALCO.NS":"Metals",
+    # Cement
+    "ULTRACEMCO.NS":"Cement","SHREECEM.NS":"Cement","AMBUJACEM.NS":"Cement","ACC.NS":"Cement",
+    "RAMCOCEM.NS":"Cement","JKCEMENT.NS":"Cement","DALMIACENTB.NS":"Cement",
+    # Real Estate
+    "DLF.NS":"Real Estate","GODREJPROP.NS":"Real Estate","OBEROIRLTY.NS":"Real Estate",
+    "PHOENIXLTD.NS":"Real Estate","PRESTIGE.NS":"Real Estate","LODHA.NS":"Real Estate",
+    # Capital Goods & Infra
+    "LT.NS":"Engineering","SIEMENS.NS":"Engineering","ABB.NS":"Engineering",
+    "BHEL.NS":"Engineering","HAL.NS":"Defence","BEL.NS":"Defence","BEML.NS":"Defence",
+    "CGPOWER.NS":"Electrical","HAVELLS.NS":"Electrical","POLYCAB.NS":"Electrical",
+    "RVNL.NS":"Infrastructure","IRCON.NS":"Infrastructure","NBCC.NS":"Infrastructure",
+    "ADANIPORTS.NS":"Ports","ADANIENT.NS":"Diversified",
+    # Chemicals
+    "PIDILITE.NS":"Chemicals","SRF.NS":"Chemicals","DEEPAKNTR.NS":"Chemicals",
+    "UPL.NS":"Agrochemicals","COROMANDEL.NS":"Agrochemicals","TATACHEM.NS":"Chemicals",
+    # Telecom & Media
+    "BHARTIARTL.NS":"Telecom","INDUSTOWER.NS":"Telecom","IDEA.NS":"Telecom",
+    "SUNTV.NS":"Media","ZEEL.NS":"Media","SAREGAMA.NS":"Media",
+    # Logistics
+    "INDIGO.NS":"Aviation","DELHIVERY.NS":"Logistics","BLUEDART.NS":"Logistics",
+    "CONCOR.NS":"Logistics","IRCTC.NS":"Railways",
+}
+
+
 def get_sectors() -> dict[str, str]:
-    cached = _get("sectors", 86400)
-    if cached:
-        return cached
-
-    sectors = {}
-    for symbol in NIFTY50_TICKERS:
-        try:
-            info = yf.Ticker(symbol).info
-            sector = info.get("sector") or info.get("sectorDisp")
-            if sector:
-                sectors[symbol] = sector
-        except Exception:
-            pass
-
-    _set("sectors", sectors, 86400)
-    return sectors
+    return _STATIC_SECTORS
 
 
 # ── FII net ───────────────────────────────────────────────────────────────────
