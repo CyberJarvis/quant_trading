@@ -88,6 +88,7 @@ def run_comparison(symbols: list[str], days_back: int = 365) -> dict:
         bl["risk_metrics"] = compute_risk_metrics(bl_daily)
         results["pravah_bl"] = bl
     except Exception as e:
+        import traceback; traceback.print_exc()
         results["pravah_bl"] = {"error": str(e)}
 
     try:

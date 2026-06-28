@@ -197,9 +197,11 @@ def generate_risk_brief(
     holdings_text = "\n".join(f"  {s}: {w*100:.1f}%" for s, w in top_holdings)
 
     winner     = optimizer_result.get("winner", "pravah_bl")
-    bl_metrics = (optimizer_result.get("optimizers", {})
-                                  .get("pravah_bl", {})
-                                  .get("risk_metrics", {}))
+    optimizers = optimizer_result.get("optimizers", {})
+    # Use BL metrics; fall back to winner's metrics if BL errored
+    bl_metrics = optimizers.get("pravah_bl", {}).get("risk_metrics", {})
+    if not bl_metrics:
+        bl_metrics = optimizers.get(winner, {}).get("risk_metrics", {})
     sharpe     = bl_metrics.get("sharpe_ratio", "N/A")
     drawdown   = bl_metrics.get("max_drawdown", "N/A")
 

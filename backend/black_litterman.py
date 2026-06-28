@@ -196,15 +196,21 @@ def black_litterman_optimize(
     # ── Step 5: The B-L posterior formula ───────────────────────────────────
     # E[R] = [(τΣ)⁻¹ + P'Ω⁻¹P]⁻¹ × [(τΣ)⁻¹Π + P'Ω⁻¹Q]
     tau_Sigma = tau * cov_matrix
-    tau_Sigma_inv = np.linalg.inv(tau_Sigma)
+    try:
+        tau_Sigma_inv = np.linalg.inv(tau_Sigma)
+    except np.linalg.LinAlgError:
+        # Near-singular covariance — add stronger ridge and retry
+        tau_Sigma_inv = np.linalg.inv(tau_Sigma + np.eye(n) * 1e-4)
 
     try:
         Omega_inv = np.linalg.inv(Omega)
     except np.linalg.LinAlgError:
-        # Degenerate Omega — fall back to prior (no views)
         Omega_inv = np.zeros_like(Omega)
 
-    left_bracket = np.linalg.inv(tau_Sigma_inv + P.T @ Omega_inv @ P)
+    try:
+        left_bracket = np.linalg.inv(tau_Sigma_inv + P.T @ Omega_inv @ P)
+    except np.linalg.LinAlgError:
+        left_bracket = np.linalg.pinv(tau_Sigma_inv + P.T @ Omega_inv @ P)
     right_bracket = tau_Sigma_inv @ Pi + P.T @ Omega_inv @ Q
     posterior_returns = left_bracket @ right_bracket
 
