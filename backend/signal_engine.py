@@ -299,7 +299,7 @@ def compute_cqr_signals(symbol: str, candles: list) -> dict:
     macd_hist_raw = macd - macd.ewm(span=9, adjust=False).mean()
     feat["macd_hist"] = macd_hist_raw / close
 
-    feat["target"] = log_ret.shift(-5)
+    feat["target"] = np.log(close.shift(-5) / close)   # cumulative 5-day log return
     feat = feat.dropna()
 
     if len(feat) < 50:

@@ -229,7 +229,7 @@ def _build_cqr_features(candles: list):
     macd  = ema12 - ema26
     feat["macd_hist"] = (macd - macd.ewm(span=9, adjust=False).mean()) / close
 
-    feat["target"] = log_ret.shift(-5)
+    feat["target"] = np.log(close.shift(-5) / close)   # cumulative 5-day log return
     feat = feat.dropna()
     if len(feat) < 50:
         return None
@@ -286,14 +286,15 @@ def verify_prediction(symbol: str):
 
         price_t0    = float(candles_past[-1]["close"])
         price_t5    = float(candles[-1]["close"])
-        actual_ret  = round((price_t5 - price_t0) / price_t0 * 100, 4)
+        # cumulative log return — same units as model target
+        actual_ret  = round(np.log(price_t5 / price_t0) * 100, 4)
         covered     = (pred_lo * 100) <= actual_ret <= (pred_hi * 100)
 
         retro = {
-            "prediction_window": f"{candles_past[-1]['date']} → {candles[-1]['date']}",
-            "price_at_prediction": round(price_t0, 2),
-            "price_realized":      round(price_t5, 2),
-            "actual_return_pct":   actual_ret,
+            "prediction_window":    f"{candles_past[-1]['date']} → {candles[-1]['date']}",
+            "price_at_prediction":  round(price_t0, 2),
+            "price_realized":       round(price_t5, 2),
+            "actual_log_return_pct": actual_ret,   # log(p_t5/p_t0)*100 — matches model target
             "predicted_lower_pct": round(pred_lo * 100, 2),
             "predicted_median_pct": round(pred_mid * 100, 2),
             "predicted_upper_pct": round(pred_hi * 100, 2),
