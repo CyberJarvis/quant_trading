@@ -246,15 +246,31 @@ def _compute_all_signals_bg():
         print(f"[signals] BG warm error: {e}")
 
 
+_CQR_CACHE_DIR = "/tmp/pravah_cqr"
+
+
+def _cqr_cache_path(symbol: str, n_candles: int) -> str:
+    """Cache key = symbol + candle count + today's date → retrain daily or on new data."""
+    import os, hashlib
+    from datetime import date
+    os.makedirs(_CQR_CACHE_DIR, exist_ok=True)
+    key = f"{symbol}_{n_candles}_{date.today().isoformat()}"
+    return os.path.join(_CQR_CACHE_DIR, hashlib.md5(key.encode()).hexdigest() + ".pkl")
+
+
 def compute_cqr_signals(symbol: str, candles: list) -> dict:
     """Conformalized Quantile Regression — 90% guaranteed prediction interval for 5-day return.
 
+    Models are persisted to disk (joblib) and reloaded on subsequent calls —
+    training happens at most once per stock per day.
+
     Returns prediction_interval with lower_pct, pred_realist (Q50 → Black-Litterman view),
-    upper_pct, width, confidence, and abstain flag (width > 10%).
-    Returns {"prediction_interval": None} when data < 100 bars or lightgbm unavailable.
+    upper_pct, width, confidence, abstain flag, and model_source ('cached'/'trained').
+    Returns {"prediction_interval": None} when data < 250 bars or lightgbm unavailable.
     """
     try:
         import lightgbm as lgb
+        import joblib
     except ImportError:
         return {"prediction_interval": None}
 
@@ -281,7 +297,7 @@ def compute_cqr_signals(symbol: str, candles: list) -> dict:
     ema26 = close.ewm(span=26, adjust=False).mean()
     macd = ema12 - ema26
     macd_hist_raw = macd - macd.ewm(span=9, adjust=False).mean()
-    feat["macd_hist"] = macd_hist_raw / close  # normalize by price for cross-stock comparability
+    feat["macd_hist"] = macd_hist_raw / close
 
     feat["target"] = log_ret.shift(-5)
     feat = feat.dropna()
@@ -300,33 +316,47 @@ def compute_cqr_signals(symbol: str, candles: list) -> dict:
     if len(X_cal) < 10:
         return {"prediction_interval": None}
 
-    params_base = {
-        "objective": "quantile",
-        "n_estimators": 200,
-        "learning_rate": 0.05,
-        "num_leaves": 31,
-        "verbose": -1,
-    }
-    models = {}
-    for name, alpha_val in [("lo", 0.05), ("mid", 0.50), ("hi", 0.95)]:
-        m = lgb.LGBMRegressor(**{**params_base, "alpha": alpha_val})
-        m.fit(X_train, y_train)
-        models[name] = m
+    # ── Load or train models ────────────────────────────────────────────────
+    cache_path = _cqr_cache_path(symbol, len(candles))
+    model_source = "cached"
 
-    q_lo_cal = models["lo"].predict(X_cal)
-    q_hi_cal = models["hi"].predict(X_cal)
-    E = np.maximum(q_lo_cal - y_cal, y_cal - q_hi_cal)
+    try:
+        cached = joblib.load(cache_path)
+        models  = cached["models"]
+        q_hat   = cached["q_hat"]
+    except Exception:
+        model_source = "trained"
+        params_base = {
+            "objective":     "quantile",
+            "n_estimators":  200,
+            "learning_rate": 0.05,
+            "num_leaves":    31,
+            "verbose":       -1,
+        }
+        models = {}
+        for name, alpha_val in [("lo", 0.05), ("mid", 0.50), ("hi", 0.95)]:
+            m = lgb.LGBMRegressor(**{**params_base, "alpha": alpha_val})
+            m.fit(X_train, y_train)
+            models[name] = m
 
-    alpha = 0.10
-    n_cal = len(X_cal)
-    q_hat_level = min((1 - alpha) * (1 + 1 / n_cal), 1.0)
-    q_hat = float(np.quantile(E, q_hat_level))
+        q_lo_cal = models["lo"].predict(X_cal)
+        q_hi_cal = models["hi"].predict(X_cal)
+        E = np.maximum(q_lo_cal - y_cal, y_cal - q_hi_cal)
+        alpha_conf = 0.10
+        n_cal = len(X_cal)
+        q_hat = float(np.quantile(E, min((1 - alpha_conf) * (1 + 1 / n_cal), 1.0)))
 
-    X_new = X.iloc[[-1]]
-    lower = float(models["lo"].predict(X_new)[0]) - q_hat
-    pred  = float(models["mid"].predict(X_new)[0])
-    upper = float(models["hi"].predict(X_new)[0]) + q_hat
-    width = upper - lower
+        try:
+            joblib.dump({"models": models, "q_hat": q_hat}, cache_path)
+        except Exception:
+            pass
+
+    # ── Inference on latest row ─────────────────────────────────────────────
+    X_new  = X.iloc[[-1]]
+    lower  = float(models["lo"].predict(X_new)[0]) - q_hat
+    pred   = float(models["mid"].predict(X_new)[0])
+    upper  = float(models["hi"].predict(X_new)[0]) + q_hat
+    width  = upper - lower
 
     lower_pct = round(lower * 100, 2)
     pred_pct  = round(pred  * 100, 2)
@@ -334,7 +364,7 @@ def compute_cqr_signals(symbol: str, candles: list) -> dict:
     width_pct = round(width * 100, 2)
 
     return {
-        "pred_realist": pred_pct,  # Q50 median — feeds Black-Litterman view vector Q
+        "pred_realist": pred_pct,
         "prediction_interval": {
             "lower_pct":    lower_pct,
             "pred_realist": pred_pct,
@@ -342,6 +372,7 @@ def compute_cqr_signals(symbol: str, candles: list) -> dict:
             "width":        width_pct,
             "confidence":   0.90,
             "abstain":      width_pct > 10.0,
+            "model_source": model_source,   # 'cached' or 'trained'
         }
     }
 
