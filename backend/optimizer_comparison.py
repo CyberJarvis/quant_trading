@@ -13,9 +13,12 @@ from signal_engine import compute_cqr_signals
 
 
 def _fetch_candles_batch(symbols: list[str], days_back: int = 365) -> dict:
+    from angel_client import get_candles
     result = {}
     for sym in symbols:
         candles = get_cached_candles(sym, days_back)
+        if not candles or len(candles) < 30:
+            candles = get_candles(sym, interval="ONE_DAY", days_back=days_back)
         if candles and len(candles) >= 30:
             result[sym] = candles
     return result
