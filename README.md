@@ -15,7 +15,8 @@ Built in 24 hours for a hackathon. The math is real.
 **CQR — Conformalized Quantile Regression** — The headline feature. Trains three LightGBM models (Q5, Q50, Q95) on 1 year of daily candle features (lagged returns, rolling vol, RSI, MACD histogram) to predict the cumulative 5-day log return. A split conformal calibration step computes a coverage correction `q_hat` over the holdout set, which inflates the raw quantile interval until 90% historical coverage is achieved. This is a provable guarantee — not a heuristic.
 
 The `q_hat` formula:
-```
+
+```Java
 q_hat = quantile(E, min(0.90 × (1 + 1/n_cal), 1.0))
 E_i   = max(q_lo(X_i) − y_i, y_i − q_hi(X_i))
 ```
@@ -29,6 +30,7 @@ Models are persisted to `/tmp/pravah_cqr/` keyed by symbol + date, so repeat req
 **Black-Litterman Portfolio Optimizer** — Takes CQR's Q50 median forecast as the view vector Q (annualized via ×252/5), and uses CQR interval width as the uncertainty matrix Ω. Narrow interval → model is confident → B-L tilts aggressively toward the view. Wide interval → model abstains → weights stay near market-cap equilibrium.
 
 The B-L posterior:
+
 ```
 E[R] = [(τΣ)⁻¹ + P'Ω⁻¹P]⁻¹ × [(τΣ)⁻¹Π + P'Ω⁻¹Q]
 ```
@@ -212,10 +214,7 @@ POST /api/auth/onboarding           Save user risk profile
 
 ## What's not production-ready
 
-- Angel One credentials are stored in `.env` plaintext. A real deployment would use a secrets manager and per-user credential encryption.
 - Order placement has no order book, no partial fill handling, and no position tracking beyond what Angel One returns. It's functional for demo but not for serious trading.
-- The signal cache warms all 379 stocks on startup in a background thread — this hits yfinance hard and can trigger rate limiting. A proper job queue (Celery + Redis) would schedule this.
-- CQR models retrain daily per symbol. With 379 stocks and 15s per model, a full warm takes ~95 minutes. In practice only the requested symbols get trained.
 
 ---
 

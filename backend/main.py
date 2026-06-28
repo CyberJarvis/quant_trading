@@ -49,7 +49,7 @@ async def unhandled_exception(request: Request, exc: Exception):
         headers=headers,
     )
 
-from routers import regime, market, signals, portfolio, backtest, stress, auth, optimizer
+from routers import regime, market, signals, portfolio, backtest, stress, auth, optimizer, news
 
 app.include_router(auth.router,      prefix="/api")
 app.include_router(regime.router,    prefix="/api")
@@ -59,6 +59,7 @@ app.include_router(portfolio.router, prefix="/api")
 app.include_router(backtest.router,  prefix="/api")
 app.include_router(stress.router,    prefix="/api")
 app.include_router(optimizer.router, prefix="/api")
+app.include_router(news.router,      prefix="/api")
 
 
 @app.get("/")
