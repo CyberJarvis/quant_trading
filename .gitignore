@@ -45,5 +45,8 @@ skills-lock.json
 *.tmp
 *.bak
 
+# Planning docs (not code)
+PRAVAH_ML_Master_Plan.md
+
 # Large data files
 backend/OpenAPIScripMaster.json
